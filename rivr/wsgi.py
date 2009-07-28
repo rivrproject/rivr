@@ -1,4 +1,4 @@
-from rivr.http import Request, Response
+from rivr.http import Request, Response, ResponseNotFound, Http404
 
 STATUS_CODES = {
     100: 'CONTINUE',
@@ -64,6 +64,8 @@ class WSGIHandler(object):
             response = self.view(request)
             if not response:
                 raise Exception, "View did not return a response."
+        except Http404, e:
+            response = ResponseNotFound('Page not found')
         except Exception, e:
             response = Response('Internal server error', status=500)
         

@@ -25,7 +25,7 @@ ERROR_HTML = """
 
 class DebugMiddleware(Middleware):
     def process_404(self, request):
-        return ResponseNotFound('Error 404')
+        return ResponseNotFound('Page Not Found')
     
     def process_exception(self, request, e):
         if isinstance(e, Http404):
