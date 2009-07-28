@@ -1,4 +1,4 @@
-from rivr.http import Request
+from rivr.http import Request, Response
 
 STATUS_CODES = {
     100: 'CONTINUE',
@@ -54,12 +54,18 @@ class WSGIRequest(object):
 class WSGIHandler(object):
     request_class = WSGIRequest
     
-    def __init__(self, handler):
-        self.handler = handler
+    def __init__(self, view):
+        self.view = view
     
     def __call__(self, environ, start_response):
         request = self.request_class(environ)
-        response = self.handler(request)
+        
+        try:
+            response = self.view(request)
+            if not response:
+                raise Exception, "View did not return a response."
+        except Exception, e:
+            response = Response('Internal server error', status=500)
         
         try:
             status_text = STATUS_CODES[response.status_code]
