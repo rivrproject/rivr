@@ -1,3 +1,5 @@
+class Http404(Exception): pass
+
 class Request(object):
     def __init__(self, path='/', method='GET', GET={}, POST={}):
         self.path = path
