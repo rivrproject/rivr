@@ -1,7 +1,7 @@
 import sys
 
 from rivr.middleware import Middleware
-from rivr.http import Response
+from rivr.http import Response, ResponseNotFound, Http404
 from rivr.template import html_escape
 
 ERROR_HTML = """
@@ -24,7 +24,13 @@ ERROR_HTML = """
 """
 
 class DebugMiddleware(Middleware):
+    def process_404(self, request):
+        return ResponseNotFound('Error 404')
+    
     def process_exception(self, request, e):
+        if isinstance(e, Http404):
+            return self.process_404(request)
+        
         import traceback
         tb = '\n'.join(traceback.format_exception(*sys.exc_info()))
 
@@ -38,4 +44,5 @@ class DebugMiddleware(Middleware):
     
     def process_response(self, request, response):
         if not response:
-            self.process_exception(request, Exception, "View did not return a response.")
+            return self.process_exception(request, Exception, "View did not return a response.")
+        return response
