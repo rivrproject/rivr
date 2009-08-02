@@ -1,3 +1,9 @@
+try:
+    # The mod_python version is more efficient, so try importing it first.
+    from mod_python.util import parse_qsl
+except ImportError:
+    from cgi import parse_qsl
+
 from rivr.http import Request, Response, ResponseNotFound, Http404
 
 STATUS_CODES = {
@@ -50,6 +56,29 @@ class WSGIRequest(object):
         
         self.method = environ.get('REQUEST_METHOD', 'GET').upper()
         self.path = environ.get('PATH_INFO', '/')
+    
+    #@property
+    def get_get(self):
+        if not hasattr(self, '_get'):
+            self._get = dict((k,v) for k,v in parse_qsl(self.environ.get('QUERY_STRING', ''), True))
+        return self._get
+    GET = property(get_get)
+    
+    #@property
+    def get_post(self):
+        if not hasattr(self, '_post'):
+            try:
+                content_length = int(self.environ.get('CONTENT_LENGTH', 0))
+            except (ValueError, TypeError):
+                content_length = 0
+            
+            if content_length > 0:
+                body = self.environ['wsgi.input'].read(int(self.environ.get('CONTENT_LENGTH', 0)))
+                self._post = dict((k,v) for k,v in parse_qsl(body, True))
+            else:
+                self._post = {}
+        return self._post
+    POST = property(get_post)
 
 class WSGIHandler(object):
     request_class = WSGIRequest
