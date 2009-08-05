@@ -33,3 +33,6 @@ class ResponsePermanentRedirect(ResponseRedirect):
 
 class ResponseNotFound(Response):
     status_code = 404
+
+class ResponseNotModified(Response):
+    status_code = 304
