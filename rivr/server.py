@@ -1,4 +1,4 @@
-from django.core.servers.basehttp import WSGIServer, WSGIRequestHandler
+from wsgiref.simple_server import WSGIServer, WSGIRequestHandler
 from rivr.wsgi import WSGIHandler
 
 def serve(handler, host='localhost', port=8080):
