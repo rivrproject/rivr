@@ -116,6 +116,6 @@ def directory_index(request, path, fullpath):
             files.append(f)
     
     return Response(str(t.render(Context({
-        'directory': path,
+        'directory': path + '/',
         'files': files,
     }))))
