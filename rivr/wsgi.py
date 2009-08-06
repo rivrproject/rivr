@@ -56,6 +56,7 @@ class WSGIRequest(object):
         
         self.method = environ.get('REQUEST_METHOD', 'GET').upper()
         self.path = environ.get('PATH_INFO', '/')
+        self.META = environ
     
     #@property
     def get_get(self):
