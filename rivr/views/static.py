@@ -4,9 +4,9 @@ import urllib
 import mimetypes
 import stat
 import re
-from email.Utils import formatdate
+from email.Utils import formatdate, parsedate_tz, mktime_tz
 
-from rivr.http import Response, ResponseRedirect, Http404
+from rivr.http import Response, ResponseRedirect, ResponseNotModified, Http404
 
 def was_modified_since(header=None, mtime=0, size=0):
     if header is None:
