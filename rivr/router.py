@@ -129,8 +129,11 @@ class Router(object):
             if (not self.is_valid_path(request.path)) and self.is_valid_path(request.path+'/'):
                 return ResponsePermanentRedirect(request.path+'/')
         
-        callback, args, kwargs = RegexURLResolver(r'^/', self).resolve(request.path)
-        return callback(request, *args, **kwargs)
+        result = RegexURLResolver(r'^/', self).resolve(request.path)
+        if result:
+            callback, args, kwargs = result
+            return callback(request, *args, **kwargs)
+        raise Resolver404
     
     def append(self, url):
         self.urlpatterns.append(url)
