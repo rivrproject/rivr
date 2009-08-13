@@ -129,7 +129,7 @@ class Router(object):
             if (not self.is_valid_path(request.path)) and self.is_valid_path(request.path+'/'):
                 return ResponsePermanentRedirect(request.path+'/')
         
-        callback, args, kwargs = self.resolve(request.path)
+        callback, args, kwargs = RegexURLResolver(r'^/', self).resolve(request.path)
         return callback(request, *args, **kwargs)
     
     def append(self, url):
@@ -137,7 +137,7 @@ class Router(object):
     
     def resolve(self, path):
         # Remove a starting /
-        if path.startswith('/'): path = path[1:]
+        #if path.startswith('/'): path = path[1:]
         
         for pattern in self.urlpatterns:
             result = pattern.resolve(path)
