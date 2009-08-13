@@ -113,5 +113,5 @@ class WSGIHandler(object):
         
         status = '%s %s' % (response.status_code, status_text)
         
-        start_response(status, response.headers.items())
+        start_response(status, response.headers_items())
         return [response.content]
