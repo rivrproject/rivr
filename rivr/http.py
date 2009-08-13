@@ -1,3 +1,21 @@
+from Cookie import SimpleCookie, CookieError
+
+def parse_cookie(cookie):
+    if cookie == '':
+        return {}
+    
+    try:
+        c = SimpleCookie()
+        c.load(cookie)
+    except CookieError:
+        return {}
+    
+    cookiedict = {}
+    for key in c.keys():
+        cookiedict[key] = c.get(key).value
+    
+    return cookiedict
+
 class Http404(Exception): pass
 
 class Request(object):

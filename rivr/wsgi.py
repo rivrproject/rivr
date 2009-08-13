@@ -4,7 +4,7 @@ try:
 except ImportError:
     from cgi import parse_qsl
 
-from rivr.http import Request, Response, ResponseNotFound, Http404
+from rivr.http import parse_cookie, Request, Response, ResponseNotFound, Http404
 
 STATUS_CODES = {
     100: 'CONTINUE',
@@ -80,6 +80,13 @@ class WSGIRequest(object):
                 self._post = {}
         return self._post
     POST = property(get_post)
+    
+    #@property
+    def get_cookies(self):
+        if not hasattr(self, '_cookies'):
+            self._cookies = parse_cookie(self.environ.get('HTTP_COOKIE', ''))
+        return self._cookies
+    COOKIES = property(get_cookies)
 
 class WSGIHandler(object):
     request_class = WSGIRequest
