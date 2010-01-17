@@ -6,5 +6,3 @@ from rivr.middleware.debug import DebugMiddleware
 
 from rivr.router import Router, url, include
 from rivr.array import Array
-
-from rivr.django import django_view
