@@ -94,9 +94,7 @@ class RegexURLResolver(RegexURL):
         return self._router
     router = property(router)
 
-class Router(object):
-    APPEND_SLASH = True
-    
+class BaseRouter(object):
     def __init__(self, *urls):
         self.urlpatterns = []
         
@@ -124,29 +122,29 @@ class Router(object):
     def __isub__(self, router):
         self.urlpatterns.__isub__(router.urlpatterns)
     
-    def __call__(self, request):
-        if self.APPEND_SLASH and (not request.path.endswith('/')):
-            if (not self.is_valid_path(request.path)) and self.is_valid_path(request.path+'/'):
-                return ResponsePermanentRedirect(request.path+'/')
-        
-        result = RegexURLResolver(r'^/', self).resolve(request.path)
-        if result:
-            callback, args, kwargs = result
-            return callback(request, *args, **kwargs)
-        raise Resolver404
-    
     def append(self, url):
         self.urlpatterns.append(url)
+
+class Router(BaseRouter):
+    APPEND_SLASH = True
     
     def resolve(self, path):
-        # Remove a starting /
-        #if path.startswith('/'): path = path[1:]
-        
         for pattern in self.urlpatterns:
             result = pattern.resolve(path)
             if result is not None:
                 return result
         raise Resolver404, 'No URL pattern matched.'
+    
+    def __call__(self, request):
+        if self.APPEND_SLASH and (not request.path.endswith('/')):
+            if (not self.is_valid_path(request.path)) and self.is_valid_path(request.path+'/'):
+                return ResponsePermanentRedirect(request.path+'/')
+            
+        result = RegexURLResolver(r'^/', self).resolve(request.path)
+        if result:
+            callback, args, kwargs = result
+            return callback(request, *args, **kwargs)
+        raise Resolver404
     
     def is_valid_path(self, path):
         try:
@@ -154,7 +152,39 @@ class Router(object):
             return True
         except Resolver404:
             return False
+
+class Domain(BaseRouter):
+    APPEND_SLASH = True
     
+    def resolve(self, path):
+        for pattern in self.urlpatterns:
+            result = pattern.resolve(path)
+            if result is not None:
+                return result
+        raise Resolver404, 'No URL pattern matched.'
+    
+    def __call__(self, request):
+        host = request.META.get('HTTP_HOST', 'localhost:80')
+        host = ':'.join(host.split(':')[:-1])
+        url = host + request.path
+        
+        if self.APPEND_SLASH and (not url.endswith('/')):
+            if (not self.is_valid_url(url)) and self.is_valid_url(url+'/'):
+                return ResponsePermanentRedirect(url+'/')
+        
+        result = self.resolve(url)
+        if result:
+            callback, args, kwargs = result
+            return callback(request, *args, **kwargs)
+        raise Resolver404
+    
+    def is_valid_url(self, path):
+        try:
+            self.resolve(path)
+            return True
+        except Resolver404:
+            return False
+
 # Shortcuts
 def url(regex, view, kwargs={}, name=None, prefix=None):
     if isinstance(view, list):
