@@ -10,7 +10,7 @@ setup(
     author='Kyle Fuller',
     author_email='inbox@kylefuller.co.uk',
     url='http://github.com/kylef/rivr/',
-    download_url='http://github.com/kylef/django-request/zipball/%s' % VERSION,
+    download_url='http://github.com/kylef/rivr/zipball/%s' % VERSION,
     packages=['rivr', 'rivr.middleware', 'rivr.views'],
     license='BSD',
     classifiers=[
