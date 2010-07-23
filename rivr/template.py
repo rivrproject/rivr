@@ -183,10 +183,22 @@ def do_for(parser, token):
     
     return ForNode(var, loopvars, nodelist_loop, nodelist_empty)
 
+class RenderNode(VariableNode):
+    def render(self, context):
+        try:
+            return context[self.variable].render(context)
+        except KeyError:
+            return ''
+
+def do_render(parser, token):
+    var = token.contents.split()[1]
+    return RenderNode(var)
+
 BLOCKS = {
     'if': do_if,
     'ifnot': do_ifnot,
     'for': do_for,
+    'render': do_render,
 }
 
 class Token(object):
