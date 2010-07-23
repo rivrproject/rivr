@@ -1,6 +1,6 @@
 import re
 
-#from rivr.templatetags import BLOCKS
+from rivr.http import Response
 
 HTML_ESCAPE_DICT = {
     '<': '&lt;',
@@ -266,6 +266,14 @@ class Template(object):
     
     def render(self, context):
         return self.nodelist.render(context)
+
+def render_to_string(template_string, context):
+    t = Template(template_string)
+    c = Context(context)
+    return t.render(c)
+
+def render_to_response(template_string, context, *args, **kwargs):
+    return Response(render_to_string(template_string, context), *args, **kwargs)
 
 def html_escape(text):
     for escape in HTML_ESCAPE_DICT:

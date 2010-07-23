@@ -13,9 +13,9 @@ TEMPLATE = """
 """
 
 def view(request):
-    t = rivr.Template(TEMPLATE)
-    c = rivr.Context({ 'tag_list': BLOCKS.keys() })
-    return rivr.Response(t.render(c))
+    return rivr.render_to_response(TEMPLATE, {
+        'tag_list': BLOCKS.keys()
+    })
 
 if __name__ == '__main__':
     rivr.serve(view)
