@@ -30,6 +30,9 @@ tag_re = re.compile('(%s.*?%s|%s.*?%s|%s.*?%s)' % (
     re.escape(COMMENT_TAG_START), re.escape(COMMENT_TAG_END))
 )
 
+class TemplateSyntaxError(Exception):
+    pass
+
 class Context(object):
     def __init__(self, kwargs=None):
         self.dicts = []
@@ -163,12 +166,10 @@ class ForNode(Node):
 def do_for(parser, token):
     bits = token.contents.split()
     if len(bits) < 4:
-        # todo raise something
-        pass
+        raise TemplateSyntaxError("'for' statements should have atleast 4 works (words: %s)" % token.contents)
     
     if bits[-2] != 'in':
-        # todo raise something
-        pass
+        raise TemplateSyntaxError("'for' statements should use the following 'for x in y': %s" % token.contents)
     
     var = bits[-1]
     loopvars = re.sub(r' *, *', ',', ' '.join(bits[1:-2])).split(',')
@@ -194,11 +195,34 @@ def do_render(parser, token):
     var = token.contents.split()[1]
     return RenderNode(var)
 
+class IncludeNode(Node):
+    def __init__(self, file_name):
+        self.file_name = file_name
+    
+    def render(self, context):
+        try:
+            fp = open(self.file_name, 'r')
+            output = fp.read()
+            fp.close()
+        except IOError:
+            output = ''
+        
+        return Template(output).render(context)
+
+def do_include(parser, token):
+    bits = token.contents.split()
+    
+    if len(bits) < 2:
+        raise TemplateSyntaxError("Include tag takes one argument: the path to the file to be included")
+    
+    return IncludeNode(bits[1])
+
 BLOCKS = {
     'if': do_if,
     'ifnot': do_ifnot,
     'for': do_for,
     'render': do_render,
+    'include': do_include,
 }
 
 class Token(object):
@@ -250,11 +274,12 @@ class Parser(object):
                 try:
                     command = token.split_contents()[0]
                 except IndexError:
-                    # todo
-                    pass
+                    command = ''
                 
                 if command in BLOCKS:
                     nodes.append(BLOCKS[command](self, token))
+                else:
+                    raise TemplateSyntaxError("No such tag %s" % command)
         
         return nodes
     
@@ -277,7 +302,12 @@ class Template(object):
         self.nodelist = template_string_to_nodes(template_string)
     
     def render(self, context):
-        return self.nodelist.render(context)
+        try:
+            return self.nodelist.render(context)
+        except TemplateSyntaxError, e:
+            e.template = self
+            e.context = context
+            raise e
 
 def render_to_string(template_string, context):
     t = Template(template_string)
