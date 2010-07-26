@@ -89,10 +89,11 @@ class VariableNode(Node):
         self.variable = s
     
     def render(self, context):
-        try:
+        if self.variable in context:
+            if callable(context[self.variable]):
+                return context[self.variable]()
             return context[self.variable]
-        except KeyError:
-            return ''
+        return ''
 
 class IfNode(Node):
     def __init__(self, var, nodelist_true=None, nodelist_false=None):
