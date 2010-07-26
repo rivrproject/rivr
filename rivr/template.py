@@ -89,11 +89,22 @@ class VariableNode(Node):
         self.variable = s
     
     def render(self, context):
-        if self.variable in context:
-            if callable(context[self.variable]):
-                return context[self.variable]()
-            return context[self.variable]
-        return ''
+        try:
+            var = context
+            for component in self.variable.split('.'):
+                if type(var) == list:
+                    var = var[int(component)]
+                else:
+                    var = var[component]
+            
+            if callable(var):
+                return var()
+            
+            return var
+        except KeyError:
+            return ''
+        except ValueError:
+            return ''
 
 class IfNode(Node):
     def __init__(self, var, nodelist_true=None, nodelist_false=None):
