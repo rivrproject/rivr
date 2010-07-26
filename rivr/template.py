@@ -229,12 +229,28 @@ def do_include(parser, token):
     
     return IncludeNode(bits[1])
 
+class NowNode(Node):
+    def __init__(self, format_string):
+        self.format_string = format_string
+    
+    def render(self, context):
+        from datetime import datetime
+        return datetime.now().strftime(self.format_string)
+
+def do_now(parser, token):
+    bits = token.contents.split('"')
+    if len(bits) != 3:
+        raise TemplateSyntaxError("'now' statement takes one argument")
+    format_string = bits[1]
+    return NowNode(format_string)
+
 BLOCKS = {
     'if': do_if,
     'ifnot': do_ifnot,
     'for': do_for,
     'render': do_render,
     'include': do_include,
+    'now': do_now,
 }
 
 class Token(object):
