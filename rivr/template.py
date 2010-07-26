@@ -92,7 +92,9 @@ class VariableNode(Node):
         try:
             var = context
             for component in self.variable.split('.'):
-                if type(var) == list:
+                if hasattr(var, component):
+                    var = getattr(var, component)
+                elif type(var) == list:
                     var = var[int(component)]
                 else:
                     var = var[component]
@@ -167,10 +169,15 @@ class ForNode(Node):
         
         for item in values:
             if unpack:
-                context.push(dict(zip(self.loopvars, item)))
+                if (type(values) == dict) and (len(self.loopvars) == 2):
+                    context.push(dict(zip(self.loopvars, [item, values[item]])))
+                else:
+                    context.push(dict(zip(self.loopvars, item)))
             else:
                 context[self.loopvars[0]] = item
             result.append(self.nodelist_loop.render(context))
+            if unpack:
+                context.pop()
         
         context.pop()
         return ''.join(result)
