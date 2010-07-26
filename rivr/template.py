@@ -251,6 +251,17 @@ def do_now(parser, token):
     format_string = bits[1]
     return NowNode(format_string)
 
+class EscapeNode(VariableNode):
+    def render(self, context):
+        rendered = super(EscapeNode, self).render(context)
+        if rendered:
+            return html_escape(rendered)
+        return ''
+
+def do_escape(parser, token):
+    variable = ' '.join(token.split_contents()[1:])
+    return EscapeNode(variable)
+
 BLOCKS = {
     'if': do_if,
     'ifnot': do_ifnot,
@@ -258,6 +269,7 @@ BLOCKS = {
     'render': do_render,
     'include': do_include,
     'now': do_now,
+    'escape': do_escape,
 }
 
 class Token(object):
