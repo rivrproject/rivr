@@ -262,7 +262,7 @@ def do_escape(parser, token):
     variable = ' '.join(token.split_contents()[1:])
     return EscapeNode(variable)
 
-BLOCKS = {
+DEFAULT_TEMPLATE_TAGS = {
     'if': do_if,
     'ifnot': do_ifnot,
     'for': do_for,
@@ -304,6 +304,7 @@ class Lexer(object):
 class Parser(object):
     def __init__(self, tokens):
         self.tokens = tokens
+        self.tags = DEFAULT_TEMPLATE_TAGS
     
     def parse(self, parse_until=[]):
         nodes = NodeList()
@@ -323,8 +324,8 @@ class Parser(object):
                 except IndexError:
                     command = ''
                 
-                if command in BLOCKS:
-                    nodes.append(BLOCKS[command](self, token))
+                if command in self.tags:
+                    nodes.append(self.tags[command](self, token))
                 else:
                     raise TemplateSyntaxError("No such tag %s" % command)
         

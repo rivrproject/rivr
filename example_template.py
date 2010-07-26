@@ -1,5 +1,5 @@
 import rivr
-from rivr.template import BLOCKS
+from rivr.template import DEFAULT_TEMPLATE_TAGS
 
 TEMPLATE = """
 <h1>rivr templates</h1>
@@ -14,7 +14,7 @@ TEMPLATE = """
 
 def view(request):
     return rivr.render_to_response(TEMPLATE, {
-        'tag_list': BLOCKS.keys()
+        'tag_list': DEFAULT_TEMPLATE_TAGS
     })
 
 if __name__ == '__main__':
