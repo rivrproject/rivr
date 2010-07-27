@@ -177,3 +177,23 @@ def do_load(parser, token):
     parser.add_library(lib)
     return ''
 register.tag('load', do_load)
+
+class FilterNode(template.Node):
+    def __init__(self, filter_expr, nodelist):
+        self.filter_expr, self.nodelist = filter_expr, nodelist
+    
+    def render(self, context):
+        output = self.nodelist.render(context)
+        context.push({'var':output})
+        filtered = self.filter_expr.resolve(context)
+        context.pop()
+        return filtered
+
+def do_filter(parser, token):
+    _, filter_expr = token.contents.split(None, 1)
+    nodelist = parser.parse(('endfilter',))
+    parser.delete_first_token()
+    
+    filter_expr = parser.compile_filter("var|%s" % filter_expr)
+    return FilterNode(filter_expr, nodelist)
+register.tag('filter', do_filter)
