@@ -34,10 +34,8 @@ class TemplateSyntaxError(Exception):
     pass
 
 class Context(object):
-    def __init__(self, kwargs=None):
-        self.dicts = []
-        if kwargs:
-            self.dicts.append(kwargs)
+    def __init__(self, kwargs={}):
+        self.dicts = [kwargs]
     
     def __setitem__(self, key, value):
         self.dicts[-1][key] = value
