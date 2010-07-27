@@ -116,7 +116,7 @@ def do_render(parser, token):
     return RenderNode(var)
 register.tag('render', do_render)
 
-class IncludeNode(template.Node):
+class SSINode(template.Node):
     def __init__(self, file_name):
         self.file_name = file_name
     
@@ -130,14 +130,14 @@ class IncludeNode(template.Node):
         
         return Template(output).render(context)
 
-def do_include(parser, token):
+def do_ssi(parser, token):
     bits = token.contents.split()
     
     if len(bits) < 2:
-        raise template.TemplateSyntaxError("Include tag takes one argument: the path to the file to be included")
+        raise template.TemplateSyntaxError("ssi tag takes one argument: the path to the file to be included")
     
-    return IncludeNode(bits[1])
-register.tag('include', do_include)
+    return SSINode(bits[1])
+register.tag('ssi', do_ssi)
 
 class NowNode(template.Node):
     def __init__(self, format_string):

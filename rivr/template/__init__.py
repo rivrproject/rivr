@@ -171,6 +171,7 @@ class Parser(object):
         self.filters = {}
         self.add_library(import_library('rivr.template.defaulttags'))
         self.add_library(import_library('rivr.template.defaultfilters'))
+        self.add_library(import_library('rivr.template.loader_tags'))
     
     def add_library(self, lib):
         self.tags.update(lib.tags)
