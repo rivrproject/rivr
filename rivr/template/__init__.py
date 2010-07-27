@@ -14,6 +14,7 @@ HTML_ESCAPE_DICT = {
     "'":'&#39;', 
 }
 
+VARIABLE_ATTRIBUTE_SEPARATOR = '.'
 BLOCK_TAG_START = '{%'
 BLOCK_TAG_END = '%}'
 VARIABLE_TAG_START = '{{'
@@ -39,6 +40,46 @@ def import_library(library_module):
 class TemplateSyntaxError(Exception):
     pass
 
+class Variable(object):
+    def __init__(self, var):
+        self.var = var
+        self.lookups = None
+        
+        try:
+            self.literal = float(var)
+            if '.' not in var and 'e' not in var.lower():
+                self.literal = int(var)
+        except ValueError:
+            #TODO if " o" or ''
+            self.lookups = tuple(var.split(VARIABLE_ATTRIBUTE_SEPARATOR))
+    
+    def resolve(self, context):
+        if self.lookups is not None:
+            current = context
+            for bit in self.lookups:
+                try: # Dictionary lookup
+                    current = current[bit]
+                except (TypeError, AttributeError, KeyError):
+                    try: # Attribute lookup
+                        current = getattr(current, bit)
+                        if callable(current):
+                            try:
+                                current = current()
+                            except TypeError: # This function requires arguments
+                                current = ''
+                    except (TypeError, AttributeError):
+                        try: # list-index lookup
+                            current = current[int(bit)]
+                        except (
+                            IndexError, # list index out of range
+                            ValueError, # invalid literal for int()
+                            KeyError,   # current is a dict without `int(bit)` key
+                            TypeError,  # unsubscriptable object
+                        ):
+                            return ''
+            return current
+        return self.literal
+
 class NodeList(list):
     def render(self, context):
         bits = []
@@ -62,27 +103,10 @@ class TextNode(Node):
 
 class VariableNode(Node):
     def __init__(self, s):
-        self.variable = s
+        self.variable = Variable(s)
     
     def render(self, context):
-        try:
-            var = context
-            for component in self.variable.split('.'):
-                if hasattr(var, component):
-                    var = getattr(var, component)
-                elif type(var) == list:
-                    var = var[int(component)]
-                else:
-                    var = var[component]
-            
-            if callable(var):
-                return var()
-            
-            return str(var)
-        except KeyError:
-            return ''
-        except ValueError:
-            return ''
+        return str(self.variable.resolve(context))
 
 class Token(object):
     def __init__(self, token_type, contents):
