@@ -102,7 +102,7 @@ class VariableNode(Node):
             if callable(var):
                 return var()
             
-            return var
+            return str(var)
         except KeyError:
             return ''
         except ValueError:
@@ -209,6 +209,8 @@ class RenderNode(VariableNode):
             return context[self.variable].render(context)
         except KeyError:
             return ''
+        except AttributeError:
+            return Template(context[self.variable]).render(context)
 
 def do_render(parser, token):
     var = token.contents.split()[1]
