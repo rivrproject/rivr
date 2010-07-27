@@ -166,3 +166,14 @@ def do_escape(parser, token):
     variable = ' '.join(token.split_contents()[1:])
     return EscapeNode(variable)
 register.tag('escape', do_escape)
+
+def do_load(parser, token):
+    bits = token.contents.split()
+    
+    if len(bits) < 2:
+        raise template.TemplateSyntaxError("Load tag takes one argument: the module of the template library")
+    
+    lib = template.import_library(bits[1])
+    parser.add_library(lib)
+    return ''
+register.tag('load', do_load)
