@@ -1,5 +1,5 @@
 import rivr
-from rivr.template import DEFAULT_TEMPLATE_TAGS
+from rivr.template.defaulttags import register
 
 TEMPLATE = """
 <h1>rivr templates</h1>
@@ -14,8 +14,8 @@ TEMPLATE = """
 
 def view(request):
     return rivr.render_to_response(TEMPLATE, {
-        'tag_list': DEFAULT_TEMPLATE_TAGS
+        'tag_list': register.tags
     })
 
 if __name__ == '__main__':
-    rivr.serve(view)
+    rivr.serve(rivr.DebugMiddleware(view))

@@ -8,4 +8,5 @@ from rivr.middleware.auth import AuthMiddleware
 from rivr.router import Router, Domain, url, include
 from rivr.array import Array
 
-from rivr.template import Template, Context, render_to_response
+from rivr.template import Template, Context
+from rivr.template.shortcuts import render_to_response
