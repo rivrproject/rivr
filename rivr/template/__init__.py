@@ -14,6 +14,8 @@ HTML_ESCAPE_DICT = {
     "'":'&#39;', 
 }
 
+FILTER_SEPARATOR = '|'
+FILTER_ARGUMENT_SEPARATOR = ':'
 VARIABLE_ATTRIBUTE_SEPARATOR = '.'
 BLOCK_TAG_START = '{%'
 BLOCK_TAG_END = '%}'
@@ -80,6 +82,31 @@ class Variable(object):
             return current
         return self.literal
 
+class FilterExpression(object):
+    def __init__(self, token, parser):
+        self.token = token
+        self.filters = []
+        bits = token.split('|')
+        
+        if len(bits) < 1:
+            raise TemplateSyntaxError("Variable tags must inclue 1 argument")
+        
+        self.var = Variable(bits[0].strip())
+        
+        for filter_name in bits[1:]:
+            self.filters.append(parser.find_filter(filter_name.strip()))
+    
+    def resolve(self, context):
+        if isinstance(self.var, Variable):
+            obj = self.var.resolve(context)
+        else:
+            obj = self.var
+        
+        for filter_func in self.filters:
+            obj = filter_func(obj)
+        
+        return obj
+
 class NodeList(list):
     def render(self, context):
         bits = []
@@ -103,7 +130,7 @@ class TextNode(Node):
 
 class VariableNode(Node):
     def __init__(self, s):
-        self.variable = Variable(s)
+        self.variable = s
     
     def render(self, context):
         return str(self.variable.resolve(context))
@@ -141,10 +168,13 @@ class Parser(object):
     def __init__(self, tokens):
         self.tokens = tokens
         self.tags = {}
+        self.filters = {}
         self.add_library(import_library('rivr.template.defaulttags'))
+        self.add_library(import_library('rivr.template.defaultfilters'))
     
     def add_library(self, lib):
         self.tags.update(lib.tags)
+        self.filters.update(lib.filters)
     
     def parse(self, parse_until=[]):
         nodes = NodeList()
@@ -153,7 +183,7 @@ class Parser(object):
             if token.token_type == TOKEN_TEXT:
                 nodes.append(TextNode(token.contents))
             elif token.token_type == TOKEN_VAR:
-                nodes.append(VariableNode(token.contents))
+                nodes.append(VariableNode(self.compile_filter(token.contents)))
             elif token.token_type == TOKEN_BLOCK:
                 if token.contents in parse_until:
                     self.prepend_token(token)
@@ -170,6 +200,15 @@ class Parser(object):
                     raise TemplateSyntaxError("No such tag %s" % command)
         
         return nodes
+    
+    def compile_filter(self, token):
+        return FilterExpression(token, self)
+    
+    def find_filter(self, filter_name):
+        if filter_name in self.filters:
+            return self.filters[filter_name]
+        else:
+            raise TemplateSyntaxError("Invalid filter: '%s'" % filter_name)
     
     def prepend_token(self, token):
         self.tokens.insert(0, token)
@@ -195,9 +234,13 @@ class Template(object):
 class Library(object):
     def __init__(self):
         self.tags = {}
+        self.filters = {}
     
     def tag(self, name, function):
         self.tags[name] = function
+    
+    def filter(self, name, function):
+        self.filters[name] = function
 
 def template_string_to_nodes(template_string):
     tokens = Lexer(template_string).tokenize()
