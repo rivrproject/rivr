@@ -44,11 +44,14 @@ def import_library(library_module):
 class TemplateSyntaxError(Exception):
     pass
 
+class VariableDoesNotExist(Exception):
+    pass
+
 class Variable(object):
     def __init__(self, var):
         self.var = var
         self.lookups = None
-        self.literal = None
+        self.literal = ''
         
         try:
             self.literal = float(var)
@@ -60,32 +63,41 @@ class Variable(object):
             else:
                 self.lookups = tuple(var.split(VARIABLE_ATTRIBUTE_SEPARATOR))
     
-    def resolve(self, context):
+    def resolve(self, context, fail_silently=True):
         if self.lookups is not None:
-            current = context
-            for bit in self.lookups:
-                try: # Dictionary lookup
-                    current = current[bit]
-                except (TypeError, AttributeError, KeyError):
-                    try: # Attribute lookup
-                        current = getattr(current, bit)
-                        if callable(current):
-                            try:
-                                current = current()
-                            except TypeError: # This function requires arguments
-                                current = ''
-                    except (TypeError, AttributeError):
-                        try: # list-index lookup
-                            current = current[int(bit)]
-                        except (
-                            IndexError, # list index out of range
-                            ValueError, # invalid literal for int()
-                            KeyError,   # current is a dict without `int(bit)` key
-                            TypeError,  # unsubscriptable object
-                        ):
-                            return ''
-            return current
+            try:
+                return self.resolve_lookup(context)
+            except VariableDoesNotExist:
+                if fail_silently:
+                    return ''
+                else:
+                    raise
         return self.literal
+    
+    def resolve_lookup(self, context):
+        current = context
+        for bit in self.lookups:
+            try: # Dictionary lookup
+                current = current[bit]
+            except (TypeError, AttributeError, KeyError):
+                try: # Attribute lookup
+                    current = getattr(current, bit)
+                    if callable(current):
+                        try:
+                            current = current()
+                        except TypeError: # This function requires arguments
+                            raise VariableDoesNotExist
+                except (TypeError, AttributeError):
+                    try: # list-index lookup
+                        current = current[int(bit)]
+                    except (
+                        IndexError, # list index out of range
+                        ValueError, # invalid literal for int()
+                        KeyError,   # current is a dict without `int(bit)` key
+                        TypeError,  # unsubscriptable object
+                    ):
+                       raise VariableDoesNotExist
+        return current
 
 class FilterExpression(object):
     def __init__(self, token, parser):
