@@ -35,6 +35,8 @@ tag_re = re.compile('(%s.*?%s|%s.*?%s|%s.*?%s)' % (
     re.escape(COMMENT_TAG_START), re.escape(COMMENT_TAG_END))
 )
 
+literal_re = re.compile(r'^(\'.*\'|".*")$')
+
 def import_library(library_module):
     module = import_module(library_module)
     return getattr(module, 'register')
@@ -46,14 +48,17 @@ class Variable(object):
     def __init__(self, var):
         self.var = var
         self.lookups = None
+        self.literal = None
         
         try:
             self.literal = float(var)
             if '.' not in var and 'e' not in var.lower():
                 self.literal = int(var)
         except ValueError:
-            #TODO if " o" or ''
-            self.lookups = tuple(var.split(VARIABLE_ATTRIBUTE_SEPARATOR))
+            if literal_re.match(var):
+                self.literal = var[1:-1]
+            else:
+                self.lookups = tuple(var.split(VARIABLE_ATTRIBUTE_SEPARATOR))
     
     def resolve(self, context):
         if self.lookups is not None:
