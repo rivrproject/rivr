@@ -6,14 +6,16 @@ register = template.Library()
 
 class IfNode(template.Node):
     def __init__(self, var, nodelist_true=None, nodelist_false=None):
-        self.var = var
+        self.var = template.Variable(var)
         self.nodelist_true, self.nodelist_false = nodelist_true, nodelist_false
     
     def render(self, context):
-        if self.var in context:
-            if context[self.var]:
+        try:
+            if self.var.resolve(context):
                 return self.nodelist_true.render(context)
-        return self.nodelist_false.render(context)
+            return self.nodelist_false.render(context)
+        except template.VariableDoesNotExist:
+            return self.nodelist_false.render(context)
     
 def do_if(parser, token):
     var = token.split_contents()[1]
@@ -118,11 +120,11 @@ register.tag('render', do_render)
 
 class SSINode(template.Node):
     def __init__(self, file_name):
-        self.file_name = file_name
+        self.file_name = template.Variable(file_name)
     
     def render(self, context):
         try:
-            fp = open(self.file_name, 'r')
+            fp = open(self.file_name.resolve(context), 'r')
             output = fp.read()
             fp.close()
         except IOError:
@@ -154,18 +156,6 @@ def do_now(parser, token):
     format_string = bits[1]
     return NowNode(format_string)
 register.tag('now', do_now)
-
-class EscapeNode(template.VariableNode):
-    def render(self, context):
-        rendered = super(EscapeNode, self).render(context)
-        if rendered:
-            return html_escape(rendered)
-        return ''
-
-def do_escape(parser, token):
-    variable = ' '.join(token.split_contents()[1:])
-    return EscapeNode(variable)
-register.tag('escape', do_escape)
 
 def do_load(parser, token):
     bits = token.contents.split()
