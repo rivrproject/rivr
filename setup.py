@@ -2,7 +2,7 @@
 
 from distutils.core import setup
 
-VERSION = '0.1'
+VERSION = '0.1.1'
 
 setup(
     name='rivr',
