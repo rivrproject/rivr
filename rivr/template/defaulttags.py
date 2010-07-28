@@ -45,14 +45,14 @@ register.tag('ifnot', do_ifnot)
 
 class ForNode(template.Node):
     def __init__(self, var, loopvars, nodelist_loop, nodelist_empty):
-        self.var = var
+        self.var = template.Variable(var)
         self.loopvars = loopvars
         self.nodelist_loop = nodelist_loop
         self.nodelist_empty = nodelist_empty
     
     def render(self, context):
         try:
-            values = context[self.var]
+            values = self.var.resolve(context)
             if not hasattr(values, '__len__'):
                 values = list(values)
         except KeyError:
