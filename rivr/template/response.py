@@ -59,3 +59,6 @@ class TemplateMiddleware(object):
             response.template_dirs = self.template_dirs
         
         return response
+
+def direct_to_template(request, template, extra_context={}, **kwargs):
+    return TemplateResponse(request, template, extra_context)
