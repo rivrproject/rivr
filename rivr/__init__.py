@@ -11,3 +11,5 @@ from rivr.array import Array
 from rivr.template import Template, Context
 from rivr.template.shortcuts import render_to_response
 from rivr.template.response import TemplateResponse, TemplateMiddleware
+
+from rivr.views.simple import direct_to_template, redirect_to

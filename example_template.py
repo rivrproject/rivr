@@ -12,4 +12,12 @@ def view(request):
     })
 
 if __name__ == '__main__':
-    rivr.serve(rivr.TemplateMiddleware(template_dir, view))
+    rivr.serve(rivr.TemplateMiddleware(template_dir, rivr.Router(
+        (r'^$', rivr.direct_to_template, {
+            'template': 'example_template.html',
+            'extra_context': {
+                'tag_list': tag_lib.tags,
+                'filter_list': filter_lib.filters,
+            }}),
+        (r'^view/$', view)
+    )))
