@@ -9,12 +9,16 @@ def mongodb(func):
     def new_func(request, *args, **kwargs):
         if Connection and 'mongodb_host' in kwargs and 'mongodb_port' in kwargs:
             request.mongodb_connection = Connection(kwargs['mongodb_host'], kwargs['mongodb_port'])
+            del kwargs['mongodb_host']
+            del kwargs['mongodb_port']
         
         if 'mongodb_database' in kwargs and hasattr(request, 'mongodb_connection'):
             request.mongodb_database = request.mongodb_connection[kwargs['mongodb_database']]
+            del kwargs['mongodb_database']
         
         if 'mongodb_collection' in kwargs and hasattr(request, 'mongodb_database'):
-            request.mongodb_collection = request.mongodb_database[kwargs['collection']]
+            request.mongodb_collection = request.mongodb_database[kwargs['mongodb_collection']]
+            del kwargs['mongodb_collection']
         
         if not hasattr(request, 'mongodb_collection'):
             raise Exception, "MongoDB Collection missing"
