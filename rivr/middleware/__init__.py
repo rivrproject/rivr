@@ -17,6 +17,8 @@ class Middleware(object):
                 
                 if response:
                     return response
+            else:
+                raise e
         
         if hasattr(self, 'process_response'):
             response = self.process_response(request, response)
