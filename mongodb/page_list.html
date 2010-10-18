@@ -29,7 +29,7 @@
         
         <ul>
         {% for page in page_list %}
-            <li><a href="/{{ page._id }}/">{{ page.title }}</a></li>
+            <li><a href="/{{ page._id }}/">{{ page.title }}</a> (<a href="/{{ page._id }}/edit/">edit</a> | <a href="/{{ page._id }}/delete/">delete</a>)</li>
         {% endfor %}
         </ul>
     </div>

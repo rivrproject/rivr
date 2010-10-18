@@ -1,5 +1,5 @@
 import rivr
-from rivr.views.mongodb import object_list, object_detail
+from rivr.views.mongodb import object_list, object_detail, delete_object
 from os.path import realpath, dirname, join
 from rivr.http import ResponseRedirect
 from pymongo.objectid import ObjectId
@@ -30,6 +30,7 @@ if __name__ == '__main__':
                 (r'^$', object_list, kwargs),
                 (r'^add/$', add_view),
                 (r'^(?P<object_id>[\w\d]+)/edit/$', edit_view),
+                (r'^(?P<object_id>[\w\d]+)/delete/$', delete_object, kwargs),
                 (r'^(?P<object_id>[\w\d]+)/$', object_detail, kwargs)
             )
         )

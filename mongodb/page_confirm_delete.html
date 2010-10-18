@@ -26,8 +26,11 @@
     
     <div id="content">
     {% if page %}
-        <h2>{{ page.title }} (<a href="/{{ page._id }}/edit/">edit</a> | <a href="/{{ page._id }}/delete/">delete</a>)</h2>
-        <p>{{ page.content }}</p>
+        <h2>Delete {{ page.title }}</h2>
+        <p>Are you sure you wish to delete `{{ page.title }}`?</p>
+        <form action="/{{ page._id }}/delete/" method="post" accept-charset="utf-8">
+            <p><input type="submit" value="Delete"></p>
+        </form>
     {% else %}
         <p>Item not found</p>
     {% endif %}
