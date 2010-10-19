@@ -124,6 +124,12 @@ class BaseRouter(object):
     
     def append(self, url):
         self.urlpatterns.append(url)
+    
+    def register(self, *t):
+        if isinstance(t, (list, tuple)):
+            t = url(*t)
+        
+        self.append(t)
 
 class Router(BaseRouter):
     APPEND_SLASH = True
