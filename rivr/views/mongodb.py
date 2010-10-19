@@ -1,13 +1,42 @@
 from rivr.template.response import TemplateResponse
-from rivr.http import ResponseRedirect, Http404
+from rivr.http import Response, ResponseRedirect, Http404
 from rivr.middleware.mongodb import mongodb
+
+try:
+    from pymongo.objectid import ObjectId
+    import gridfs
+except ImportError:
+    ObjectId = lambda x: x
+    gridfs = None
+
+class GridFSResponse(Response):
+    def __init__(self, grid_file):
+        super(GridFSResponse, self).__init__(content_type=str(grid_file.content_type))
+        self.grid_file = grid_file
+    
+    def get_content(self):
+        return self.grid_file.read()
+    
+    def set_content(self, value):
+        pass
+    content = property(get_content, set_content)
+
+#@mongodb
+def gridfs_view(request, object_id=None, filename=None):
+    if not gridfs:
+        raise ImportError, "gridfs is missing"
+    
+    grid = gridfs.GridFS(request.mongodb_database)
+    f = grid.get(ObjectId(object_id))
+    
+    return GridFSResponse(f)
+gridfs_view = mongodb(gridfs_view)
 
 def object_lookup(func):
     def new_func(request, object_id=None, slug=None, slug_field='slug', *args, **kwargs):
         lookup = {}
         
         if object_id:
-            from pymongo.objectid import ObjectId
             lookup['_id'] = ObjectId(object_id)
         
         if slug:
