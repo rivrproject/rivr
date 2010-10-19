@@ -45,7 +45,7 @@ def object_lookup(func):
         return func(request, lookup, *args, **kwargs)
     return new_func
 
-@mongodb
+#@mongodb
 def object_list(request, template_name=None, template_object_name='object'):
     if not template_name:
         template_name = '%s_list.html' % template_object_name
@@ -53,7 +53,9 @@ def object_list(request, template_name=None, template_object_name='object'):
     return TemplateResponse(request, template_name, {
         '%s_list' % template_object_name: request.mongodb_collection.find()
     })
+object_list = mongodb(object_list)
 
+#@mongodb
 def object_detail(request, lookup, template_name=None, template_object_name='object'):
     if not template_name:
         template_name = '%s_detail.html' % template_object_name
@@ -65,6 +67,7 @@ def object_detail(request, lookup, template_name=None, template_object_name='obj
 object_detail = object_lookup(object_detail)
 object_detail = mongodb(object_detail)
 
+#@mongodb
 def delete_object(request, lookup, template_name=None, template_object_name='object', post_delete_redirect='/'):
     obj = request.mongodb_collection.find_one(lookup)
     
