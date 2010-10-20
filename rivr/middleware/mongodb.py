@@ -5,8 +5,17 @@ try:
 except ImportError:
     Connection = None
 
-def mongodb(func):
-    def new_func(request, *args, **kwargs):
+class mongodb(object):
+    def __init__(self, func, database=True, collection=True, gridfs=False):
+        self.func = func
+        self.database = database
+        self.collection = collection
+        self.gridfs = gridfs
+        
+        if gridfs or collection:
+            self.database = True
+    
+    def __call__(self, request, *args, **kwargs):
         if Connection and 'mongodb_host' in kwargs and 'mongodb_port' in kwargs:
             request.mongodb_connection = Connection(kwargs['mongodb_host'], kwargs['mongodb_port'])
             del kwargs['mongodb_host']
@@ -20,11 +29,17 @@ def mongodb(func):
             request.mongodb_collection = request.mongodb_database[kwargs['mongodb_collection']]
             del kwargs['mongodb_collection']
         
-        if not hasattr(request, 'mongodb_collection'):
+        if self.database and not hasattr(request, 'mongodb_database'):
+            raise Exception, "MongoDB Database missing"
+        
+        if self.collection and not hasattr(request, 'mongodb_collection'):
             raise Exception, "MongoDB Collection missing"
         
-        return func(request, *args, **kwargs)
-    return new_func
+        if self.gridfs:
+            import gridfs
+            request.mongodb_gridfs = gridfs.GridFS(request.mongodb_database)
+        
+        return self.func(request, *args, **kwargs)
 
 class MongoDBMiddleware(Middleware):
     def __init__(self, host=None, port=None, database=None, collection=None, handler=None):

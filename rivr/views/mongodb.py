@@ -22,15 +22,10 @@ class GridFSResponse(Response):
     content = property(get_content, set_content)
 
 #@mongodb
-def gridfs_view(request, object_id=None, filename=None):
-    if not gridfs:
-        raise ImportError, "gridfs is missing"
-    
-    grid = gridfs.GridFS(request.mongodb_database)
-    f = grid.get(ObjectId(object_id))
-    
+def gridfs_view(request, object_id):
+    f = request.mongodb_gridfs.get(ObjectId(object_id))
     return GridFSResponse(f)
-gridfs_view = mongodb(gridfs_view)
+gridfs_view = mongodb(gridfs_view, collection=False, gridfs=True)
 
 def object_lookup(func):
     def new_func(request, object_id=None, slug=None, slug_field='slug', *args, **kwargs):
