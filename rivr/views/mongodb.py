@@ -43,7 +43,10 @@ def object_lookup(func):
 #@mongodb
 def object_list(request, template_name=None, template_object_name='object'):
     if not template_name:
-        template_name = '%s_list.html' % template_object_name
+        template_name = ['%s_list.html' % template_object_name]
+        
+        if template_object_name == 'object':
+            template_name.insert(0, '%s_list.html' % request.mongodb_collection.name)
     
     return TemplateResponse(request, template_name, {
         '%s_list' % template_object_name: request.mongodb_collection.find()
@@ -53,7 +56,10 @@ object_list = mongodb(object_list)
 #@mongodb
 def object_detail(request, lookup, template_name=None, template_object_name='object'):
     if not template_name:
-        template_name = '%s_detail.html' % template_object_name
+        template_name = ['%s_detail.html' % template_object_name]
+        
+        if template_object_name == 'object':
+            template_name.insert(0, '%s_detail.html' % request.mongodb_collection.name)
     
     return TemplateResponse(request, template_name, {
         template_object_name: request.mongodb_collection.find_one(lookup)
@@ -74,7 +80,10 @@ def delete_object(request, lookup, template_name=None, template_object_name='obj
         return ResponseRedirect(post_delete_redirect)
     
     if not template_name:
-        template_name = '%s_confirm_delete.html' % template_object_name
+        template_name = ['%s_confirm_delete.html' % template_object_name]
+        
+        if template_object_name == 'object':
+            template_name.insert(0, '%s_confirm_delete.html' % request.mongodb_collection.name)
     
     return TemplateResponse(request, template_name, {
         template_object_name: obj
