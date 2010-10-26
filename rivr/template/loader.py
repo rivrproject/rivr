@@ -14,13 +14,13 @@ class Loader(object):
     def __init__(self):
         self.template_dirs = []
     
-    def load_template(self, template_name):
+    def load_template(self, template_names):
         tried = []
         
-        if isinstance(template_name, str):
-            template_name = [template_name]
+        if isinstance(template_names, str):
+            template_names = [template_names]
         
-        for template_name in template_name:
+        for template_name in template_names:
             for template_dir in self.template_dirs:
                 filepath = join(template_dir, template_name)
                 try:
@@ -32,7 +32,7 @@ class Loader(object):
                 except IOError:
                     tried.append(filepath)
             
-            return tried
+        return tried
     
     def get_template(self, template_name):
         template_content = self.load_template(template_name)
