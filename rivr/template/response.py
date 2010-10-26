@@ -5,6 +5,7 @@ from rivr.template.loader import Loader
 class TemplateResponse(Response):
     def __init__(self, request, template_name, context, template_dirs=[], *args, **kwargs):
         self.request = request
+        self.loader = None
         self.template_name = template_name
         self.context = context
         self.template_dirs = template_dirs
@@ -12,20 +13,20 @@ class TemplateResponse(Response):
         super(TemplateResponse, self).__init__(*args, **kwargs)
     
     def resolve_template(self):
-        l = Loader()
+        self.loader = Loader()
         
         if isinstance(self.template_dirs, list):
-            l.template_dirs += self.template_dirs
+            self.loader.template_dirs += self.template_dirs
         else:
-            l.template_dirs.append(self.template_dirs)
+            self.loader.template_dirs.append(self.template_dirs)
         
-        return l.get_template(self.template_name)
+        return self.loader.get_template(self.template_name)
     
     def resolve_context(self):
         if isinstance(self.context, Context):
             return self.context
         
-        c = Context({'request':self.request})
+        c = Context({'request':self.request, 'loader':self.loader})
         c.push(self.context)
         self.context = c
         
