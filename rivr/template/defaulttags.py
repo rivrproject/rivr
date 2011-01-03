@@ -45,6 +45,35 @@ def do_ifnot(parser, token):
     return IfNode(var, nodelist_true, nodelist_false)
 register.tag('ifnot', do_ifnot)
 
+class IfEqualNode(template.Node):
+    def __init__(self, var1, var2, nodelist_true=None, nodelist_false=None):
+        self.var1 = template.Variable(var1)
+        self.var2 = template.Variable(var2)
+        self.nodelist_true, self.nodelist_false = nodelist_true, nodelist_false
+    
+    def render(self, context):
+        try:
+            if self.var1.resolve(context) == self.var2.resolve(context):
+                return self.nodelist_true.render(context)
+            return self.nodelist_false.render(context)
+        except template.VariableDoesNotExist:
+            return self.nodelist_false.render(context)
+
+def do_ifequal(parser, token):
+    var1 = token.split_contents()[1]
+    var2 = token.split_contents()[2]
+    nodelist_true = parser.parse(('else', 'endif'))
+    token = parser.next_token()
+    
+    if token.contents == 'else':
+        nodelist_false = parser.parse(('endif',))
+        parser.delete_first_token()
+    else:
+        nodelist_false = template.NodeList()
+    
+    return IfEqualNode(var1, var2, nodelist_true, nodelist_false)
+register.tag('ifequal', do_ifequal)
+
 class ForNode(template.Node):
     def __init__(self, var, loopvars, nodelist_loop, nodelist_empty):
         self.var = template.Variable(var)
