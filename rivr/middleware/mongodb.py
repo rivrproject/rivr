@@ -1,9 +1,9 @@
 from rivr.middleware import Middleware
 
 try:
-    from pymongo import Connection
+    import pymongo
 except ImportError:
-    Connection = None
+    pymongo = None
 
 class mongodb(object):
     def __init__(self, func, database=True, collection=True, gridfs=False):
@@ -16,8 +16,8 @@ class mongodb(object):
             self.database = True
     
     def __call__(self, request, *args, **kwargs):
-        if Connection and 'mongodb_host' in kwargs and 'mongodb_port' in kwargs:
-            request.mongodb_connection = Connection(kwargs['mongodb_host'], kwargs['mongodb_port'])
+        if pymongo and 'mongodb_host' in kwargs and 'mongodb_port' in kwargs:
+            request.mongodb_connection = pymongo.Connection(kwargs['mongodb_host'], kwargs['mongodb_port'])
             del kwargs['mongodb_host']
             del kwargs['mongodb_port']
         
@@ -51,8 +51,8 @@ class MongoDBMiddleware(Middleware):
         self.collection = None
         self._collection = None
         
-        if Connection and host and port:
-            self.connection = Connection(host, port)
+        if pymongo and host and port:
+            self.connection = pymongo.Connection(host, port)
         
         if database:
             self._database = database
