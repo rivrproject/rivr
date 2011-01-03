@@ -40,6 +40,15 @@ def object_lookup(func):
         return func(request, lookup, *args, **kwargs)
     return new_func
 
+lookup_filters = {
+    'int': int,
+    'gt': lambda x: {'$gt': int(x)},
+    'gte': lambda x: {'$gte': int(x)},
+    'lt': lambda x: {'$lt': int(x)},
+    'lte': lambda x: {'$lte': int(x)},
+    'regex': lambda x: {'$regex': x},
+}
+
 #@mongodb
 def object_list(request, template_name=None, template_object_name='object'):
     if not template_name:
@@ -48,8 +57,20 @@ def object_list(request, template_name=None, template_object_name='object'):
         if template_object_name == 'object':
             template_name.insert(0, '%s_list.html' % request.mongodb_collection.name)
     
+    lookup = {}
+    
+    for l in request.GET:
+        if '__' in l:
+            try:
+                key, f = l.split('__')
+                lookup[key] = lookup_filters[f](request.GET[l])
+            except:
+                continue
+        else:
+            lookup[l] = request.GET[l]
+    
     return TemplateResponse(request, template_name, {
-        '%s_list' % template_object_name: request.mongodb_collection.find()
+        '%s_list' % template_object_name: request.mongodb_collection.find(lookup)
     })
 object_list = mongodb(object_list)
 
