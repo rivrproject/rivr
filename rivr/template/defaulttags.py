@@ -62,11 +62,11 @@ class IfEqualNode(template.Node):
 def do_ifequal(parser, token):
     var1 = token.split_contents()[1]
     var2 = token.split_contents()[2]
-    nodelist_true = parser.parse(('else', 'endif'))
+    nodelist_true = parser.parse(('else', 'endifequal'))
     token = parser.next_token()
     
     if token.contents == 'else':
-        nodelist_false = parser.parse(('endif',))
+        nodelist_false = parser.parse(('endifequal',))
         parser.delete_first_token()
     else:
         nodelist_false = template.NodeList()
