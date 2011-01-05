@@ -42,7 +42,7 @@ class mongodb(object):
         return self.func(request, *args, **kwargs)
 
 class MongoDBMiddleware(Middleware):
-    def __init__(self, host=None, port=None, database=None, collection=None, handler=None):
+    def __init__(self, host=None, port=None, database=None, collection=None, handler=None, username=None, password=None):
         super(MongoDBMiddleware, self).__init__(handler)
         
         self.connection = None
@@ -58,6 +58,8 @@ class MongoDBMiddleware(Middleware):
             self._database = database
             if self.connection:
                 self.database = self.connection[database]
+            if username and password:
+                self.database.authenticate(username, password)
             
         if collection:
             self._collection = collection
