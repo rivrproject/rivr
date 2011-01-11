@@ -150,7 +150,7 @@ class VariableNode(Node):
         self.variable = s
     
     def render(self, context):
-        return str(self.variable.resolve(context))
+        return unicode(self.variable.resolve(context))
 
 class Token(object):
     def __init__(self, token_type, contents):
