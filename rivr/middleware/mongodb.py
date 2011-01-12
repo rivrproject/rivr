@@ -51,7 +51,7 @@ class MongoDBMiddleware(Middleware):
         self.collection = None
         self._collection = None
         
-        if pymongo and host and port:
+        if pymongo:
             self.connection = pymongo.Connection(host, port)
         
         if database:
