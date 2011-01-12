@@ -15,7 +15,9 @@ class GridFSResponse(Response):
         self.grid_file = grid_file
     
     def get_content(self):
-        return self.grid_file.read()
+        if not hasattr(self, '_content'):
+            self._content = self.grid_file.read()
+        return self._content
     
     def set_content(self, value):
         pass
