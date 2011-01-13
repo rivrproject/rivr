@@ -1,3 +1,5 @@
+import math
+
 from rivr.template.response import TemplateResponse
 from rivr.http import Response, ResponseRedirect, Http404
 from rivr.middleware.mongodb import mongodb
@@ -77,18 +79,19 @@ def object_list(request, page=1, paginate_by=20, template_name=None, template_ob
         page = int(page)
         if page < 1:
             page = 1
-    except ValueError:
+    except (TypeError, ValueError):
         page = 1
     
     query = request.mongodb_collection.find(lookup)
-    query = query.skip(paginate_by * (page - 1)).limit(paginate_by)
+    paged_query = query.skip(paginate_by * (page - 1)).limit(paginate_by)
     
     return TemplateResponse(request, template_name, {
-        '%s_list' % template_object_name: query,
+        '%s_list' % template_object_name: paged_query,
         'mongodb_collection': request.mongodb_collection.name,
         # Pagination
         'page': page,
         'paginate_by': paginate_by,
+        'page_count': int(math.ceil(float(query.count()) / float(paginate_by)))
     })
 object_list = mongodb(object_list)
 
