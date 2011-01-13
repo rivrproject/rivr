@@ -52,7 +52,7 @@ lookup_filters = {
 }
 
 #@mongodb
-def object_list(request, template_name=None, template_object_name='object'):
+def object_list(request, page=1, paginate_by=20, template_name=None, template_object_name='object'):
     if not template_name:
         template_name = ['%s_list.html' % template_object_name]
         
@@ -62,7 +62,9 @@ def object_list(request, template_name=None, template_object_name='object'):
     lookup = {}
     
     for l in request.GET:
-        if '__' in l:
+        if l == 'page':
+            page = request.GET[l]
+        elif '__' in l:
             try:
                 key, f = l.split('__')
                 lookup[key] = lookup_filters[f](request.GET[l])
@@ -71,9 +73,22 @@ def object_list(request, template_name=None, template_object_name='object'):
         else:
             lookup[l] = request.GET[l]
     
+    try:
+        page = int(page)
+        if page < 1:
+            page = 1
+    except ValueError:
+        page = 1
+    
+    query = request.mongodb_collection.find(lookup)
+    query = query.skip(paginate_by * (page - 1)).limit(paginate_by)
+    
     return TemplateResponse(request, template_name, {
-        '%s_list' % template_object_name: request.mongodb_collection.find(lookup),
-        'mongodb_collection': request.mongodb_collection.name
+        '%s_list' % template_object_name: query,
+        'mongodb_collection': request.mongodb_collection.name,
+        # Pagination
+        'page': page,
+        'paginate_by': paginate_by,
     })
 object_list = mongodb(object_list)
 
