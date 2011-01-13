@@ -72,7 +72,8 @@ def object_list(request, template_name=None, template_object_name='object'):
             lookup[l] = request.GET[l]
     
     return TemplateResponse(request, template_name, {
-        '%s_list' % template_object_name: request.mongodb_collection.find(lookup)
+        '%s_list' % template_object_name: request.mongodb_collection.find(lookup),
+        'mongodb_collection': request.mongodb_collection.name
     })
 object_list = mongodb(object_list)
 
@@ -85,7 +86,8 @@ def object_detail(request, lookup, template_name=None, template_object_name='obj
             template_name.insert(0, '%s_detail.html' % request.mongodb_collection.name)
     
     return TemplateResponse(request, template_name, {
-        template_object_name: request.mongodb_collection.find_one(lookup)
+        template_object_name: request.mongodb_collection.find_one(lookup),
+        'mongodb_collection': request.mongodb_collection.name
     })
 
 object_detail = object_lookup(object_detail)
@@ -109,7 +111,8 @@ def delete_object(request, lookup, template_name=None, template_object_name='obj
             template_name.insert(0, '%s_confirm_delete.html' % request.mongodb_collection.name)
     
     return TemplateResponse(request, template_name, {
-        template_object_name: obj
+        template_object_name: obj,
+        'mongodb_collection': request.mongodb_collection.name
     })
 
 delete_object = object_lookup(delete_object)
