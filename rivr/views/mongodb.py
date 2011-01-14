@@ -51,6 +51,7 @@ lookup_filters = {
     'lt': lambda x: {'$lt': int(x)},
     'lte': lambda x: {'$lte': int(x)},
     'regex': lambda x: {'$regex': x},
+    'iregex': lambda x: {'$regex': x, '$options': 'i'},
 }
 
 #@mongodb
