@@ -19,3 +19,7 @@ def last(value):
     except IndexError:
         return ''
 register.filter('last', last)
+
+def capitalize(value):
+    return value.capitalize()
+register.filter('capitalize', capitalize)
