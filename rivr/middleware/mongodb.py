@@ -30,10 +30,10 @@ class mongodb(object):
             del kwargs['mongodb_collection']
         
         if self.database and not hasattr(request, 'mongodb_database'):
-            raise Exception, "MongoDB Database missing"
+            raise Exception("MongoDB Database missing")
         
         if self.collection and not hasattr(request, 'mongodb_collection'):
-            raise Exception, "MongoDB Collection missing"
+            raise Exception("MongoDB Collection missing")
         
         if self.gridfs:
             import gridfs

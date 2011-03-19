@@ -57,12 +57,12 @@ def serve(request, path, document_root=None, show_indexes=False):
     fullpath = os.path.join(document_root, newpath)
     
     if not os.path.exists(fullpath):
-        raise Http404, '"%s" does not exist.' % newpath
+        raise Http404('"%s" does not exist.' % newpath)
     
     if os.path.isdir(fullpath):
         if show_indexes:
             return directory_index(request, newpath, fullpath)
-        raise Http404, 'Directory indexes are not allowed here.'
+        raise Http404('Directory indexes are not allowed here.')
     
     statobj = os.stat(fullpath)
     

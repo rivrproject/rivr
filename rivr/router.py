@@ -50,7 +50,7 @@ class RegexURLPattern(RegexURL):
         try:
             self._callback = import_module(self._callback_str)
         except ImportError, e:
-            raise ViewDoesNotExist, 'Could not import %s. Error was: %s' % (self._callback_str, str(e))
+            raise ViewDoesNotExist('Could not import %s. Error was: %s' % (self._callback_str, str(e)))
         
         return self._callback
     callback = property(callback)
@@ -89,7 +89,7 @@ class RegexURLResolver(RegexURL):
         try:
             self._router = import_module(self._router_str)
         except ImportError, e:
-            raise Http404, 'Could not import %s. Error was: %s' % (mod_name, str(e))
+            raise Http404('Could not import %s. Error was: %s' % (mod_name, str(e)))
         
         return self._router
     router = property(router)
@@ -139,7 +139,7 @@ class Router(BaseRouter):
             result = pattern.resolve(path)
             if result is not None:
                 return result
-        raise Resolver404, 'No URL pattern matched.'
+        raise Resolver404('No URL pattern matched.')
     
     def __call__(self, request):
         if self.APPEND_SLASH and (not request.path.endswith('/')):
@@ -150,7 +150,7 @@ class Router(BaseRouter):
         if result:
             callback, args, kwargs = result
             return callback(request, *args, **kwargs)
-        raise Resolver404
+        raise Resolver404()
     
     def is_valid_path(self, path):
         try:

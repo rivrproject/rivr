@@ -8,7 +8,7 @@ except ImportError: # Python < 2.5
         sha256 = SHA256.new
     except ImportError:
         print "Update to python 2.5+, or install PyCrypto."
-        raise ImportError, "No SHA256"
+        raise ImportError("No SHA256")
 
 from rivr.http import Response
 

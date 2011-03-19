@@ -100,7 +100,7 @@ class WSGIHandler(object):
         try:
             response = self.view(request)
             if not response:
-                raise Exception, "View did not return a response."
+                raise Exception("View did not return a response.")
         except Http404, e:
             response = ResponseNotFound('Page not found')
         except Exception, e:
