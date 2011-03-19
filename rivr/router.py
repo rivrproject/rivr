@@ -167,7 +167,7 @@ class Domain(BaseRouter):
             result = pattern.resolve(path)
             if result is not None:
                 return result
-        raise Resolver404, 'No URL pattern matched.'
+        raise Resolver404('No URL pattern matched.')
     
     def __call__(self, request):
         host = request.META.get('HTTP_HOST', 'localhost:80')
@@ -182,7 +182,7 @@ class Domain(BaseRouter):
         if result:
             callback, args, kwargs = result
             return callback(request, *args, **kwargs)
-        raise Resolver404
+        raise Resolver404()
     
     def is_valid_url(self, path):
         try:
