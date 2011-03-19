@@ -6,6 +6,7 @@ from rivr.middleware.mongodb import mongodb
 
 try:
     from pymongo.objectid import ObjectId
+    from pymongo import json_util
     import gridfs
 except ImportError:
     ObjectId = lambda x: x
@@ -55,7 +56,7 @@ lookup_filters = {
 }
 
 #@mongodb
-def object_list(request, page=1, paginate_by=20, template_name=None, template_object_name='object'):
+def object_list(request, page=1, paginate_by=20, template_name=None, template_object_name='object', serializable=False):
     if not template_name:
         template_name = ['%s_list.html' % template_object_name]
         
@@ -63,10 +64,13 @@ def object_list(request, page=1, paginate_by=20, template_name=None, template_ob
             template_name.insert(0, '%s_list.html' % request.mongodb_collection.name)
     
     lookup = {}
+    output = 'template'
     
     for l in request.GET:
         if l == 'page':
             page = request.GET[l]
+        elif l == 'o':
+            output = request.GET[l]
         elif '__' in l:
             try:
                 key, f = l.split('__')
@@ -85,6 +89,11 @@ def object_list(request, page=1, paginate_by=20, template_name=None, template_ob
     
     query = request.mongodb_collection.find(lookup)
     paged_query = query.skip(paginate_by * (page - 1)).limit(paginate_by)
+    
+    if output == 'json' and serializable:
+        import json
+        serialized = json.dumps([x for x in paged_query], default=json_util.default)
+        return Response(serialized, content_type='application/json')
     
     return TemplateResponse(request, template_name, {
         '%s_list' % template_object_name: paged_query,
