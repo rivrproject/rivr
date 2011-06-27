@@ -1,7 +1,7 @@
 from rivr.http import Response, Http404
 from rivr.server import serve
 
-from rivr.middleware import Middleware
+from rivr.middleware import Middleware, MiddlewareController
 from rivr.middleware.debug import DebugMiddleware
 from rivr.middleware.auth import AuthMiddleware
 from rivr.middleware.mongodb import MongoDBMiddleware, mongodb
