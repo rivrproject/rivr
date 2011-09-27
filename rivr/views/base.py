@@ -1,5 +1,5 @@
 from rivr.http import ResponseNotAllowed, ResponseRedirect, ResponsePermanentRedirect
-
+from rivr.template.response import TemplateResponse
 
 class View(object):
     http_method_names = ['get', 'post', 'put', 'delete', 'head', 'options', 'trace']
@@ -52,3 +52,26 @@ class RedirectView(View):
                 return ResponsePermanentRedirect(url)
             return ResponseRedirect(url)
         raise Http404("Redirect URL not found.")
+
+class TemplateMixin(object):
+    template_name = None
+    response_class = TemplateResponse
+
+    def get_template_names(self):
+        if self.template_name is None:
+            raise Exception("TemplateResponseMixin requires either a"
+                            "definition of 'template_name' or a"
+                            "implementation of 'get_template_names()'")
+        return [self.template_name]
+
+    def render_to_response(self, context):
+        return self.response_class(self.request, self.get_template_names(), context)
+
+class TemplateView(TemplateMixin, View):
+    def get_context_data(self, **kwargs):
+        return {'params': kwargs}
+
+    def get(self, request, *args, **kwargs):
+        context = self.get_context_data(**kwargs)
+        return self.render_to_response(context)
+

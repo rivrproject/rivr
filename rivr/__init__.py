@@ -13,4 +13,4 @@ from rivr.array import Array
 from rivr.template import Template, Context
 from rivr.template.response import TemplateResponse, TemplateMiddleware, direct_to_template
 
-from rivr.views.base import View
+from rivr.views.base import View, TemplateView
