@@ -1,4 +1,5 @@
-from rivr.http import ResponseNotAllowed
+from rivr.http import ResponseNotAllowed, ResponseRedirect, ResponsePermanentRedirect
+
 
 class View(object):
     http_method_names = ['get', 'post', 'put', 'delete', 'head', 'options', 'trace']
@@ -29,3 +30,25 @@ class View(object):
         allowed_methods = [m for m in self.http_method_names if hasattr(self, m)]
         return ResponseNotAllowed(allowed_methods)
 
+class RedirectView(View):
+    permanent = True
+    url = None
+    query_string = False
+
+    def get_redirect_url(self, **kwargs):
+        if self.url:
+            args = self.request.META["QUERY_STRING"]
+            if args and self.query_string:
+                url = "%s?%s" % (self.url, args)
+            else:
+                url = self.url
+            return self.url % kwargs
+        return None
+
+    def get(self, request, *args, **kwargs):
+        url = self.get_redirect_url(**kwargs)
+        if url:
+            if self.permanent:
+                return ResponsePermanentRedirect(url)
+            return ResponseRedirect(url)
+        raise Http404("Redirect URL not found.")
