@@ -85,3 +85,11 @@ class ResponseNotFound(Response):
 
 class ResponseNotModified(Response):
     status_code = 304
+
+class ResponseNotAllowed(Response):
+    status_code = 405
+
+    def __init__(self, permitted_methods):
+        super(ResponseNotAllowed, self).__init__()
+        self.headers['Allow'] = ', '.join(permitted_methods)
+
