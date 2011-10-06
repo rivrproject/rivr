@@ -25,19 +25,23 @@
     </div>
     
     <div id="content">
+      {% if tag_list %}
         <h2>Template tags</h2>
         <ul>
         {% for tag in tag_list %}
             <li><code>{{ tag }}</code></li>
         {% endfor %}
         </ul>
-        
+      {% endif %}
+
+      {% if filter_list %}
         <h2>Template filters</h2>
         <ul>
         {% for filter in filter_list %}
             <li><code>{{ filter }}</code></li>
         {% endfor %}
         </ul>
+      {% endif %}
     </div>
 </body>
 </html>

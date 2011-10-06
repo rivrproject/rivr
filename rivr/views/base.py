@@ -62,7 +62,7 @@ class TemplateMixin(object):
             raise Exception("TemplateResponseMixin requires either a"
                             "definition of 'template_name' or a"
                             "implementation of 'get_template_names()'")
-        return [self.template_name]
+        return self.template_name
 
     def render_to_response(self, context):
         return self.response_class(self.request, self.get_template_names(), context)
