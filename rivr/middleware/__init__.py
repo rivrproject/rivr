@@ -1,30 +1,4 @@
-class Middleware(object):
-    def __init__(self, handler=None):
-        self.handler = handler
-
-    def __call__(self, request):
-        if hasattr(self, 'process_request'):
-            response = self.process_request(request)
-
-            if response:
-                return response
-
-        try:
-            response = self.handler(request)
-        except Exception, e:
-            if hasattr(self, 'process_exception'):
-                response = self.process_exception(request, e)
-
-                if response:
-                    return response
-            else:
-                raise e
-
-        if hasattr(self, 'process_response'):
-            response = self.process_response(request, response)
-
-        return response
-
+from rivr.middleware.base import Middleware
 
 class MiddlewareController(Middleware):
     def __init__(self, handler, *middleware):
@@ -51,7 +25,7 @@ class MiddlewareController(Middleware):
             response = request_mw(request)
             if response:
                 break
-
+ 
         if response is None:
             try:
                 response = self.handler(request)
