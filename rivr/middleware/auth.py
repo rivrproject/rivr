@@ -1,16 +1,7 @@
 from base64 import b64decode
 
-try:
-    from hashlib import sha256
-except ImportError: # Python < 2.5
-    try:
-        from Crypto.Hash import SHA256
-        sha256 = SHA256.new
-    except ImportError:
-        print("Update to python 2.5+, or install PyCrypto.")
-        raise ImportError("No SHA256")
-
 from rivr.http import Response
+from rivr.middleware.base import Middleware
 
 class ResponseAuthorizationRequired(Response):
     status_code = 401
@@ -38,23 +29,15 @@ class AnnonymousUser(object):
     def is_authenticated(self):
         return False
 
-class AuthMiddleware(object):
-    def __init__(self, handler, view, needs_auth=True):
-        self.handler = handler
-        self.view = view
-        self.needs_auth = needs_auth
-    
-    def __call__(self, request, *args, **kwargs):
+class AuthMiddleware(Middleware):
+    needs_auth = True
+
+    def process_request(self, request):
         request.user = self.check_login(request)
-        
+
         if not request.user.is_authenticated() and self.needs_auth:
             return ResponseAuthorizationRequired()
-        
-        return self.view(request, *args, **kwargs)
-    
-    def hash(self, password):
-        return sha256(password).hexdigest()
-    
+
     def check_login(self, request):
         authorization = request.META.get('HTTP_AUTHORIZATION', False)
         
@@ -74,7 +57,11 @@ class AuthMiddleware(object):
         except ValueError:
             return AnnonymousUser()
         
-        if self.handler(username, password):
+        if self.check_password(username, password):
             return User(username)
         
         return AnnonymousUser()
+
+    def check_password(self, username, password):
+        return False
+
