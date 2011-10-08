@@ -74,6 +74,21 @@ def do_ifequal(parser, token):
     return IfEqualNode(var1, var2, nodelist_true, nodelist_false)
 register.tag('ifequal', do_ifequal)
 
+def do_ifnotequal(parser, token):
+    var1 = token.split_contents()[1]
+    var2 = token.split_contents()[2]
+    nodelist_true = parser.parse(('else', 'endifnotequal'))
+    token = parser.next_token()
+    
+    if token.contents == 'else':
+        nodelist_false = parser.parse(('endifnotequal',))
+        parser.delete_first_token()
+    else:
+        nodelist_false = template.NodeList()
+    
+    return IfEqualNode(var1, var2, nodelist_false, nodelist_true)
+register.tag('ifnotequal', do_ifnotequal)
+
 class ForNode(template.Node):
     def __init__(self, var, loopvars, nodelist_loop, nodelist_empty):
         self.var = template.Variable(var)
