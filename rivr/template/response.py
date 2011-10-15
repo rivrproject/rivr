@@ -1,4 +1,5 @@
 from rivr.http import Response
+from rivr.middleware import Middleware
 from rivr.template import Context
 from rivr.template.loader import Loader
 
@@ -48,17 +49,15 @@ class TemplateResponse(Response):
         pass
     content = property(get_content, set_content)
 
-class TemplateMiddleware(object):
-    def __init__(self, template_dirs, view):
+class TemplateMiddleware(Middleware):
+    def __init__(self, template_dirs, handler=None):
+        super(TemplateMiddleware, self).__init__(handler)
         self.template_dirs = template_dirs
-        self.view = view
-    
-    def __call__(self, *args, **kwargs):
-        response = self.view(*args, **kwargs)
-        
+
+    def process_response(self, request, response):
         if isinstance(response, TemplateResponse):
             response.template_dirs = self.template_dirs
-        
+
         return response
 
 def direct_to_template(request, template, extra_context={}, **kwargs):
