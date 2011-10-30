@@ -1,4 +1,5 @@
 from rivr.middleware.base import Middleware
+from rivr.http import Response, ResponseNotFound, Http404
 
 class MiddlewareController(Middleware):
     def __init__(self, handler, *middleware):
@@ -19,31 +20,44 @@ class MiddlewareController(Middleware):
             self.exception_middleware.insert(0, middleware.process_exception)
 
     def process_request(self, request):
-        response = None
-
         for request_mw in self.request_middleware:
             response = request_mw(request)
             if response:
-                break
- 
-        if response is None:
-            try:
-                response = self.handler(request)
-            except Exception, e:
-                for exception_mw in self.exception_middleware:
-                    response = exception_mw(request, e)
-                    if response:
-                        return response
-                else:
-                    raise e
+                return response
 
+    def process_response(self, request, response):
         for response_mw in self.response_middleware:
             response = response_mw(request, response)
 
         return response
 
-    def process_response(self, request, response):
-        pass
-
     def process_exception(self, request, exception):
-        pass
+        for exception_mw in self.exception_middleware:
+            response = exception_mw(request, e)
+            if response:
+                return response
+
+class ErrorWrapper(object):
+    def __init__(self, app, custom_404=None, custom_500=None):
+        self.app = app
+        self.error_404 = custom_404 or self.default_error_404
+        self.error_500 = custom_500 or self.default_error_500
+
+    def __call__(self, request, *args, **kwargs):
+        try:
+            response = self.app(request, *args, **kwargs)
+        except Http404, e:
+            response = self.error_404(request, e)
+        except Exception, e:
+            response = self.error_500(request, e)
+
+        if not response:
+            response = self.error_404(request, Http404())
+
+        return response
+
+    def default_error_404(self, request, e):
+        return ResponseNotFound("404: %s" % e)
+
+    def default_error_500(self, request, e):
+        return Response("A 500 has occured", status=500)

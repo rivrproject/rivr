@@ -20,4 +20,4 @@ def page(request, slug):
 router.register(r'^(?P<slug>[-\w]+)/$', page)
 
 if __name__ == '__main__':
-    rivr.serve(router)
+    rivr.serve(rivr.ErrorWrapper(router))

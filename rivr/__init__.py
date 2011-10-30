@@ -3,7 +3,7 @@ VERSION = '0.2.2'
 from rivr.http import Response, Http404
 from rivr.server import serve
 
-from rivr.middleware import Middleware, MiddlewareController
+from rivr.middleware import Middleware, MiddlewareController, ErrorWrapper
 from rivr.middleware.debug import DebugMiddleware
 from rivr.middleware.auth import AuthMiddleware
 from rivr.middleware.redirect import RedirectMiddleware
