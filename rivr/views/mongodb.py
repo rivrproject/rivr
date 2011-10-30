@@ -1,8 +1,7 @@
 import math
 
-from rivr.template.response import TemplateResponse
-from rivr.http import Response, ResponseRedirect, Http404
-from rivr.middleware.mongodb import mongodb
+from rivr.http import Response, ResponseRedirect
+from rivr.views.base import View, TemplateView
 
 try:
     from pymongo.objectid import ObjectId
@@ -11,6 +10,7 @@ try:
 except ImportError:
     ObjectId = lambda x: x
     gridfs = None
+
 
 class GridFSResponse(Response):
     def __init__(self, grid_file):
@@ -26,122 +26,170 @@ class GridFSResponse(Response):
         pass
     content = property(get_content, set_content)
 
-#@mongodb
-def gridfs_view(request, object_id):
-    f = request.mongodb_gridfs.get(ObjectId(object_id))
-    return GridFSResponse(f)
-gridfs_view = mongodb(gridfs_view, collection=False, gridfs=True)
 
-def object_lookup(func):
-    def new_func(request, object_id=None, slug=None, slug_field='slug', *args, **kwargs):
+class GridFSView(View):
+    def get(self, request, *args, **kwargs):
+        f = request.mongodb_gridfs.get(ObjectId(object_id))
+        return GridFSResponse(f)
+
+class MongoMixin(object):
+    collection = None
+
+    def get_collection_name(self):
+        if "mongodb_collection" in self.kwargs:
+            return self.kwargs['mongodb_collection']
+
+        if self.collection:
+            return self.collection
+
+        raise Exception("MongoMixin requires either a definition of 'collection'"
+                        "or a implementation of 'get_collection_name()'")
+
+    def get_collection(self):
+        return self.request.mongodb_database[self.get_collection_name()]
+
+class SingleObjectMixin(MongoMixin):
+    slug_field = 'slug'
+    context_object_name = None
+
+    def get_object(self):
+        object_id = self.kwargs.get('object_id', None)
+        slug = self.kwargs.get('slug', None)
         lookup = {}
-        
+
         if object_id:
             lookup['_id'] = ObjectId(object_id)
-        
-        if slug:
-            lookup[slug_field] = slug
-        
-        return func(request, lookup, *args, **kwargs)
-    return new_func
-
-lookup_filters = {
-    'int': int,
-    'gt': lambda x: {'$gt': int(x)},
-    'gte': lambda x: {'$gte': int(x)},
-    'lt': lambda x: {'$lt': int(x)},
-    'lte': lambda x: {'$lte': int(x)},
-    'regex': lambda x: {'$regex': x},
-    'iregex': lambda x: {'$regex': x, '$options': 'i'},
-}
-
-#@mongodb
-def object_list(request, page=1, paginate_by=20, template_name=None, template_object_name='object', serializable=False):
-    if not template_name:
-        template_name = ['%s_list.html' % template_object_name]
-        
-        if template_object_name == 'object':
-            template_name.insert(0, '%s_list.html' % request.mongodb_collection.name)
-    
-    lookup = {}
-    output = 'template'
-    
-    for l in request.GET:
-        if l == 'page':
-            page = request.GET[l]
-        elif l == 'o':
-            output = request.GET[l]
-        elif '__' in l:
-            try:
-                key, f = l.split('__')
-                lookup[key] = lookup_filters[f](request.GET[l])
-            except:
-                continue
+        elif slug:
+            lookup[self.get_slug_field()] = slug
         else:
-            lookup[l] = request.GET[l]
-    
-    try:
-        page = int(page)
-        if page < 1:
-            page = 1
-    except (TypeError, ValueError):
-        page = 1
-    
-    query = request.mongodb_collection.find(lookup)
-    paged_query = query.skip(paginate_by * (page - 1)).limit(paginate_by)
-    
-    if output == 'json' and serializable:
-        import json
-        serialized = json.dumps([x for x in paged_query], default=json_util.default)
-        return Response(serialized, content_type='application/json')
-    
-    return TemplateResponse(request, template_name, {
-        '%s_list' % template_object_name: paged_query,
-        'mongodb_collection': request.mongodb_collection.name,
-        # Pagination
-        'page': page,
-        'paginate_by': paginate_by,
-        'page_count': int(math.ceil(float(query.count()) / float(paginate_by)))
-    })
-object_list = mongodb(object_list)
+            raise AttributeError("%s must be called with either an object_id"
+                                 "or a slug" % self.__class__.__name__)
 
-#@mongodb
-def object_detail(request, lookup, template_name=None, template_object_name='object'):
-    if not template_name:
-        template_name = ['%s_detail.html' % template_object_name]
-        
-        if template_object_name == 'object':
-            template_name.insert(0, '%s_detail.html' % request.mongodb_collection.name)
-    
-    return TemplateResponse(request, template_name, {
-        template_object_name: request.mongodb_collection.find_one(lookup),
-        'mongodb_collection': request.mongodb_collection.name
-    })
+        return self.get_collection().find_one(lookup)
 
-object_detail = object_lookup(object_detail)
-object_detail = mongodb(object_detail)
+    def get_slug_field(self):
+        return self.slug_field
+ 
+    def get_context_object_name(self, obj):
+        if self.context_object_name:
+            return self.context_object_name
+        return 'object'
 
-#@mongodb
-def delete_object(request, lookup, template_name=None, template_object_name='object', post_delete_redirect='/'):
-    obj = request.mongodb_collection.find_one(lookup)
-    
-    if not obj:
-        raise Http404
-    
-    if request.method == 'POST':
-        request.mongodb_collection.remove(lookup)
-        return ResponseRedirect(post_delete_redirect)
-    
-    if not template_name:
-        template_name = ['%s_confirm_delete.html' % template_object_name]
-        
-        if template_object_name == 'object':
-            template_name.insert(0, '%s_confirm_delete.html' % request.mongodb_collection.name)
-    
-    return TemplateResponse(request, template_name, {
-        template_object_name: obj,
-        'mongodb_collection': request.mongodb_collection.name
-    })
+    def get_context_data(self, **kwargs):
+        context = kwargs
+        obj = self.get_object()
+        context_object_name = self.get_context_object_name(obj)
+        if context_object_name:
+            context[context_object_name] = obj
+        context['mongodb_collection'] = self.get_collection_name()
+        return context
 
-delete_object = object_lookup(delete_object)
-delete_object = mongodb(delete_object)
+    def get_template_names(self):
+        try:
+            names = super(SingleObjectMixin, self).get_template_names()
+        except:
+            names = '%s_detail.html' % self.get_context_object_name(None)
+
+        return names
+
+
+class DetailView(SingleObjectMixin, TemplateView):
+    pass
+
+class MultipleObjectMixin(MongoMixin):
+    context_object_name = None
+    paginate_by = 20
+    allow_filters = True
+
+    lookup_filters = {
+        'int': int,
+        'gt': lambda x: {'$gt': int(x)},
+        'gte': lambda x: {'$gte': int(x)},
+        'lt': lambda x: {'$lt': int(x)},
+        'lte': lambda x: {'$lte': int(x)},
+        'regex': lambda x: {'$regex': x},
+        'iregex': lambda x: {'$regex': x, '$options': 'i'},
+    }
+
+    def resolve_page(self):
+        self.page = 1
+
+        try:
+            self.page = int(self.request.GET['page'])
+        except (KeyError, TypeError, ValueError):
+            pass
+
+        if 'page' in self.kwargs:
+            try:
+                self.page = int(self.kwargs['page'])
+            except:
+                pass
+
+        if self.page < 1:
+            self.page = 1
+
+    def get_object_list(self):
+        self.resolve_page()
+
+        lookup = {}
+
+        if self.allow_filters:
+            for l in self.request.GET:
+                if l == 'page':
+                    continue
+                elif '__' in l:
+                    key, f = l.split('__')
+                    if f in self.lookup_filters:
+                        lookup[key] = self.lookup_filters[f](self.request.GET[l])
+                else:
+                    lookup[l] = self.request.GET[l]
+
+        query = self.get_collection().find(lookup)
+        paged_query = query.skip(self.paginate_by * (self.page - 1)).limit(self.paginate_by)
+        self.page_count = int(math.ceil(float(query.count()) / float(self.paginate_by)))
+        return paged_query
+
+    def get_context_object_name(self, object_list):
+        if self.context_object_name:
+            return self.context_object_name
+        return 'object'
+
+    def get_context_data(self, **kwargs):
+        context = kwargs
+        object_list = self.get_object_list()
+        context_object_name = self.get_context_object_name(object_list)
+        if context_object_name:
+            context['%s_list' % context_object_name] = object_list
+
+        context['paginate_by'] = self.paginate_by
+        context['page'] = self.page
+        context['page_count'] = self.page_count
+
+        context['mongodb_collection'] = self.get_collection_name()
+
+        return context
+
+    def get_template_names(self):
+        try:
+            names = super(MultipleObjectMixin, self).get_template_names()
+        except:
+            names = '%s_list.html' % self.get_context_object_name(None)
+
+        return names
+
+
+class ListView(MultipleObjectMixin, TemplateView):
+    pass
+
+class DeleteView(DetailView):
+    post_delete_redirect = '/'
+
+    def post(self, request, *args, **kwargs):
+        self.get_collection().remove(self.get_object())
+        return ResponseRedirect(self.post_delete_redirect)
+
+    def get_template_names(self):
+        if self.template_name:
+            return self.template_name
+        return '%s_confirm_delete.html' % self.get_context_object_name(None)
+
