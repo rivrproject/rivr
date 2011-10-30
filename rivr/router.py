@@ -150,7 +150,7 @@ class Router(BaseRouter):
         if result:
             callback, args, kwargs = result
             return callback(request, *args, **kwargs)
-        raise Resolver404()
+        raise Resolver404('No URL pattern matched.')
     
     def is_valid_path(self, path):
         try:
@@ -182,7 +182,7 @@ class Domain(BaseRouter):
         if result:
             callback, args, kwargs = result
             return callback(request, *args, **kwargs)
-        raise Resolver404()
+        raise Resolver404('No URL pattern matched.')
     
     def is_valid_url(self, path):
         try:
