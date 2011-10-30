@@ -6,7 +6,6 @@ from rivr.server import serve
 from rivr.middleware import Middleware, MiddlewareController
 from rivr.middleware.debug import DebugMiddleware
 from rivr.middleware.auth import AuthMiddleware
-from rivr.middleware.mongodb import MongoDBMiddleware, mongodb
 from rivr.middleware.redirect import RedirectMiddleware
 
 from rivr.router import Router, Domain, url, include
