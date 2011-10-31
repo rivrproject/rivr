@@ -29,3 +29,4 @@ class MongoMiddleware(Middleware):
 
     def process_request(self, request):
         request.mongodb_database = self.get_database()
+

@@ -5,7 +5,7 @@ import rivr
 from rivr.views.base import TemplateView
 from rivr.views.mongodb import MongoMixin, DetailView, ListView, DeleteView
 from rivr.http import ResponseRedirect
-from rivr.middleware.mongodb import MongoMiddleware
+from rivr.mongodb import MongoMiddleware
 
 template_dir = join(dirname(realpath(__file__)), 'mongodb')
 
@@ -32,5 +32,5 @@ if __name__ == '__main__':
                 (r'^(?P<object_id>[\w\d]+)/delete/$', DeleteView.as_view(collection='pages', context_object_name='page')),
                 (r'^(?P<object_id>[\w\d]+)/$', DetailView.as_view(collection='pages', context_object_name='page'))
             )
-        ), "mongodb://localhost/rivr")
+        ), uri="mongodb://localhost/rivr"),
     )
