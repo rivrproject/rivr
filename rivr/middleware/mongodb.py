@@ -9,10 +9,6 @@ class MongoMiddleware(Middleware):
     database = None
     uri = None
 
-    def __init__(self, app, uri=None):
-        super(MongoMiddleware, self).__init__(app)
-        self.uri = uri
-
     def get_database(self):
         if not self.database:
             if not self.uri and 'MONGODB_URI' in os.environ:

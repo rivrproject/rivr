@@ -1,6 +1,9 @@
 class Middleware(object):
-    def __init__(self, handler=None):
+    def __init__(self, handler=None, **kwargs):
         self.handler = handler
+
+        for key, value in kwargs.iteritems():
+            setattr(self, key, value)
 
     def __call__(self, request):
         if hasattr(self, 'process_request'):
