@@ -13,6 +13,9 @@ class JinjaResponse(Response):
         self._content = None
         self.jinja_env = env
 
+        if 'request' not in self.context:
+            self.context['request'] = request
+
     def get_env(self):
         if self.jinja_env:
             return self.jinja_env
