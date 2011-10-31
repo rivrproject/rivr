@@ -28,9 +28,15 @@ class GridFSResponse(Response):
 
 
 class GridFSView(View):
+    def get_gridfs(self):
+        return gridfs.GridFS(self.request.mongodb_database)
+
+    def get_file(self):
+        object_id = self.kwargs.get('object_id', None)
+        return self.get_gridfs().get(ObjectId(object_id))
+
     def get(self, request, *args, **kwargs):
-        f = request.mongodb_gridfs.get(ObjectId(object_id))
-        return GridFSResponse(f)
+        return GridFSResponse(self.get_file())
 
 class MongoMixin(object):
     collection = None
