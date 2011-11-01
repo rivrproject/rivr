@@ -10,6 +10,7 @@ class TemplateResponse(Response):
         self.template_name = template_name
         self.context = context
         self.template_dirs = template_dirs
+        self.extra_context = {}
         self._content = None
         super(TemplateResponse, self).__init__(*args, **kwargs)
     
@@ -27,7 +28,8 @@ class TemplateResponse(Response):
         if isinstance(self.context, Context):
             return self.context
         
-        c = Context({'request':self.request, 'loader':self.loader})
+        c = Context(self.extra_context)
+        c.push({'request':self.request, 'loader':self.loader})
         c.push(self.context)
         self.context = c
         
@@ -50,13 +52,15 @@ class TemplateResponse(Response):
     content = property(get_content, set_content)
 
 class TemplateMiddleware(Middleware):
-    def __init__(self, template_dirs, handler=None):
+    def __init__(self, template_dirs, extra_context={}, handler=None):
         super(TemplateMiddleware, self).__init__(handler)
         self.template_dirs = template_dirs
+        self.extra_context = extra_context
 
     def process_response(self, request, response):
         if isinstance(response, TemplateResponse):
             response.template_dirs = self.template_dirs
+            response.extra_context = self.extra_context
 
         return response
 
