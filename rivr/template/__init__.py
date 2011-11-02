@@ -134,6 +134,13 @@ class NodeList(list):
                 bits.append(node)
         return ''.join(bits)
 
+    def get_nodes_by_type(self, nodetype):
+        nodes = []
+        for node in self:
+            if isinstance(node, nodetype):
+                nodes.append(node)
+        return nodes
+
 class Node(object):
     def render(self, context):
         pass
