@@ -3,7 +3,7 @@ from os.path import realpath, dirname, join
 
 import rivr
 from rivr.views.base import TemplateView
-from rivr.views.mongodb import MongoMixin, DetailView, ListView, DeleteView
+from rivr.mongodb.views import MongoMixin, DetailView, ListView, DeleteView
 from rivr.http import ResponseRedirect
 from rivr.mongodb import MongoMiddleware
 
