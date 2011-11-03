@@ -115,6 +115,7 @@ class MultipleObjectMixin(MongoMixin):
         'lte': lambda x: {'$lte': int(x)},
         'regex': lambda x: {'$regex': x},
         'iregex': lambda x: {'$regex': x, '$options': 'i'},
+        'id': lambda x: {'_id': ObjectId(x)},
     }
 
     def get_lookup(self):
@@ -127,7 +128,10 @@ class MultipleObjectMixin(MongoMixin):
                 elif '__' in l:
                     key, f = l.split('__')
                     if f in self.lookup_filters:
-                        lookup[key] = self.lookup_filters[f](self.request.GET[l])
+                        try:
+                            lookup[key] = self.lookup_filters[f](self.request.GET[l])
+                        except:
+                            pass
                 else:
                     lookup[l] = self.request.GET[l]
 
