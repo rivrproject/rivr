@@ -44,6 +44,25 @@ class BaseSessionStore(object):
         self.modified = True
         self.session_key = hashlib.new('sha1', str(time.time()) + str(random())).hexdigest()
 
+class MemorySessionStoreObject(BaseSessionStore):
+    def __init__(self, store, *args, **kwargs):
+        self.store = store
+        super(MemorySessionStoreObject, self).__init__(*args, **kwargs)
+
+    def get_session(self, request):
+        if self.session_key in self.store.sessions:
+            self.data = self.store.sessions[self.session_key]
+
+    def save(self, request):
+        self.store.sessions[self.session_key] = self.data
+
+class MemorySessionStore(object):
+    def __init__(self):
+        self.sessions = {}
+
+    def __call__(self, *args, **kwargs):
+        return MemorySessionStoreObject(self, *args, **kwargs)
+
 class SessionMiddleware(Middleware):
     cookie_name = 'sessionid'
     cookie_secure = False
