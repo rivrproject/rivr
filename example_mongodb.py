@@ -21,16 +21,19 @@ class EditView(DetailView):
         self.get_collection().update(self.get_object(), request.POST)
         return ResponseRedirect('/%s/' % object_id)
 
+router = rivr.Router(
+    (r'^$', ListView.as_view(collection='pages', context_object_name='page')),
+    (r'^add/$', AddView.as_view()),
+    (r'^(?P<object_id>[\w\d]+)/edit/$', EditView.as_view(collection='pages', context_object_name='page')),
+    (r'^(?P<object_id>[\w\d]+)/delete/$', DeleteView.as_view(collection='pages', context_object_name='page')),
+    (r'^(?P<object_id>[\w\d]+)/$', DetailView.as_view(collection='pages', context_object_name='page'))
+)
+
+app = rivr.MiddlewareController(router,
+    rivr.DebugMiddleware(),
+    MongoMiddleware(uri="mongodb://localhost/rivr"),
+    rivr.TemplateMiddleware(template_dir),
+)
+
 if __name__ == '__main__':
-    rivr.serve(
-        MongoMiddleware(
-            rivr.TemplateMiddleware(template_dir,
-            rivr.Router(
-                (r'^$', ListView.as_view(collection='pages', context_object_name='page')),
-                (r'^add/$', AddView.as_view()),
-                (r'^(?P<object_id>[\w\d]+)/edit/$', EditView.as_view(collection='pages', context_object_name='page')),
-                (r'^(?P<object_id>[\w\d]+)/delete/$', DeleteView.as_view(collection='pages', context_object_name='page')),
-                (r'^(?P<object_id>[\w\d]+)/$', DetailView.as_view(collection='pages', context_object_name='page'))
-            )
-        ), uri="mongodb://localhost/rivr"),
-    )
+    rivr.serve(app)
