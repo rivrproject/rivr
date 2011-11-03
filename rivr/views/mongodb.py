@@ -117,6 +117,22 @@ class MultipleObjectMixin(MongoMixin):
         'iregex': lambda x: {'$regex': x, '$options': 'i'},
     }
 
+    def get_lookup(self):
+        lookup = {}
+
+        if self.allow_filters:
+            for l in self.request.GET:
+                if l == 'page':
+                    continue
+                elif '__' in l:
+                    key, f = l.split('__')
+                    if f in self.lookup_filters:
+                        lookup[key] = self.lookup_filters[f](self.request.GET[l])
+                else:
+                    lookup[l] = self.request.GET[l]
+
+        return lookup
+
     def resolve_page(self):
         self.page = 1
 
@@ -137,20 +153,7 @@ class MultipleObjectMixin(MongoMixin):
     def get_object_list(self):
         self.resolve_page()
 
-        lookup = {}
-
-        if self.allow_filters:
-            for l in self.request.GET:
-                if l == 'page':
-                    continue
-                elif '__' in l:
-                    key, f = l.split('__')
-                    if f in self.lookup_filters:
-                        lookup[key] = self.lookup_filters[f](self.request.GET[l])
-                else:
-                    lookup[l] = self.request.GET[l]
-
-        query = self.get_collection().find(lookup)
+        query = self.get_collection().find(self.get_lookup())
         paged_query = query.skip(self.paginate_by * (self.page - 1)).limit(self.paginate_by)
         self.page_count = int(math.ceil(float(query.count()) / float(self.paginate_by)))
         return paged_query
