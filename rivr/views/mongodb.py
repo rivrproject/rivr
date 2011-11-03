@@ -58,10 +58,10 @@ class SingleObjectMixin(MongoMixin):
     slug_field = 'slug'
     context_object_name = None
 
-    def get_object(self):
+    def get_lookup(self):
+        lookup = {}
         object_id = self.kwargs.get('object_id', None)
         slug = self.kwargs.get('slug', None)
-        lookup = {}
 
         if object_id:
             lookup['_id'] = ObjectId(object_id)
@@ -71,7 +71,10 @@ class SingleObjectMixin(MongoMixin):
             raise AttributeError("%s must be called with either an object_id"
                                  "or a slug" % self.__class__.__name__)
 
-        return self.get_collection().find_one(lookup)
+        return lookup
+
+    def get_object(self):
+        return self.get_collection().find_one(self.get_lookup())
 
     def get_slug_field(self):
         return self.slug_field
