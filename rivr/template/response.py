@@ -52,10 +52,8 @@ class TemplateResponse(Response):
     content = property(get_content, set_content)
 
 class TemplateMiddleware(Middleware):
-    def __init__(self, template_dirs, extra_context={}, handler=None):
-        super(TemplateMiddleware, self).__init__(handler)
-        self.template_dirs = template_dirs
-        self.extra_context = extra_context
+    template_dirs = None
+    extra_context = {}
 
     def process_response(self, request, response):
         if isinstance(response, TemplateResponse):
