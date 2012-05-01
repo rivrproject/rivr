@@ -34,7 +34,7 @@ router = rivr.Router(
 
 app = rivr.MiddlewareController(router,
     SessionMiddleware(session_store=MemorySessionStore()),
-    rivr.TemplateMiddleware('example_templates/')
+    rivr.TemplateMiddleware(template_dirs='example_templates/')
 )
 
 if __name__ == '__main__':
