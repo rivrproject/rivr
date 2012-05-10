@@ -2,8 +2,7 @@ from rivr.middleware.base import Middleware
 from rivr.http import Response, ResponseNotFound, Http404
 
 class MiddlewareController(Middleware):
-    def __init__(self, handler, *middleware):
-        super(MiddlewareController, self).__init__(handler)
+    def __init__(self, *middleware):
         self.request_middleware = []
         self.response_middleware = []
         self.exception_middleware = []
@@ -36,6 +35,8 @@ class MiddlewareController(Middleware):
             response = exception_mw(request, e)
             if response:
                 return response
+        else:
+            raise exception
 
 class ErrorWrapper(object):
     def __init__(self, app, custom_404=None, custom_500=None):

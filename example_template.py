@@ -21,7 +21,7 @@ class TemplateTagView(rivr.views.TemplateView):
 if __name__ == '__main__':
     view = TemplateTagView.as_view()
 
-    app = rivr.MiddlewareController(view,
+    app = rivr.MiddlewareController.wrap(view,
         rivr.TemplateMiddleware(template_dirs=template_dir)        
     )
 
