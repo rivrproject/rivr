@@ -127,6 +127,13 @@ class BaseRouter(object):
     
     def register(self, *t):
         if isinstance(t, (list, tuple)):
+            if len(t) == 1:
+                def func(view):
+                    self.register(t[0], view)
+                    return view
+
+                return func
+
             t = url(*t)
         
         self.append(t)

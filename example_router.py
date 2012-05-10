@@ -11,9 +11,9 @@ router = rivr.Router(
     (r'^test/$', test)
 )
 
+@router.register(r'^example/$')
 def example(request):
-    return rivr.Response('Example view. Showing the register command on a router.')
-router.register(r'^example/$', example)
+    return rivr.Response('Example view. Showing the register decorator.')
 
 def page(request, slug):
     return rivr.Response('page view, slug is `%s`' % slug)
