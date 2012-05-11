@@ -10,6 +10,16 @@ class View(object):
 
     @classmethod
     def as_view(cls, **initkwargs):
+        """
+        This method will return a callable which will generate a new instance
+        of the class passing it the kwargs passed to it.
+
+        Usage::
+
+            view = View.as_view()
+            response = view(request)
+
+        """
         def view(*args, **kwargs):
             return cls(**initkwargs).dispatch(*args, **kwargs)
         return view
@@ -31,11 +41,19 @@ class View(object):
         return ResponseNotAllowed(allowed_methods)
 
 class RedirectView(View):
+    """
+    The redirect view will redirect on any GET requests.
+    """
+
     permanent = True
     url = None
     query_string = False
 
     def get_redirect_url(self, **kwargs):
+        """
+        Return the URL we should redirect to
+        """
+
         if self.url:
             args = self.request.META["QUERY_STRING"]
             if args and self.query_string:
@@ -58,6 +76,14 @@ class TemplateMixin(object):
     response_class = TemplateResponse
 
     def get_template_names(self):
+        """
+        This method will be called to get the template to be rendered, by
+        default we will try self.template_name.
+
+        `get_template_names` should return a string or list of template names
+        to render.
+        """
+
         if self.template_name is None:
             raise Exception("TemplateResponseMixin requires either a"
                             "definition of 'template_name' or a"
@@ -69,6 +95,9 @@ class TemplateMixin(object):
 
 class TemplateView(TemplateMixin, View):
     def get_context_data(self, **kwargs):
+        """
+        This method will be called to get the context data for the template.
+        """
         return {'params': kwargs}
 
     def get(self, request, *args, **kwargs):

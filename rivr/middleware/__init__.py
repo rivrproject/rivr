@@ -2,6 +2,19 @@ from rivr.middleware.base import Middleware
 from rivr.http import Response, ResponseNotFound, Http404
 
 class MiddlewareController(Middleware):
+    """
+    The middleware controller allows you to wrap a view in multiple middleware.
+
+    Example usage::
+
+        view = MiddlewareController.wrap(view,
+            FirstMiddleware(),
+            SecondMiddleware()
+        )
+
+        response = view(request)
+    """
+
     def __init__(self, *middleware):
         self.request_middleware = []
         self.response_middleware = []
