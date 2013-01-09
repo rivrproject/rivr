@@ -97,8 +97,8 @@ class RegexURLResolver(RegexURL):
         try:
             self._router = import_module(self._router_str)
         except ImportError as e:
-            raise Http404('Could not import %s. Error was: %s' % (mod_name,
-                                                                  str(e)))
+            raise Http404('Could not import %s. Error was: %s' %
+                          (self._router_str, str(e)))
 
         return self._router
     router = property(router)
