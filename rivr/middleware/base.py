@@ -28,7 +28,7 @@ class Middleware(object):
         if not response:
             try:
                 response = view(request, *args, **kwargs)
-            except Exception, e:
+            except Exception as e:
                 if hasattr(self, 'process_exception'):
                     response = self.process_exception(request, e)
                 else:

@@ -265,7 +265,7 @@ class Template(object):
     def render(self, context):
         try:
             return self.nodelist.render(context)
-        except TemplateSyntaxError, e:
+        except TemplateSyntaxError as e:
             e.template = self
             e.context = context
             raise e

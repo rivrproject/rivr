@@ -125,9 +125,9 @@ class WSGIHandler(object):
             response = self.view(request)
             if not response:
                 raise Exception("View did not return a response.")
-        except Http404, e:
+        except Http404:
             response = ResponseNotFound('Page not found')
-        except Exception, e:
+        except Exception:
             response = Response('Internal server error', status=500)
 
         try:

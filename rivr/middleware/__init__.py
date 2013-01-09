@@ -62,9 +62,9 @@ class ErrorWrapper(object):
     def __call__(self, request, *args, **kwargs):
         try:
             response = self.app(request, *args, **kwargs)
-        except Http404, e:
+        except Http404 as e:
             response = self.error_404(request, e)
-        except Exception, e:
+        except Exception as e:
             response = self.error_500(request, e)
 
         if not response:

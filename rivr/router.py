@@ -56,7 +56,7 @@ class RegexURLPattern(RegexURL):
             return self._callback
         try:
             self._callback = import_module(self._callback_str)
-        except ImportError, e:
+        except ImportError as e:
             raise ViewDoesNotExist('Could not import %s (%s)' % (self._callback_str, str(e)))
 
         return self._callback
@@ -96,7 +96,7 @@ class RegexURLResolver(RegexURL):
             return self._router
         try:
             self._router = import_module(self._router_str)
-        except ImportError, e:
+        except ImportError as e:
             raise Http404('Could not import %s. Error was: %s' % (mod_name,
                                                                   str(e)))
 
