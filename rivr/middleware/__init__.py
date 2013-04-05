@@ -45,7 +45,7 @@ class MiddlewareController(Middleware):
 
     def process_exception(self, request, exception):
         for exception_mw in self.exception_middleware:
-            response = exception_mw(request, e)
+            response = exception_mw(request, exception)
             if response:
                 return response
         else:
