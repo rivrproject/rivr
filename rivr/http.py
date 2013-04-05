@@ -1,4 +1,6 @@
 from Cookie import SimpleCookie, CookieError
+import json
+
 
 def parse_cookie(cookie):
     if cookie == '':
@@ -92,4 +94,11 @@ class ResponseNotAllowed(Response):
     def __init__(self, permitted_methods):
         super(ResponseNotAllowed, self).__init__()
         self.headers['Allow'] = ', '.join(permitted_methods)
+
+class RESTResponse(Response):
+    def __init__(self, request, payload, status=None):
+        content = json.dumps(payload)
+        content_type = 'application/json'
+
+        super(RESTResponse, self).__init__(content, status, content_type)
 

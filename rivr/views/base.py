@@ -1,4 +1,5 @@
-from rivr.http import ResponseNotAllowed, ResponseRedirect, ResponsePermanentRedirect
+from rivr.http import (Response, ResponseNotAllowed, ResponseRedirect,
+                       ResponsePermanentRedirect, RESTResponse)
 from rivr.template.response import TemplateResponse
 
 class View(object):
@@ -103,4 +104,18 @@ class TemplateView(TemplateMixin, View):
     def get(self, request, *args, **kwargs):
         context = self.get_context_data(**kwargs)
         return self.render_to_response(context)
+
+
+class RESTView(View):
+    def dispatch(self, request, *args, **kwargs):
+        self.request = request
+        self.args = args
+        self.kwargs = kwargs
+
+        response = self.get_handler(request)(request, *args, **kwargs)
+
+        if not isinstance(response, Response):
+            response = RESTResponse(request, response)
+
+        return response
 
