@@ -95,9 +95,17 @@ class ResponseNotAllowed(Response):
         super(ResponseNotAllowed, self).__init__()
         self.headers['Allow'] = ', '.join(permitted_methods)
 
+
+class JSONEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if hasattr(obj, 'isoformat'):
+            return obj.isoformat()
+
+        return super(DateTimeJSONEncoder, self).default(obj)
+
 class RESTResponse(Response):
     def __init__(self, request, payload, status=None):
-        content = json.dumps(payload)
+        content = JSONEncoder().encode(payload)
         content_type = 'application/json'
 
         super(RESTResponse, self).__init__(content, status, content_type)
