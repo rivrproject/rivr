@@ -114,7 +114,9 @@ class RESTView(View):
 
         response = self.get_handler(request)(request, *args, **kwargs)
 
-        if not isinstance(response, Response):
+        if response is None:
+            response = Response(status=204)
+        elif not isinstance(response, Response):
             response = RESTResponse(request, response)
 
         return response
