@@ -1,5 +1,6 @@
 from rivr.http import (Response, ResponseNotAllowed, ResponseRedirect,
-                       ResponsePermanentRedirect, RESTResponse)
+                       ResponsePermanentRedirect, RESTResponse,
+                       ResponseNoContent)
 from rivr.template.response import TemplateResponse
 
 class View(object):
@@ -115,7 +116,7 @@ class RESTView(View):
         response = self.get_handler(request)(request, *args, **kwargs)
 
         if response is None:
-            response = Response(status=204)
+            response = ResponseNoContent()
         elif not isinstance(response, Response):
             response = RESTResponse(request, response)
 

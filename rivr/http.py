@@ -72,6 +72,9 @@ class Response(object):
         
         return headers
 
+class ResponseNoContent(Response):
+    status_code = 204
+
 class ResponseRedirect(Response):
     status_code = 302
     
