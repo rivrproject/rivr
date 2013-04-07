@@ -5,7 +5,7 @@ class ExampleAuthMiddleware(rivr.AuthMiddleware):
         return username == 'kylef' and password == 'letmein'
 
 def hello_world(request):
-    return rivr.Response('Hello, World!', content_type='text/plain')
+    return rivr.Response('Hello, {}!'.format(request.user.username), content_type='text/plain')
 
 if __name__ == '__main__':
-    rivr.serve(ExampleAuthMiddleware(hello_world))
+    rivr.serve(ExampleAuthMiddleware.wrap(hello_world))
