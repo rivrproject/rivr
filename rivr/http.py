@@ -1,5 +1,5 @@
 from Cookie import SimpleCookie, CookieError
-import json
+from rivr.utils import JSON_CONTENT_TYPES, JSONEncoder
 
 
 def parse_cookie(cookie):
@@ -96,17 +96,10 @@ class ResponseNotAllowed(Response):
         self.headers['Allow'] = ', '.join(permitted_methods)
 
 
-class JSONEncoder(json.JSONEncoder):
-    def default(self, obj):
-        if hasattr(obj, 'isoformat'):
-            return obj.isoformat()
-
-        return super(DateTimeJSONEncoder, self).default(obj)
-
 class RESTResponse(Response):
     def __init__(self, request, payload, status=None):
         content = JSONEncoder().encode(payload)
-        content_type = 'application/json'
+        content_type = JSON_CONTENT_TYPES[0]
 
         super(RESTResponse, self).__init__(content, status, content_type)
 

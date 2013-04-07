@@ -5,6 +5,7 @@ except ImportError:
     from cgi import parse_qsl
 
 from rivr.http import parse_cookie, Request, Response, ResponseNotFound, Http404
+from rivr.utils import JSON_CONTENT_TYPES, JSONDecoder
 
 STATUS_CODES = {
     100: 'CONTINUE',
@@ -72,10 +73,16 @@ class WSGIRequest(object):
                 content_length = int(self.environ.get('CONTENT_LENGTH', 0))
             except (ValueError, TypeError):
                 content_length = 0
-            
+
             if content_length > 0:
-                body = self.environ['wsgi.input'].read(int(self.environ.get('CONTENT_LENGTH', 0)))
-                self._post = dict((k,v) for k,v in parse_qsl(body, True))
+                content_type = self.environ.get('CONTENT_TYPE',
+                        'application/json')
+                content = self.environ['wsgi.input'].read(content_length)
+
+                if content_type in JSON_CONTENT_TYPES:
+                    self._post = JSONDecoder().decode(content)
+                else:
+                    self._post = dict((k,v) for k,v in parse_qsl(content, True))
             else:
                 self._post = {}
         return self._post
