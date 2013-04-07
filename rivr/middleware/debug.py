@@ -56,11 +56,11 @@ error_template = Template("""
 class DebugMiddleware(Middleware):
     def process_404(self, request):
         return ResponseNotFound('Page Not Found')
-    
+
     def process_exception(self, request, e):
         if isinstance(e, Http404):
             return self.process_404(request)
-        
+
         import traceback
         tb = '\n'.join(traceback.format_exception(*sys.exc_info()))
 
@@ -68,7 +68,7 @@ class DebugMiddleware(Middleware):
             formatter = HtmlFormatter(style='borland')
             html_tb = highlight(tb, PythonTracebackLexer(), formatter)
         else:
-            html_tb = '<pre><code>%s</pre></code>'
+            html_tb = '<pre><code>%s</pre></code>' % (tb)
 
         context = Context({
             'title': str(e),
@@ -80,8 +80,9 @@ class DebugMiddleware(Middleware):
             context['extra_css'] = formatter.get_style_defs('.highlight')
 
         return Response(error_template.render(context), status=500)
-    
+
     def process_response(self, request, response):
         if not response:
-            return self.process_exception(request, Exception, "View did not return a response.")
+            return self.process_exception(request,
+                Exception("View did not return a response."))
         return response
