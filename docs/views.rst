@@ -52,3 +52,6 @@ rivr also provides a bunch of views such as a `TemplateView`, and a
 
     .. automethod:: get_template_names(self)
     .. automethod:: get_context_data(self, **kwargs)
+
+.. autoclass:: RESTView
+

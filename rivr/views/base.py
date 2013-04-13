@@ -111,7 +111,7 @@ class TemplateView(TemplateMixin, View):
         return self.render_to_response(context)
 
 
-class RESTView(View, LastModifiedMixin):
+class RESTView(View):
     def get_last_modified(self, request):
         pass
 
