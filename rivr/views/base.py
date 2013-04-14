@@ -115,6 +115,14 @@ class RESTView(View):
     def get_last_modified(self, request):
         pass
 
+    def get_response(self, payload=None, status=None):
+        if payload is None:
+            response = ResponseNoContent(status=status)
+        else:
+            response = RESTResponse(self.request, payload, status)
+
+        return response
+
     def dispatch(self, request, *args, **kwargs):
         self.request = request
         self.args = args
