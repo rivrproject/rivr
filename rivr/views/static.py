@@ -46,6 +46,7 @@ class StaticView(View):
     document_root = None
     show_indexes = False
     use_request_path = False
+    index = None
 
     def was_modified_since(self, mtime=0, size=0):
         header = self.request.META.get('HTTP_IF_MODIFIED_SINCE')
@@ -115,8 +116,17 @@ class StaticView(View):
             raise Http404('"%s" does not exist.' % newpath)
 
         if os.path.isdir(fullpath):
+            if self.index:
+                index = os.path.join(fullpath, self.index)
+
+                if os.path.exists(index) and os.path.isdir(index) == False:
+                    return self.file(index)
+
             return self.directory_index(request, newpath, fullpath)
 
+        return self.file(fullpath)
+
+    def file(self, fullpath):
         statobj = os.stat(fullpath)
 
         if not self.was_modified_since(statobj[stat.ST_MTIME], statobj[stat.ST_SIZE]):
