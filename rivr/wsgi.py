@@ -77,6 +77,7 @@ class WSGIRequest(object):
             if content_length > 0:
                 content_type = self.environ.get('CONTENT_TYPE',
                         'application/json')
+                content_type = content_type.split(';')[0]
                 content = self.environ['wsgi.input'].read(content_length)
 
                 if content_type in JSON_CONTENT_TYPES:
