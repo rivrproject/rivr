@@ -21,12 +21,17 @@ def parse_cookie(cookie):
 class Http404(Exception): pass
 
 class Request(object):
-    def __init__(self, path='/', method='GET', GET={}, POST={}, COOKIES={}):
+    def __init__(self, path='/', method='GET', get=None, post=None,
+            headers=None):
         self.path = path
         self.method = method
-        self.GET = GET
-        self.POST = POST
-        self.COOKIES = COOKIES
+        self.GET = get or {}
+        self.POST = post or {}
+        self.headers = headers or {}
+
+    @property
+    def cookies(self):
+        return parse_cookie(self.headers.get('COOKIE', ''))
 
 class Response(object):
     status_code = 200
