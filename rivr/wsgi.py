@@ -4,7 +4,8 @@ try:
 except ImportError:
     from cgi import parse_qsl
 
-from rivr.http import parse_cookie, Request, Response, ResponseNotFound, Http404
+from rivr.http import (parse_cookie, Request, Response, ResponseNotFound,
+                       Http404)
 from rivr.utils import JSON_CONTENT_TYPES, JSONDecoder
 
 STATUS_CODES = {
@@ -51,21 +52,22 @@ STATUS_CODES = {
     505: 'HTTP VERSION NOT SUPPORTED',
 }
 
+
 class WSGIRequest(object):
     def __init__(self, environ):
         self.environ = environ
-        
+
         self.method = environ.get('REQUEST_METHOD', 'GET').upper()
         self.path = environ.get('PATH_INFO', '/')
         self.META = environ
-    
+
     #@property
     def get_get(self):
         if not hasattr(self, '_get'):
-            self._get = dict((k,v) for k,v in parse_qsl(self.environ.get('QUERY_STRING', ''), True))
+            self._get = dict((k, v) for k, v in parse_qsl(self.environ.get('QUERY_STRING', ''), True))
         return self._get
     GET = property(get_get)
-    
+
     #@property
     def get_post(self):
         if not hasattr(self, '_post'):
@@ -76,19 +78,20 @@ class WSGIRequest(object):
 
             if content_length > 0:
                 content_type = self.environ.get('CONTENT_TYPE',
-                        'application/json')
+                                                'application/json')
                 content_type = content_type.split(';')[0]
                 content = self.environ['wsgi.input'].read(content_length)
 
                 if content_type in JSON_CONTENT_TYPES:
                     self._post = JSONDecoder().decode(content)
                 else:
-                    self._post = dict((k,v) for k,v in parse_qsl(content, True))
+                    data = parse_qsl(content, True)
+                    self._post = dict((k, v) for k, v in data)
             else:
                 self._post = {}
         return self._post
     POST = property(get_post)
-    
+
     #@property
     def get_cookies(self):
         if not hasattr(self, '_cookies'):
@@ -96,15 +99,16 @@ class WSGIRequest(object):
         return self._cookies
     COOKIES = property(get_cookies)
 
+
 class WSGIHandler(object):
     request_class = WSGIRequest
-    
+
     def __init__(self, view):
         self.view = view
-    
+
     def __call__(self, environ, start_response):
         request = self.request_class(environ)
-        
+
         try:
             response = self.view(request)
             if not response:
@@ -113,16 +117,17 @@ class WSGIHandler(object):
             response = ResponseNotFound('Page not found')
         except Exception, e:
             response = Response('Internal server error', status=500)
-        
+
         try:
             status_text = STATUS_CODES[response.status_code]
         except KeyError:
             status_text = 'UNKNOWN STATUS CODE'
-        
+
         status = '%s %s' % (response.status_code, status_text)
-        
+
         start_response(status, response.headers_items())
-        
+
         if isinstance(response.content, unicode):
-            return [response.content.encode('utf-8')]        
+            return [response.content.encode('utf-8')]
         return [response.content]
+

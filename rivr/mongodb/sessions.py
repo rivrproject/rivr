@@ -1,5 +1,6 @@
 from rivr.sessions import BaseSessionStore
 
+
 class MongoSessionStore(BaseSessionStore):
     object_id = None
     collection = 'sessions'
@@ -16,9 +17,9 @@ class MongoSessionStore(BaseSessionStore):
     def save(self, request):
         collection = self.get_collection(request)
 
-        if not self.data and self.object_id: # delete our session
+        if not self.data and self.object_id:  # delete our session
             self.object_id = collection.remove(self.object_id)
-        else: # update our session
+        else:  # update our session
             if not self.session_key:
                 self.generate_key()
 

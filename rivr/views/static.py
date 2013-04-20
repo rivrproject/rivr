@@ -36,11 +36,13 @@ DEFAULT_DIRECTORY_INDEX_TEMPLATE = """
 </body>
 """
 
+
 class StaticView(View):
     """
     Usage in the router:
 
-        (r'(?P<path>.*)$', StaticView.as_view(document_root='.', show_indexes=True))
+        (r'(?P<path>.*)$', StaticView.as_view(document_root='.',
+                                              show_indexes=True))
     """
 
     document_root = None
@@ -53,7 +55,8 @@ class StaticView(View):
         if header is None:
             return True
 
-        matches = re.match(r'^([^;]+)(; length=([0-9]+))?$', header, re.IGNORECASE)
+        matches = re.match(r'^([^;]+)(; length=([0-9]+))?$', header,
+                           re.IGNORECASE)
 
         header_mtime = mktime_tz(parsedate_tz(matches.group(1)))
         header_len = matches.group(3)
@@ -111,7 +114,7 @@ class StaticView(View):
             return ResponseRedirect(newpath)
 
         fullpath = os.path.join(self.document_root, newpath)
-    
+
         if not os.path.exists(fullpath):
             raise Http404('"%s" does not exist.' % newpath)
 
@@ -119,7 +122,7 @@ class StaticView(View):
             if self.index:
                 index = os.path.join(fullpath, self.index)
 
-                if os.path.exists(index) and os.path.isdir(index) == False:
+                if os.path.exists(index) and not os.path.isdir(index):
                     return self.file(index)
 
             return self.directory_index(request, newpath, fullpath)
@@ -129,14 +132,17 @@ class StaticView(View):
     def file(self, fullpath):
         statobj = os.stat(fullpath)
 
-        if not self.was_modified_since(statobj[stat.ST_MTIME], statobj[stat.ST_SIZE]):
+        if not self.was_modified_since(statobj[stat.ST_MTIME],
+                                       statobj[stat.ST_SIZE]):
             return ResponseNotModified()
 
-        mimetype = mimetypes.guess_type(fullpath)[0] or 'application/octet-stream'
+        mimetype = mimetypes.guess_type(fullpath)[0] or \
+                                                  'application/octet-stream'
         contents = open(fullpath, 'rb').read()
 
         response = Response(contents, content_type=mimetype)
-        response.headers['Last-Modified'] = '%s GMT' % formatdate(statobj[stat.ST_MTIME])[:25]
+        response.headers['Last-Modified'] = '%s GMT' % (
+                formatdate(statobj[stat.ST_MTIME])[:25])
         response.headers['Content-Length'] = str(len(contents))
 
         return response

@@ -16,12 +16,12 @@ class GridFSResponse(Response):
     def __init__(self, grid_file):
         super(GridFSResponse, self).__init__(content_type=str(grid_file.content_type))
         self.grid_file = grid_file
-    
+
     def get_content(self):
         if not hasattr(self, '_content'):
             self._content = self.grid_file.read()
         return self._content
-    
+
     def set_content(self, value):
         pass
     content = property(get_content, set_content)
@@ -38,6 +38,7 @@ class GridFSView(View):
     def get(self, request, *args, **kwargs):
         return GridFSResponse(self.get_file())
 
+
 class MongoMixin(object):
     collection = None
 
@@ -48,11 +49,13 @@ class MongoMixin(object):
         if self.collection:
             return self.collection
 
-        raise Exception("MongoMixin requires either a definition of 'collection'"
-                        "or a implementation of 'get_collection_name()'")
+        raise Exception("MongoMixin requires either a definition of"
+                        "'collection' or a implementation of"
+                        "'get_collection_name()'")
 
     def get_collection(self):
         return self.request.mongodb_database[self.get_collection_name()]
+
 
 class SingleObjectMixin(MongoMixin):
     slug_field = 'slug'
@@ -78,7 +81,7 @@ class SingleObjectMixin(MongoMixin):
 
     def get_slug_field(self):
         return self.slug_field
- 
+
     def get_context_object_name(self, obj):
         if self.context_object_name:
             return self.context_object_name
@@ -104,6 +107,7 @@ class SingleObjectMixin(MongoMixin):
 
 class DetailView(SingleObjectMixin, TemplateView):
     pass
+
 
 class MultipleObjectMixin(MongoMixin):
     context_object_name = None
@@ -196,6 +200,7 @@ class MultipleObjectMixin(MongoMixin):
 
 class ListView(MultipleObjectMixin, TemplateView):
     pass
+
 
 class DeleteView(DetailView):
     post_delete_redirect = '/'

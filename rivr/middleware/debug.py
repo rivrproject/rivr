@@ -53,6 +53,7 @@ error_template = Template("""
 </body>
 """)
 
+
 class DebugMiddleware(Middleware):
     def process_404(self, request):
         return ResponseNotFound('Page Not Found')

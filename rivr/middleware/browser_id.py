@@ -3,6 +3,7 @@ from browserid import verify
 from rivr.http import Response, ResponseRedirect, ResponseNotFound
 from rivr.middleware.base import Middleware
 
+
 class BrowserIDMiddleware(Middleware):
     audience = None
 

@@ -1,5 +1,6 @@
 from rivr.http import Request
 
+
 class TestClient(object):
     def __init__(self, handler):
         self.handler = handler

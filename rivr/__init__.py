@@ -10,6 +10,7 @@ from rivr.middleware.auth import AuthMiddleware
 from rivr.router import Router, Domain, url, include
 
 from rivr.template import Template, Context
-from rivr.template.response import TemplateResponse, TemplateMiddleware, direct_to_template
+from rivr.template.response import (TemplateResponse, TemplateMiddleware,
+                                    direct_to_template)
 
 from rivr import views

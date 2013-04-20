@@ -8,7 +8,8 @@ from rivr.http import (Response, ResponseNotAllowed, ResponseRedirect,
 from rivr.template.response import TemplateResponse
 
 class View(object):
-    http_method_names = ['get', 'post', 'put', 'delete', 'head', 'options', 'trace']
+    http_method_names = ['get', 'post', 'put', 'delete', 'head', 'options',
+                         'trace']
 
     def __init__(self, **kwargs):
         for key, value in kwargs.iteritems():
@@ -32,7 +33,8 @@ class View(object):
 
     def get_handler(self, request):
         if request.method.lower() in self.http_method_names:
-            return getattr(self, request.method.lower(), self.http_method_not_allowed)
+            return getattr(self, request.method.lower(),
+                           self.http_method_not_allowed)
         return self.http_method_not_allowed
 
     def dispatch(self, request, *args, **kwargs):
@@ -45,6 +47,7 @@ class View(object):
     def http_method_not_allowed(self, request, *args, **kwargs):
         allowed_methods = [m for m in self.http_method_names if hasattr(self, m)]
         return ResponseNotAllowed(allowed_methods)
+
 
 class RedirectView(View):
     """
@@ -97,7 +100,9 @@ class TemplateMixin(object):
         return self.template_name
 
     def render_to_response(self, context):
-        return self.response_class(self.request, self.get_template_names(), context)
+        return self.response_class(self.request, self.get_template_names(),
+                                   context)
+
 
 class TemplateView(TemplateMixin, View):
     def get_context_data(self, **kwargs):

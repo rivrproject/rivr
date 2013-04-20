@@ -4,6 +4,7 @@ import hashlib
 
 from rivr.middleware import Middleware
 
+
 class BaseSessionStore(object):
     def __init__(self, request, session_key=None):
         self.modified = False
@@ -44,6 +45,7 @@ class BaseSessionStore(object):
         self.modified = True
         self.session_key = hashlib.new('sha1', str(time.time()) + str(random())).hexdigest()
 
+
 class MemorySessionStoreObject(BaseSessionStore):
     def __init__(self, store, *args, **kwargs):
         self.store = store
@@ -56,12 +58,14 @@ class MemorySessionStoreObject(BaseSessionStore):
     def save(self, request):
         self.store.sessions[self.session_key] = self.data
 
+
 class MemorySessionStore(object):
     def __init__(self):
         self.sessions = {}
 
     def __call__(self, *args, **kwargs):
         return MemorySessionStoreObject(self, *args, **kwargs)
+
 
 class SessionMiddleware(Middleware):
     cookie_name = 'sessionid'
@@ -85,7 +89,9 @@ class SessionMiddleware(Middleware):
             request.session.save(request)
 
             response.set_cookie(self.cookie_name, request.session.session_key,
-                path=self.cookie_path, domain=self.cookie_domain,
-                secure=self.cookie_secure)
+                                path=self.cookie_path,
+                                domain=self.cookie_domain,
+                                secure=self.cookie_secure)
 
         return response
+

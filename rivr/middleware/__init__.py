@@ -1,6 +1,7 @@
 from rivr.middleware.base import Middleware
 from rivr.http import Response, ResponseNotFound, Http404
 
+
 class MiddlewareController(Middleware):
     """
     The middleware controller allows you to wrap a view in multiple middleware.
@@ -51,6 +52,7 @@ class MiddlewareController(Middleware):
         else:
             raise exception
 
+
 class ErrorWrapper(object):
     def __init__(self, app, custom_404=None, custom_500=None):
         self.app = app
@@ -75,3 +77,4 @@ class ErrorWrapper(object):
 
     def default_error_500(self, request, e):
         return Response("A 500 has occured", status=500)
+
