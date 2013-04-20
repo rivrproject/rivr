@@ -61,6 +61,18 @@ class WSGIRequest(object):
         self.path = environ.get('PATH_INFO', '/')
         self.META = environ
 
+    @property
+    def headers(self):
+        if not hasattr(self, '_headers'):
+            headers = {}
+
+            for key in self.META:
+                if key.startswith('HTTP_'):
+                    headers[key[5:]] = self.META[key]
+
+            self._headers = headers
+        return self._headers
+
     #@property
     def get_get(self):
         if not hasattr(self, '_get'):

@@ -138,7 +138,7 @@ class RESTView(View):
 
         if request.method.lower() in ('get', 'head'):
             last_modified = self.get_last_modified(request)
-            if_last_modified = request.META.get('HTTP_IF_MODIFIED_SINCE')
+            if_last_modified = request.headers.get('IF_MODIFIED_SINCE')
 
             if last_modified and if_last_modified:
                 if_last_modified = datetime(*parsedate(if_last_modified)[:6])
