@@ -6,3 +6,21 @@ What rivr includes:
 - Domain router (Like django's URL router, but you can have a regex search over the whole domain, useful for subdomains).
 - A debugging middleware
 - Basic HTTP authentication
+
+Simple views:
+
+    def hello_world(request):
+        return Response('Hello, World!', content_type='text/plain')
+
+View router:
+
+    router = Router()
+
+    @router.register(r'^$')
+    def index(request):
+        return Response('Hello world.')
+
+    @router.register(r'^test/$')
+    def test(request):
+        return Response('Testing!')
+
