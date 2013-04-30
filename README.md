@@ -7,13 +7,16 @@ What rivr includes:
 - A debugging middleware
 - Basic HTTP authentication
 
-Simple views:
+### Simple views:
 
+```python
     def hello_world(request):
         return Response('Hello, World!', content_type='text/plain')
+```
 
-View router:
+### View router:
 
+```python
     router = Router()
 
     @router.register(r'^$')
@@ -23,4 +26,5 @@ View router:
     @router.register(r'^test/$')
     def test(request):
         return Response('Testing!')
+```
 
