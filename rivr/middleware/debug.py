@@ -8,6 +8,7 @@ try:
 except ImportError:
     HAS_PYGMENTS = False
 
+from rivr import VERSION
 from rivr.middleware import Middleware
 from rivr.http import Response, ResponseNotFound, Http404
 from rivr.template import Template, Context, html_escape
@@ -32,6 +33,7 @@ error_template = Template("""
     pre { border: 1px solid #ddd; margin: 10px 0; background: #eee; width: 720px; padding: 10px; border-radius: 6px; overflow: auto; font-size: 9pt; font-weight: normal; }
     pre:hover { border: 1px solid #bbb; }
     code { font-family: Consolas, Monaco, 'Lucida Console', 'Liberation Mono', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Courier New'; }
+    footer { width: 720px; margin-top: 25px; font-size: 0.9em; }
     </style>
 </head>
 <body>
@@ -49,6 +51,10 @@ error_template = Template("""
             <h2>Request</h2>
             <pre><code>{{ request }}</code></pre>
         </section>
+
+        <footer>
+            <p>Powered by rivr {{ version }} on Python {{ python_version }}.</p>
+        </footer>
     </div>
 </body>
 """)
@@ -74,7 +80,9 @@ class DebugMiddleware(Middleware):
         context = Context({
             'title': str(e),
             'traceback': html_tb,
-            'request': html_escape(repr(request))
+            'request': html_escape(repr(request)),
+            'version': VERSION,
+            'python_version': '{}.{}.{}-{}-{}'.format(*sys.version_info),
         })
 
         if HAS_PYGMENTS:
