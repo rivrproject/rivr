@@ -25,6 +25,7 @@ Contents:
 
    views
    middleware
+   server
 
 Indices and tables
 ==================
