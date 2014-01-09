@@ -216,8 +216,10 @@ class Domain(BaseRouter):
 def url(regex, view, kwargs={}, name=None, prefix=None):
     if isinstance(view, list):
         return RegexURLResolver(regex, view[0], kwargs)
-    else:
-        return RegexURLPattern(regex, view, kwargs, name, prefix)
+    elif hasattr(view, 'as_view') and callable(view.as_view):
+        view = view.as_view()
+
+    return RegexURLPattern(regex, view, kwargs, name, prefix)
 
 
 def include(router):
