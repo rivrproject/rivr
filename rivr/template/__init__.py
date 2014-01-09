@@ -1,3 +1,4 @@
+import sys
 import re
 
 from rivr.importlib import import_module
@@ -5,14 +6,15 @@ from rivr.template.context import Context
 
 __all__ = ('Template', 'Context')
 
-HTML_ESCAPE_DICT = {
-    '<': '&lt;',
-    '>': '&gt;',
+HTML_ESCAPE_DICT = (
+    ('&', '&amp;'),
 
-    '&': '&amp;',
-    '"': '&quot;',
-    "'": '&#39;',
-}
+    ('<', '&lt;'),
+    ('>', '&gt;'),
+
+    ('"', '&quot;'),
+    ("'", '&#39;'),
+)
 
 FILTER_SEPARATOR = '|'
 FILTER_ARGUMENT_SEPARATOR = ':'
@@ -167,7 +169,12 @@ class VariableNode(Node):
         self.variable = s
 
     def render(self, context):
-        return unicode(self.variable.resolve(context))
+        value = self.variable.resolve(context)
+
+        if sys.version_info[0] < 3:
+            value = unicode(value)
+
+        return value
 
 
 class Token(object):
@@ -290,8 +297,8 @@ def template_string_to_nodes(template_string):
 
 
 def html_escape(text):
-    for escape in HTML_ESCAPE_DICT:
-        text = text.replace(escape, HTML_ESCAPE_DICT[escape])
+    for escape, replacement in HTML_ESCAPE_DICT:
+        text = text.replace(escape, replacement)
 
     return text
 

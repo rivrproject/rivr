@@ -44,6 +44,17 @@ class ResponseTest(unittest.TestCase):
         self.assertEqual(str(response.cookies['test_cookie']),
                          'Set-Cookie: test_cookie=testing; Domain=rivr.com; expires=Mon, 30 Dec 2013 00:00:00; Max-Age=3600; Path=/cookie/; secure')
 
+    def test_header_items(self):
+        response = Response()
+        response.delete_cookie('test_cookie')
+        response.headers['Location'] = '/'
+
+        self.assertEqual(response.headers_items(), [
+            ('Content-Type', 'text/html; charset=utf8'),
+            ('Location', '/'),
+            ('Set-Cookie', ' test_cookie=; expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; Path=/')]
+        )
+
 
 class ResponseNoContentTest(unittest.TestCase):
     def test_status_code(self):

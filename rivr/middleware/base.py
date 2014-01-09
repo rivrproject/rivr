@@ -19,7 +19,7 @@ class Middleware(object):
         return func
 
     def __init__(self, **kwargs):
-        for key, value in kwargs.iteritems():
+        for key, value in kwargs.items():
             setattr(self, key, value)
 
     def dispatch(self, view, request, *args, **kwargs):

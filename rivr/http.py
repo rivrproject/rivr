@@ -87,7 +87,7 @@ class Response(object):
                         expires='Thu, 01-Jan-1970 00:00:00 GMT')
 
     def headers_items(self):
-        headers = self.headers.items()
+        headers = [(k, v) for k, v in self.headers.items()]
 
         for cookie in self.cookies.values():
             headers.append(('Set-Cookie', str(cookie.output(header=''))))

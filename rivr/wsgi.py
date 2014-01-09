@@ -1,3 +1,5 @@
+import sys
+
 try:
     # The mod_python version is more efficient, so try importing it first.
     from mod_python.util import parse_qsl
@@ -139,7 +141,12 @@ class WSGIHandler(object):
 
         start_response(status, response.headers_items())
 
-        if isinstance(response.content, unicode):
-            return [response.content.encode('utf-8')]
-        return [response.content]
+        response_content = response.content
+
+        if isinstance(response_content, str):
+            response_content = response_content.encode('utf-8')
+        elif sys.version_info[0] < 3 and isinstance(response.content, unicode):
+            response_content = response_content.encode('utf-8')
+
+        return [response_content]
 
