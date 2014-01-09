@@ -7,6 +7,7 @@ from rivr.http import (Response, ResponseNotAllowed, ResponseRedirect,
                        ResponseNoContent, ResponseNotModified)
 from rivr.template.response import TemplateResponse
 
+
 class View(object):
     http_method_names = ['get', 'post', 'put', 'delete', 'head', 'options',
                          'trace']
@@ -69,7 +70,7 @@ class RedirectView(View):
                 url = "%s?%s" % (self.url, args)
             else:
                 url = self.url
-            return self.url % kwargs
+            return url % kwargs
         return None
 
     def get(self, request, *args, **kwargs):
@@ -79,6 +80,7 @@ class RedirectView(View):
                 return ResponsePermanentRedirect(url)
             return ResponseRedirect(url)
         raise Http404("Redirect URL not found.")
+
 
 class TemplateMixin(object):
     template_name = None
