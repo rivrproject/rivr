@@ -1,4 +1,10 @@
-from Cookie import SimpleCookie, CookieError
+try:
+    from http.cookies import SimpleCookie, CookieError
+except ImportError:
+    from Cookie import SimpleCookie, CookieError
+
+import datetime
+
 from rivr.utils import JSON_CONTENT_TYPES, JSONEncoder
 
 
@@ -62,6 +68,9 @@ class Response(object):
             self.cookies[key]['max-age'] = max_age
 
         if expires is not None:
+            if isinstance(expires, datetime.datetime):
+                expires = expires.strftime('%a, %d %b %Y %H:%M:%S')
+
             self.cookies[key]['expires'] = expires
 
         if path is not None:
