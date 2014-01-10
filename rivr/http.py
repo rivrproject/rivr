@@ -30,6 +30,12 @@ class Http404(Exception):
 
 
 class Request(object):
+    """
+    A request is an object which represents a HTTP request. You wouldn't
+    normally create a request yourself but instead be passed a request. Each
+    view gets passed the clients request.
+    """
+
     def __init__(self, path='/', method='GET', get=None, post=None,
                  headers=None):
         self.path = path
@@ -44,7 +50,13 @@ class Request(object):
 
 
 class Response(object):
+    """
+    Response is an object for describing a HTTP response. Every view is
+    responsible for either returning a response or raising an exception.
+    """
+
     status_code = 200
+    """The HTTP status code for the response."""
 
     def __init__(self, content='', status=None,
                  content_type='text/html; charset=utf8'):
@@ -62,6 +74,11 @@ class Response(object):
 
     def set_cookie(self, key, value='', max_age=None, expires=None, path='/',
                    domain=None, secure=False):
+        """
+        Sets a cookie. The parameters are the same as in the Cookie.Morsel
+        object in the Python standard library.
+        """
+
         self.cookies[key] = value
 
         if max_age is not None:
@@ -83,6 +100,11 @@ class Response(object):
             self.cookies[key]['secure'] = True
 
     def delete_cookie(self, key, path='/', domain=None):
+        """
+        Deletes the cookie with the given key. Fails silently if the key
+        doesn't exist
+        """
+
         self.set_cookie(key, max_age=0, path=path, domain=domain,
                         expires='Thu, 01-Jan-1970 00:00:00 GMT')
 
@@ -96,30 +118,50 @@ class Response(object):
 
 
 class ResponseNoContent(Response):
+    """A response that uses the 204 status code to indicate no content."""
     status_code = 204
 
 
 class ResponseRedirect(Response):
+    """
+    Acts just like a ResponseRedirect, but uses a 302 status code.
+    It takes a URL to redirect the user to.
+    """
+
     status_code = 302
 
     def __init__(self, redirect_to):
         super(ResponseRedirect, self).__init__()
         self.headers['Location'] = str(redirect_to)
 
+    @property
+    def url(self):
+        """
+        A property that returns the URL for the redirect.
+        """
+        return self.headers['Location']
+
 
 class ResponsePermanentRedirect(ResponseRedirect):
+    """Acts just like a ResponseRedirect, but uses a 302 status code."""
     status_code = 301
 
 
 class ResponseNotFound(Response):
+    """Acts just like a Response, but uses a 404 status code."""
     status_code = 404
 
 
 class ResponseNotModified(Response):
+    """Acts just like a Response, but uses a 304 status code."""
     status_code = 304
 
 
 class ResponseNotAllowed(Response):
+    """
+    A response that uses the 405 status code and takes a list of
+    permitted HTTP methods.
+    """
     status_code = 405
 
     def __init__(self, permitted_methods):
