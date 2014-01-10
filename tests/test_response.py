@@ -49,11 +49,11 @@ class ResponseTest(unittest.TestCase):
         response.delete_cookie('test_cookie')
         response.headers['Location'] = '/'
 
-        self.assertEqual(response.headers_items(), [
+        self.assertEqual(response.headers_items().sort(), [
             ('Content-Type', 'text/html; charset=utf8'),
             ('Location', '/'),
-            ('Set-Cookie', ' test_cookie=; expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; Path=/')]
-        )
+            ('Set-Cookie', ' test_cookie=; expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; Path=/')
+        ].sort())
 
 
 class ResponseNoContentTest(unittest.TestCase):
