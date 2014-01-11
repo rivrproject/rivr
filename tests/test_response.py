@@ -66,7 +66,14 @@ class ResponseRedirectTest(unittest.TestCase):
     def test_redirect(self):
         response = ResponseRedirect('/redirect/')
         self.assertEqual(response.status_code, 302)
+
+    def test_sets_location_header(self):
+        response = ResponseRedirect('/redirect/')
         self.assertEqual(response.headers['Location'], '/redirect/')
+
+    def test_url_property(self):
+        response = ResponseRedirect('/redirect/')
+        self.assertEqual(response.url, '/redirect/')
 
 
 class ResponsePermanentRedirectTest(unittest.TestCase):
