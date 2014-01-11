@@ -106,6 +106,17 @@ class RegexURLResolver(RegexURL):
 
 class BaseRouter(object):
     def __init__(self, *urls):
+        """
+        Router takes URLs which you can register on creation.
+
+        Example::
+
+            router = rivr.Router(
+                (r'^$', index),
+                (r'^test/$', test),
+            )
+        """
+
         self.urlpatterns = []
 
         try:
@@ -136,6 +147,22 @@ class BaseRouter(object):
         self.urlpatterns.append(url)
 
     def register(self, *t):
+        """
+        Register a URL pattern with a view. This can either be used as a
+        decorator, or it can be used as a method with a view.
+
+        Decorator Example::
+
+            @router.register(r'^$')
+            def view(request):
+                return Response()
+
+        View Example::
+
+            router.register(r'^$', view)
+
+        """
+
         if isinstance(t, (list, tuple)):
             if len(t) == 1:
                 def func(view):
@@ -150,7 +177,12 @@ class BaseRouter(object):
 
 
 class Router(BaseRouter):
-    APPEND_SLASH = True
+    append_slash = True
+    """
+    When append_slash is True, if the request URL does not match any patterns
+    in the router and it doesn't end in a slash. The router will HTTP redirect
+    any issues to the same URL with a slash appended.
+    """
 
     def resolve(self, path):
         for pattern in self.urlpatterns:
@@ -160,7 +192,7 @@ class Router(BaseRouter):
         raise Resolver404('No URL pattern matched.')
 
     def __call__(self, request):
-        if self.APPEND_SLASH and (not request.path.endswith('/')):
+        if self.append_slash and (not request.path.endswith('/')):
             if (not self.is_valid_path(request.path)) and \
                     self.is_valid_path(request.path+'/'):
                 return ResponsePermanentRedirect(request.path+'/')

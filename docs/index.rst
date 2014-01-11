@@ -27,6 +27,7 @@ Contents:
    request-response
    middleware
    server
+   router
 
 Indices and tables
 ==================
