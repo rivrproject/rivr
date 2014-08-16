@@ -143,7 +143,7 @@ class ResponseRedirect(Response):
 
 
 class ResponsePermanentRedirect(ResponseRedirect):
-    """Acts just like a ResponseRedirect, but uses a 302 status code."""
+    """Acts just like a ResponseRedirect, but uses a 301 status code."""
     status_code = 301
 
 
