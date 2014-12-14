@@ -1,4 +1,5 @@
 import sys
+import logging
 
 try:
     # The mod_python version is more efficient, so try importing it first.
@@ -9,6 +10,8 @@ except ImportError:
 from rivr.http import (parse_cookie, Request, Response, ResponseNotFound,
                        Http404)
 from rivr.utils import JSON_CONTENT_TYPES, JSONDecoder
+
+logger = logging.getLogger('rivr.request')
 
 STATUS_CODES = {
     100: 'CONTINUE',
@@ -130,6 +133,14 @@ class WSGIHandler(object):
         except Http404:
             response = ResponseNotFound('Page not found')
         except Exception:
+            logger.error('Internal Server Error: {}'.format(request.path),
+                exc_info=sys.exc_info(),
+                extra={
+                    'status_code': 500,
+                    'request': request
+                }
+            )
+
             response = Response('Internal server error', status=500)
 
         try:
