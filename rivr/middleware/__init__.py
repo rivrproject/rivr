@@ -50,7 +50,7 @@ class MiddlewareController(Middleware):
             if response:
                 return response
         else:
-            raise exception
+            raise
 
 
 class ErrorWrapper(object):

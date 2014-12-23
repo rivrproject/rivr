@@ -32,7 +32,7 @@ class Middleware(object):
                 if hasattr(self, 'process_exception'):
                     response = self.process_exception(request, e)
                 else:
-                    raise e
+                    raise
 
         return self.process_response(request, response)
 
