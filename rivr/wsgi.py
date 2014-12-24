@@ -78,6 +78,79 @@ class WSGIRequest(object):
             self._headers = headers
         return self._headers
 
+    @property
+    def is_secure(self):
+        """
+        Returns True if connection was made over HTTPS/TLS.
+        """
+
+        return self.scheme == 'https'
+
+    @property
+    def scheme(self):
+        """
+        Scheme used for the request. For example, `https`.
+        """
+
+        return self.environ['wsgi.url_scheme']
+
+    @property
+    def host(self):
+        """
+        Hostname used for the request. For example, `rivr.com`.
+        """
+
+        host = self.environ.get('HTTP_HOST', None)
+
+        if host is None:
+            host = self.environ.get('SERVER_NAME', None)
+
+        return host
+
+    @property
+    def port(self):
+        """
+        Port used for the connection.
+        """
+
+        default = 443 if self.is_secure else 80
+        return int(self.environ.get('SERVER_HTTP_PORT', default))
+
+    @property
+    def url(self):
+        """
+        Hostname used for the request. For example, `https://rivr.com/about`.
+        """
+
+        scheme = self.scheme
+        url = scheme + '://' + self.host
+        port = self.port
+        if (scheme == 'http' and port != 80) or (scheme == 'https' and port != 443):
+            url += ':' + str(port)
+
+        return url + self.path
+
+    @property
+    def content_length(self):
+        """
+        Returns the length of the request's body.
+        """
+
+        try:
+            content_length = int(self.environ.get('CONTENT_LENGTH', 0))
+        except (ValueError, TypeError):
+            content_length = 0
+
+        return content_length
+
+    @property
+    def body(self):
+        """
+        Request body (file descriptor).
+        """
+
+        return self.environ['wsgi.input']
+
     #@property
     def get_get(self):
         if not hasattr(self, '_get'):
@@ -88,16 +161,11 @@ class WSGIRequest(object):
     #@property
     def get_post(self):
         if not hasattr(self, '_post'):
-            try:
-                content_length = int(self.environ.get('CONTENT_LENGTH', 0))
-            except (ValueError, TypeError):
-                content_length = 0
-
-            if content_length > 0:
+            if self.content_length > 0:
                 content_type = self.environ.get('CONTENT_TYPE',
                                                 'application/json')
                 content_type = content_type.split(';')[0]
-                content = self.environ['wsgi.input'].read(content_length)
+                content = self.body.read(self.content_length)
 
                 if content_type in JSON_CONTENT_TYPES:
                     self._post = JSONDecoder().decode(content)
