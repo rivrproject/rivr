@@ -12,6 +12,11 @@ class SimpleView(View):
         return Response('Unknown Method')
 
 
+class SimplePostView(View):
+    def post(self, request):
+        pass
+
+
 class ViewTest(unittest.TestCase):
     def test_method_routing(self):
         view = SimpleView.as_view()
@@ -37,7 +42,26 @@ class ViewTest(unittest.TestCase):
 
         response = view(Request(method='OPTIONS'))
         self.assertEqual(response.status_code, 204)
-        self.assertEqual(response.headers['Allow'], 'GET,OPTIONS')
+        self.assertEqual(response.headers['Allow'], 'GET,HEAD,OPTIONS')
+
+    def test_default_head(self):
+        view = SimpleView.as_view()
+
+        response = view(Request(method='HEAD'))
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.content), 0)
+
+    def test_head_returns_405_without_get(self):
+        view = SimplePostView.as_view()
+
+        response = view(Request(method='HEAD'))
+        self.assertEqual(response.status_code, 405)
+
+    def test_head_missing_from_options_without_get(self):
+        view = SimplePostView.as_view()
+
+        response = view(Request(method='OPTIONS'))
+        self.assertEqual(response.headers['Allow'], 'POST,OPTIONS')
 
 
 class RedirectViewTest(unittest.TestCase):

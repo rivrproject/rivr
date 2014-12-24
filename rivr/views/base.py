@@ -46,14 +46,28 @@ class View(object):
         return self.get_handler(request)(request, *args, **kwargs)
 
     def http_method_not_allowed(self, request, *args, **kwargs):
+        return ResponseNotAllowed(self.get_allowed_methods())
+
+    def get_allowed_methods(self):
         allowed_methods = [m for m in self.http_method_names if hasattr(self, m)]
-        return ResponseNotAllowed(allowed_methods)
+        if not hasattr(self, 'get'):
+            allowed_methods.remove('head')
+
+        return allowed_methods
 
     def options(self, request, *args, **kwargs):
-        allowed_methods = [m.upper() for m in self.http_method_names if hasattr(self, m)]
+        allowed_methods = [m.upper() for m in self.get_allowed_methods()]
         response = ResponseNoContent()
         response.headers['Allow'] = ','.join(allowed_methods)
         return response
+
+    def head(self, request, *args, **kwargs):
+        if hasattr(self, 'get'):
+            response = self.get(request, *args, **kwargs)
+            response.content = ''
+            return response
+
+        return self.http_method_not_allowed(request, *args, **kwargs)
 
 
 class RedirectView(View):
