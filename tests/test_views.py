@@ -32,6 +32,13 @@ class ViewTest(unittest.TestCase):
         response = view(Request(method='UNKNOWN_METHOD'))
         self.assertEqual(response.status_code, 405)
 
+    def test_default_options(self):
+        view = SimpleView.as_view()
+
+        response = view(Request(method='OPTIONS'))
+        self.assertEqual(response.status_code, 204)
+        self.assertEqual(response.headers['Allow'], 'GET,OPTIONS')
+
 
 class RedirectViewTest(unittest.TestCase):
     def test_permanent_redirect(self):

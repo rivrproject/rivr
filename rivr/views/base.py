@@ -49,6 +49,12 @@ class View(object):
         allowed_methods = [m for m in self.http_method_names if hasattr(self, m)]
         return ResponseNotAllowed(allowed_methods)
 
+    def options(self, request, *args, **kwargs):
+        allowed_methods = [m.upper() for m in self.http_method_names if hasattr(self, m)]
+        response = ResponseNoContent()
+        response.headers['Allow'] = ','.join(allowed_methods)
+        return response
+
 
 class RedirectView(View):
     """
