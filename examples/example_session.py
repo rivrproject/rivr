@@ -1,6 +1,6 @@
 """
 Example rivr.sessions using a in-memory session store which is
-not persistent across restarts. See rivr.mongodb.sessions for
+not persistent across restarts. See the documentation for
 persistent sessions.
 """
 
