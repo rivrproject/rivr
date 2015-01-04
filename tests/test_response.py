@@ -55,6 +55,10 @@ class ResponseTest(unittest.TestCase):
             ('Set-Cookie', ' test_cookie=; expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; Path=/')
         ].sort())
 
+    def test_to_string(self):
+        response = Response('Hello World')
+        self.assertEqual(str(response), 'Content-Type: text/html; charset=utf8\n\nHello World')
+
 
 class ResponseNoContentTest(unittest.TestCase):
     def test_status_code(self):
