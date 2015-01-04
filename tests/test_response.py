@@ -12,6 +12,10 @@ class ResponseTest(unittest.TestCase):
 
         self.assertEqual(Response().status_code, 200)
 
+    def test_custom_status_code(self):
+        response = Response(status=302)
+        self.assertEqual(response.status_code, 302)
+
     def test_content_type(self):
         "Content type header should be set"
 
