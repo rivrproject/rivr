@@ -1,7 +1,11 @@
 language: python
 python:
- - "2.7"
- - "3.3"
-script: nosetests -s tests
+- "2.7"
+- "3.3"
 install:
- - pip install nose --use-mirrors
+- pip install nose
+- pip install nose-cov
+script: nosetests -sv tests --with-coverage --cover-package=rivr
+after_success:
+- pip install coveralls
+- coveralls
