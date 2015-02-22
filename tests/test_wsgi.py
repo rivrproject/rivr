@@ -102,14 +102,14 @@ class WSGIRequestTest(unittest.TestCase):
 
     # Parameters
 
-    def testParameters(self):
+    def test_parameters(self):
         request = WSGIRequest({
             'QUERY_STRING': 'key=value',
         })
 
         self.assertEqual(request.parameters, {'key': 'value'})
 
-    def testDepreactedGETReturnsQueryParameters(self):
+    def test_deprecated_GET_returns_parameters(self):
         request = WSGIRequest({
             'QUERY_STRING': 'key=value',
         })
@@ -118,14 +118,14 @@ class WSGIRequestTest(unittest.TestCase):
 
     # Attributes
 
-    def testPOSTIsAliasedToAttributes(self):
+    def test_deprecated_POST_returns_attributes(self):
         # POST is deprecated, but for now is an alias for attributes
         wsgi_input = StringIO('Hi')
         request = WSGIRequest({})
 
         self.assertEqual(request.POST, {})
 
-    def testJSONHTTPBodyDataDeserialisation(self):
+    def test_parameters_deserializes_JSON_HTTP_body(self):
         wsgi_input = StringIO('{"test": "👍"}')
         request = WSGIRequest({
             'CONTENT_TYPE': 'application/json',
