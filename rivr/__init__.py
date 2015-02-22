@@ -1,4 +1,4 @@
-VERSION = '0.5.1'
+VERSION = '0.6.0'
 
 from rivr.http import Response, Http404
 from rivr.server import serve

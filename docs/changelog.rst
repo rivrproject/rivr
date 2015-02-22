@@ -1,8 +1,8 @@
 Release History
 ###############
 
-Master
-======
+0.6.0
+=====
 
 Views
 -----
