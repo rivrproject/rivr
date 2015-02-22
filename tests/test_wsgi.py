@@ -100,6 +100,22 @@ class WSGIRequestTest(unittest.TestCase):
 
         self.assertEqual(request.body.read(), 'Hi')
 
+    # Parameters
+
+    def testParameters(self):
+        request = WSGIRequest({
+            'QUERY_STRING': 'key=value',
+        })
+
+        self.assertEqual(request.parameters, {'key': 'value'})
+
+    def testDepreactedGETReturnsQueryParameters(self):
+        request = WSGIRequest({
+            'QUERY_STRING': 'key=value',
+        })
+
+        self.assertEqual(request.GET, {'key': 'value'})
+
     # Attributes
 
     def testPOSTIsAliasedToAttributes(self):
