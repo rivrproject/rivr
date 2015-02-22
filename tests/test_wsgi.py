@@ -100,16 +100,22 @@ class WSGIRequestTest(unittest.TestCase):
 
         self.assertEqual(request.body.read(), 'Hi')
 
-    # POST Data
+    # Attributes
 
-    def testJSONPostDataDeserialisation(self):
+    def testPOSTIsAliasedToAttributes(self):
+        # POST is deprecated, but for now is an alias for attributes
+        wsgi_input = StringIO('Hi')
+        request = WSGIRequest({})
+
+        self.assertEqual(request.POST, {})
+
+    def testJSONHTTPBodyDataDeserialisation(self):
         wsgi_input = StringIO('{"test": "👍"}')
         request = WSGIRequest({
             'CONTENT_TYPE': 'application/json',
             'CONTENT_LENGTH': 16,
             'wsgi.input': wsgi_input,
         })
-        post = request.POST
 
-        self.assertEqual(post, {'test': '👍'})
+        self.assertEqual(request.attributes, {'test': '👍'})
 
