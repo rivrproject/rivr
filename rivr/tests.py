@@ -5,13 +5,8 @@ class TestClient(object):
     def __init__(self, handler):
         self.handler = handler
 
-    def http(self, method, path, data=None, headers=None):
-        if method == 'GET':
-            get = data
-        else:
-            get = {}
-
-        request = Request(path, method, get, data, headers)
+    def http(self, method, path, parameters=None, attributes=None, headers=None):
+        request = Request(path, method, parameters, attributes, headers)
 
         return self.handler(request)
 

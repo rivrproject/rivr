@@ -6,6 +6,7 @@ from rivr.tests import TestClient
 class TestClientTests(unittest.TestCase):
     def setUp(self):
         def view(request):
+            self.request = request
             return Response('{} {}'.format(request.method, request.path))
 
         self.client = TestClient(view)
@@ -29,3 +30,13 @@ class TestClientTests(unittest.TestCase):
     def test_delete(self):
         response = self.client.delete('/resource')
         self.assertEqual(response.content, 'DELETE /resource')
+
+    #
+
+    def test_parameters(self):
+        response = self.client.post('/resource', parameters={'id': 1})
+        self.assertEqual(self.request.parameters, {'id': 1})
+
+    def test_attributes(self):
+        response = self.client.post('/resource', attributes={'id': 1})
+        self.assertEqual(self.request.attributes, {'id': 1})
