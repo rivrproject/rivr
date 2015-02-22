@@ -17,4 +17,6 @@ Contrib
 * Completely removed the MongoDB module. This hasn't been maintained in a
   while, if anyone still uses it or is interested in maintaining it. It should
   be moved to a separate module.
+* Moved jinja support out into a separate project `rivr-jinja`.
+* Removed the BrowserID module.
 
