@@ -5,19 +5,19 @@ import hashlib
 from rivr.middleware import Middleware
 
 
-class BaseSessionStore(object):
-    def __init__(self, request, session_key=None):
+class BaseSession(object):
+    def __init__(self, session_key=None):
         self.modified = False
         self.session_key = session_key
         self.data = {}
 
         if self.session_key:
-            self.get_session(request)
+            self.get_session()
 
-    def get_session(self, request):
+    def get_session(self):
         raise NotImplementedError
 
-    def save(self, request):
+    def save(self):
         raise NotImplementedError
 
     def __contains__(self, key):
@@ -34,9 +34,6 @@ class BaseSessionStore(object):
         self.modified = True
         del self.data[key]
 
-    def has_key(self, key):
-        return key in self.data
-
     def clear(self):
         self.modified = True
         self.data = {}
@@ -46,16 +43,16 @@ class BaseSessionStore(object):
         self.session_key = hashlib.new('sha1', str(time.time()) + str(random())).hexdigest()
 
 
-class MemorySessionStoreObject(BaseSessionStore):
+class MemorySession(BaseSession):
     def __init__(self, store, *args, **kwargs):
         self.store = store
-        super(MemorySessionStoreObject, self).__init__(*args, **kwargs)
+        super(MemorySession, self).__init__(*args, **kwargs)
 
-    def get_session(self, request):
+    def get_session(self):
         if self.session_key in self.store.sessions:
             self.data = self.store.sessions[self.session_key]
 
-    def save(self, request):
+    def save(self):
         self.store.sessions[self.session_key] = self.data
 
 
@@ -64,7 +61,7 @@ class MemorySessionStore(object):
         self.sessions = {}
 
     def __call__(self, *args, **kwargs):
-        return MemorySessionStoreObject(self, *args, **kwargs)
+        return MemorySession(self, *args, **kwargs)
 
 
 class SessionMiddleware(Middleware):
@@ -81,12 +78,15 @@ class SessionMiddleware(Middleware):
                             "Session store is not defined")
 
         session_key = request.COOKIES.get(self.cookie_name, None)
-        request.session = self.session_store(request, session_key)
+        request.session = self.session_store(session_key)
 
     def process_response(self, request, response):
         if request.session.modified:
             # Save the session data and refresh the client cookie.
-            request.session.save(request)
+            request.session.save()
+
+            if not request.session.session_key:
+                request.session.generate_key()
 
             response.set_cookie(self.cookie_name, request.session.session_key,
                                 path=self.cookie_path,

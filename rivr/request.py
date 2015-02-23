@@ -39,4 +39,6 @@ class Request(object):
     def cookies(self):
         return parse_cookie(self.headers.get('COOKIE', ''))
 
+    COOKIES = cookies  # TODO address consistency
+
 
