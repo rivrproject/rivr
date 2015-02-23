@@ -10,6 +10,7 @@ except ImportError:
 
 from rivr.wsgi import WSGIRequest
 
+
 class WSGIRequestTest(unittest.TestCase):
     def testMethod(self):
         request = WSGIRequest({
