@@ -158,24 +158,34 @@ class WSGIRequest(object):
         return self._get
     GET = property(get_get)
 
-    #@property
-    def get_post(self):
-        if not hasattr(self, '_post'):
+    # Attributes
+
+    @property
+    def attributes(self):
+        """
+        A request body, deserialized as a dictionary.
+
+        This will automatically deserialize form or JSON encoded request
+        bodies.
+        """
+
+        if not hasattr(self, '_attributes'):
             if self.content_length > 0:
-                content_type = self.environ.get('CONTENT_TYPE',
-                                                'application/json')
-                content_type = content_type.split(';')[0]
                 content = self.body.read(self.content_length)
+                content_type = self.environ.get('CONTENT_TYPE', None)
+                content_type = content_type.split(';')[0]
 
                 if content_type in JSON_CONTENT_TYPES:
-                    self._post = JSONDecoder().decode(content)
-                else:
+                    self._attributes = JSONDecoder().decode(content)
+                elif content_type == 'application/x-www-form-urlencoded':
                     data = parse_qsl(content, True)
-                    self._post = dict((k, v) for k, v in data)
+                    self._attributes = dict((k, v) for k, v in data)
             else:
-                self._post = {}
-        return self._post
-    POST = property(get_post)
+                self._attributes = {}
+
+        return self._attributes
+
+    POST = attributes  # Deprecated
 
     #@property
     def get_cookies(self):

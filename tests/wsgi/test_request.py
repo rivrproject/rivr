@@ -101,16 +101,30 @@ class WSGIRequestTest(unittest.TestCase):
 
         self.assertEqual(request.body.read(), 'Hi')
 
-    # POST Data
+    # Attributes
 
-    def testJSONPostDataDeserialisation(self):
+    def test_depreacted_POST_returns_attributes(self):
+        # POST is deprecated, but for now is an alias for attributes
+        request = WSGIRequest({})
+        self.assertEqual(request.POST, {})
+
+    def test_attributes_deserializes_form_urlencoded(self):
+        wsgi_input = StringIO('test=👍')
+        request = WSGIRequest({
+            'CONTENT_TYPE': 'application/x-www-form-urlencoded',
+            'CONTENT_LENGTH': 9,
+            'wsgi.input': wsgi_input,
+        })
+
+        self.assertEqual(request.attributes, {'test': '👍'})
+
+    def test_attributes_deserializes_JSON_HTTP_body(self):
         wsgi_input = StringIO('{"test": "👍"}')
         request = WSGIRequest({
             'CONTENT_TYPE': 'application/json',
             'CONTENT_LENGTH': 16,
             'wsgi.input': wsgi_input,
         })
-        post = request.POST
 
-        self.assertEqual(post, {'test': '👍'})
+        self.assertEqual(request.attributes, {'test': '👍'})
 
