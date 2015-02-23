@@ -7,8 +7,8 @@ try:
 except ImportError:
     from cgi import parse_qsl
 
-from rivr.http import (parse_cookie, Request, Response, ResponseNotFound,
-                       Http404)
+from rivr.request import parse_cookie, Request
+from rivr.response import Response, ResponseNotFound, Http404
 from rivr.utils import JSON_CONTENT_TYPES, JSONDecoder
 
 logger = logging.getLogger('rivr.request')

@@ -1,6 +1,6 @@
 import unittest
 
-from rivr.http import Response
+from rivr.response import Response
 from rivr.middleware import MiddlewareController, Middleware
 
 

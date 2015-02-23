@@ -7,7 +7,7 @@ import re
 from email.Utils import formatdate, parsedate_tz, mktime_tz
 
 from rivr.views.base import View
-from rivr.http import Response, ResponseRedirect, ResponseNotModified, Http404
+from rivr.response import Response, ResponseRedirect, ResponseNotModified, Http404
 
 
 DEFAULT_DIRECTORY_INDEX_TEMPLATE = """

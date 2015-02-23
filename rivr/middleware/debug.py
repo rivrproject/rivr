@@ -10,7 +10,8 @@ except ImportError:
 
 from rivr import VERSION
 from rivr.middleware import Middleware
-from rivr.http import Response, ResponseNotFound, Http404
+from rivr.response import Response, ResponseNotFound, Http404
+
 
 ERROR_CSS = """
     html * { padding:0; margin:0; }

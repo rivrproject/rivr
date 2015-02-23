@@ -1,6 +1,6 @@
 VERSION = '0.6.0'
 
-from rivr.http import Response, Http404
+from rivr.response import Response, Http404
 from rivr.server import serve
 
 from rivr.middleware import Middleware, MiddlewareController, ErrorWrapper

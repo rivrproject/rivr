@@ -1,6 +1,7 @@
 import unittest
 
-from rivr.http import Request, Response, RESTResponse
+from rivr.request import Request
+from rivr.response import Response, RESTResponse
 from rivr.views import RESTView
 
 class RESTViewTestCase(unittest.TestCase):

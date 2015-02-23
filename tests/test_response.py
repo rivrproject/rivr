@@ -1,9 +1,9 @@
 import unittest
 import datetime
 
-from rivr.http import (Response, ResponseNoContent, ResponseRedirect,
-                       ResponseNotAllowed, ResponsePermanentRedirect,
-                       ResponseNotFound, ResponseNotModified)
+from rivr.response import (Response, ResponseNoContent, ResponseRedirect,
+                          ResponseNotAllowed, ResponsePermanentRedirect,
+                          ResponseNotFound, ResponseNotModified)
 
 
 class ResponseTest(unittest.TestCase):

@@ -1,8 +1,7 @@
 import re
 
 from rivr.importlib import import_module
-from rivr.http import Http404
-from rivr.http import ResponsePermanentRedirect
+from rivr.response import Http404, ResponsePermanentRedirect
 
 
 class Resolver404(Http404):

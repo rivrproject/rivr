@@ -1,6 +1,6 @@
 from base64 import b64decode
 
-from rivr.http import Response
+from rivr.response import Response
 from rivr.middleware.base import Middleware
 
 

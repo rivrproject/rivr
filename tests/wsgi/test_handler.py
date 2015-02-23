@@ -1,7 +1,7 @@
 import unittest
 
 from rivr.wsgi import WSGIHandler
-from rivr.http import Response, Http404
+from rivr.response import Response, Http404
 
 
 class WSGIHandlerTests(unittest.TestCase):

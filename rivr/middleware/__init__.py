@@ -1,5 +1,5 @@
 from rivr.middleware.base import Middleware
-from rivr.http import Response, ResponseNotFound, Http404
+from rivr.response import Response, ResponseNotFound, Http404
 
 
 class MiddlewareController(Middleware):

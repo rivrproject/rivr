@@ -2,9 +2,9 @@ from email.utils import formatdate, parsedate
 from datetime import datetime
 from calendar import timegm
 
-from rivr.http import (Response, ResponseNotAllowed, ResponseRedirect,
-                       ResponsePermanentRedirect, RESTResponse,
-                       ResponseNoContent, ResponseNotModified)
+from rivr.response import (Response, ResponseNotAllowed, ResponseRedirect,
+                           ResponsePermanentRedirect, RESTResponse,
+                           ResponseNoContent, ResponseNotModified)
 
 
 class View(object):

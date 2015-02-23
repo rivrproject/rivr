@@ -1,6 +1,7 @@
 # rivr
 
 [![Build Status](http://img.shields.io/travis/rivrproject/rivr/master.svg?style=flat)](https://travis-ci.org/rivrproject/rivr)
+[![Test Coverage](http://img.shields.io/coveralls/rivrproject/rivr/master.svg?style=flat)](https://coveralls.io/r/rivrproject/rivr)
 
 rivr is a Python WSGI Compatible microweb framework. Following a design similar to Django.
 

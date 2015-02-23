@@ -1,52 +1,15 @@
 try:
-    from http.cookies import SimpleCookie, CookieError
+    from http.cookies import SimpleCookie
 except ImportError:
-    from Cookie import SimpleCookie, CookieError
+    from Cookie import SimpleCookie
 
 import datetime
 
 from rivr.utils import JSON_CONTENT_TYPES, JSONEncoder
 
 
-def parse_cookie(cookie):
-    if cookie == '':
-        return {}
-
-    try:
-        c = SimpleCookie()
-        c.load(cookie)
-    except CookieError:
-        return {}
-
-    cookiedict = {}
-    for key in c.keys():
-        cookiedict[key] = c.get(key).value
-
-    return cookiedict
-
-
 class Http404(Exception):
     pass
-
-
-class Request(object):
-    """
-    A request is an object which represents a HTTP request. You wouldn't
-    normally create a request yourself but instead be passed a request. Each
-    view gets passed the clients request.
-    """
-
-    def __init__(self, path='/', method='GET', get=None, post=None,
-                 headers=None):
-        self.path = path
-        self.method = method
-        self.GET = get or {}
-        self.POST = post or {}
-        self.headers = headers or {}
-
-    @property
-    def cookies(self):
-        return parse_cookie(self.headers.get('COOKIE', ''))
 
 
 class Response(object):

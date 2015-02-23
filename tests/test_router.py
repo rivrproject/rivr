@@ -2,7 +2,8 @@ import unittest
 
 from rivr.router import Router, Resolver404
 from rivr.views import View
-from rivr.http import Request, Response
+from rivr.request import Request
+from rivr.response import Response
 
 
 class RouterTest(unittest.TestCase):

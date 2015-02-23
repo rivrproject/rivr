@@ -1,4 +1,4 @@
-from rivr.http import Request
+from rivr.request import Request
 
 
 class TestClient(object):

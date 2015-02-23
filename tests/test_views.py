@@ -1,7 +1,8 @@
 import unittest
 
 from rivr.views import View, RedirectView
-from rivr.http import Response, Request
+from rivr.request import Request
+from rivr.response import Response
 
 
 class SimpleView(View):
