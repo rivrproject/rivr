@@ -187,12 +187,17 @@ class WSGIRequest(object):
 
     POST = attributes  # Deprecated
 
-    #@property
-    def get_cookies(self):
+    @property
+    def cookies(self):
+        """
+        Dictionary returning all of the cookies sent with the request.
+        """
+
         if not hasattr(self, '_cookies'):
-            self._cookies = parse_cookie(self.environ.get('HTTP_COOKIE', ''))
+            self._cookies = parse_cookie(self.headers.get('COOKIE', ''))
         return self._cookies
-    COOKIES = property(get_cookies)
+
+    COOKIES = cookies  # legacy
 
 
 class WSGIHandler(object):

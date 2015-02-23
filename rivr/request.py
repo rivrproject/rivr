@@ -1,7 +1,7 @@
 try:
-    from http.cookies import SimpleCookie
+    from http.cookies import SimpleCookie, CookieError
 except ImportError:
-    from Cookie import SimpleCookie
+    from Cookie import SimpleCookie, CookieError
 
 def parse_cookie(cookie):
     if cookie == '':
@@ -39,6 +39,6 @@ class Request(object):
     def cookies(self):
         return parse_cookie(self.headers.get('COOKIE', ''))
 
-    COOKIES = cookies  # TODO address consistency
+    COOKIES = cookies  # legacy
 
 

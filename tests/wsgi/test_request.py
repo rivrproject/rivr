@@ -128,3 +128,15 @@ class WSGIRequestTest(unittest.TestCase):
 
         self.assertEqual(request.attributes, {'test': '👍'})
 
+    # Cookies
+
+    def test_cookies(self):
+        request = WSGIRequest({
+            'HTTP_COOKIE': str('Cookie: name=Kyle; username=kylef')
+        })
+
+        self.assertEqual(request.cookies, {
+            'name': 'Kyle',
+            'username': 'kylef',
+        })
+
