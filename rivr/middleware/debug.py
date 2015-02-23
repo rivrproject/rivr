@@ -11,16 +11,8 @@ except ImportError:
 from rivr import VERSION
 from rivr.middleware import Middleware
 from rivr.http import Response, ResponseNotFound, Http404
-from rivr.template import Template, Context, html_escape
 
-error_template = Template("""
-<!DOCTYPE HTML>
-<html lang="en">
-<head>
-    <meta charset="utf-8">
-    <title>{{ title }}</title>
-    <style type="text/css" media="screen">
-    {{ extra_css }}
+ERROR_CSS = """
     html * { padding:0; margin:0; }
     body * { padding:10px 20px; font-family: 'Helvetica Neue', HelveticaNeue, Arial, Helvetica, sans-serif; color: #555; }
     body * * { padding:0; }
@@ -34,30 +26,40 @@ error_template = Template("""
     pre:hover { border: 1px solid #bbb; }
     code { font-family: Consolas, Monaco, 'Lucida Console', 'Liberation Mono', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Courier New'; }
     footer { width: 720px; margin-top: 25px; font-size: 0.9em; }
+"""
+
+ERROR_TEMPLATE = """
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>{title}</title>
+    <style type="text/css" media="screen">
+    {css}
     </style>
 </head>
 <body>
     <header>
-        <h1>{{ title }}</h1>
+        <h1>{title}</h1>
     </header>
 
     <div id="content">
         <section>
             <h2>Traceback</h2>
-            {{ traceback }}
+            {traceback}
         </section>
 
         <section>
             <h2>Request</h2>
-            <pre><code>{{ request }}</code></pre>
+            <pre><code>{request}</code></pre>
         </section>
 
         <footer>
-            <p>Powered by rivr {{ version }} on Python {{ python_version }}.</p>
+            <p>Powered by rivr {version} on Python {python_version}.</p>
         </footer>
     </div>
 </body>
-""")
+"""
 
 
 class DebugMiddleware(Middleware):
@@ -77,18 +79,19 @@ class DebugMiddleware(Middleware):
         else:
             html_tb = '<pre><code>%s</pre></code>' % (tb)
 
-        context = Context({
+        context = {
             'title': str(e),
             'traceback': html_tb,
-            'request': html_escape(repr(request)),
+            'request': repr(request).replace('>', '&gt;').replace('<', '&lt;'),
             'version': VERSION,
             'python_version': '{}.{}.{}-{}-{}'.format(*sys.version_info),
-        })
+            'css': ERROR_CSS,
+        }
 
         if HAS_PYGMENTS:
-            context['extra_css'] = formatter.get_style_defs('.highlight')
+            context['css'] += formatter.get_style_defs('.highlight')
 
-        return Response(error_template.render(context), status=500)
+        return Response(ERROR_TEMPLATE.format(**context), status=500)
 
     def process_response(self, request, response):
         if not response:
