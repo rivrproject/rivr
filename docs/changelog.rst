@@ -1,6 +1,15 @@
 Release History
 ###############
 
+Master
+======
+
+Breaking
+--------
+
+* `rivr.templates` has been removed, please migrate to `rivr-jinja`.
+
+
 0.6.0
 =====
 
