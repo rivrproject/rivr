@@ -1,2 +1,2 @@
-from rivr.views.base import View, TemplateView, RedirectView, RESTView
+from rivr.views.base import View, RedirectView, RESTView
 

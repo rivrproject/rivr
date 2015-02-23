@@ -31,8 +31,7 @@ exaple:
         def post(self, request):
             return rivr.Response('Post request!')
 
-rivr also provides a bunch of views such as a `TemplateView`, and a
-`RedirectView`.
+rivr also provides a other views such as `RedirectView`.
 
 .. automodule:: rivr.views
 
@@ -45,13 +44,6 @@ rivr also provides a bunch of views such as a `TemplateView`, and a
     :members: url, permanent
 
     .. automethod:: get_redirect_url(self, **kwargs)
-
-.. autoclass:: TemplateView
-
-    :members: template_name
-
-    .. automethod:: get_template_names(self)
-    .. automethod:: get_context_data(self, **kwargs)
 
 .. autoclass:: RESTView
 
