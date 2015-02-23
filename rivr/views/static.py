@@ -8,7 +8,6 @@ from email.Utils import formatdate, parsedate_tz, mktime_tz
 
 from rivr.views.base import View
 from rivr.http import Response, ResponseRedirect, ResponseNotModified, Http404
-from rivr.template import Context, Template
 
 
 DEFAULT_DIRECTORY_INDEX_TEMPLATE = """
@@ -19,19 +18,13 @@ DEFAULT_DIRECTORY_INDEX_TEMPLATE = """
     <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
     <meta http-equiv="Content-Language" content="en-us" />
     <meta name="robots" content="NONE,NOARCHIVE" />
-    <title>Index of {{ directory }}</title>
+    <title>Index of {directory}</title>
 </head>
 
 <body>
-    <h1>Index of {{ directory }}</h1>
+    <h1>Index of {directory}</h1>
     <ul>
-      {% ifnotequal directory "/" %}
-        <li><a href="../">../</a></li>
-      {% endifnotequal %}
-
-      {% for f in files %}
-        <li><a href="{{ f }}">{{ f }}</a></li>
-      {% endfor %}
+        {files}
     </ul>
 </body>
 """
@@ -73,8 +66,6 @@ class StaticView(View):
         if not self.show_indexes:
             raise Http404('Directory indexes are not allowed here.')
 
-        t = Template(DEFAULT_DIRECTORY_INDEX_TEMPLATE)
-
         files = []
         for f in os.listdir(fullpath):
             if not f.startswith('.'):
@@ -82,10 +73,18 @@ class StaticView(View):
                     f += '/'
                 files.append(f)
 
-        return Response(str(t.render(Context({
+        if path != '':
+            files.insert(0, '../')
+
+        def render(accumulator, path):
+            return accumulator + '<li><a href="{0}">{0}</a></li>\n'.format(path)
+
+        context = {
             'directory': path + '/',
-            'files': files,
-        }))))
+            'files': reduce(render, files, ''),
+        }
+
+        return Response(DEFAULT_DIRECTORY_INDEX_TEMPLATE.format(**context))
 
     def get(self, request, path=''):
         if self.use_request_path:
