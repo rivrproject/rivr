@@ -51,7 +51,7 @@ class StaticView(View):
     index = None
 
     def was_modified_since(self, mtime=0, size=0):
-        header = self.request.META.get('HTTP_IF_MODIFIED_SINCE')
+        header = self.request.headers.get('HTTP_IF_MODIFIED_SINCE')
         if header is None:
             return True
 
