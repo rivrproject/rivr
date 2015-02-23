@@ -66,22 +66,27 @@ class StaticView(View):
         if not self.show_indexes:
             raise Http404('Directory indexes are not allowed here.')
 
+        directories = []
         files = []
         for f in os.listdir(fullpath):
             if not f.startswith('.'):
                 if os.path.isdir(os.path.join(fullpath, f)):
-                    f += '/'
-                files.append(f)
+                    directories.append(f + '/')
+                else:
+                    files.append(f)
 
         if path != '':
-            files.insert(0, '../')
+            directories.append('../')
+
+        directories.sort()
+        files.sort()
 
         def render(accumulator, path):
             return accumulator + '<li><a href="{0}">{0}</a></li>\n'.format(path)
 
         context = {
             'directory': path + '/',
-            'files': reduce(render, files, ''),
+            'files': reduce(render, directories + files, ''),
         }
 
         return Response(DEFAULT_DIRECTORY_INDEX_TEMPLATE.format(**context))
