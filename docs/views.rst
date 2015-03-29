@@ -45,5 +45,3 @@ rivr also provides a other views such as `RedirectView`.
 
     .. automethod:: get_redirect_url(self, **kwargs)
 
-.. autoclass:: RESTView
-

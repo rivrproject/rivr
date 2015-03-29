@@ -8,6 +8,8 @@ Breaking
 --------
 
 * `rivr.templates` has been removed, please migrate to `rivr-jinja`.
+* `RESTView` has been removed. Either vendor the old RESTView, or migrate to
+  `rivr-rest`.
 
 
 0.6.0
