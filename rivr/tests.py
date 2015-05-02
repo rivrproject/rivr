@@ -5,8 +5,8 @@ class TestClient(object):
     def __init__(self, handler):
         self.handler = handler
 
-    def http(self, method, path, parameters=None, attributes=None, headers=None):
-        request = Request(path, method, parameters, attributes, headers)
+    def http(self, method, path, query_parameters=None, attributes=None, headers=None):
+        request = Request(path, method, query_parameters, attributes, headers)
 
         return self.handler(request)
 

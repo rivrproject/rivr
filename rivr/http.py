@@ -36,11 +36,11 @@ class Request(object):
     view gets passed the clients request.
     """
 
-    def __init__(self, path='/', method='GET', parameters=None, attributes=None,
+    def __init__(self, path='/', method='GET', query_parameters=None, attributes=None,
                  headers=None):
         self.path = path
         self.method = method
-        self.parameters = parameters or {}
+        self.query_parameters = query_parameters or {}
         self.attributes = attributes or {}
         self.headers = headers or {}
 

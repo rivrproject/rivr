@@ -33,9 +33,9 @@ class TestClientTests(unittest.TestCase):
 
     #
 
-    def test_parameters(self):
-        response = self.client.post('/resource', parameters={'id': 1})
-        self.assertEqual(self.request.parameters, {'id': 1})
+    def test_query_parameters(self):
+        response = self.client.post('/resource', query_parameters={'id': 1})
+        self.assertEqual(self.request.query_parameters, {'id': 1})
 
     def test_attributes(self):
         response = self.client.post('/resource', attributes={'id': 1})

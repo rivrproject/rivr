@@ -152,16 +152,16 @@ class WSGIRequest(object):
         return self.environ['wsgi.input']
 
     @property
-    def parameters(self):
+    def query_parameters(self):
         """
         A dictionary containing the query parameters from the request.
         """
-        if not hasattr(self, '_parameters'):
-            self._parameters = dict((k, v) for k, v in parse_qsl(self.environ.get('QUERY_STRING', ''), True))
-        return self._parameters
+        if not hasattr(self, '_query_parameters'):
+            self._query_parameters = dict((k, v) for k, v in parse_qsl(self.environ.get('QUERY_STRING', ''), True))
+        return self._query_parameters
 
     # GET is deprecated
-    GET = parameters
+    GET = query_parameters
 
     @property
     def attributes(self):
