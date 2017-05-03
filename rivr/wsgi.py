@@ -2,8 +2,7 @@ import sys
 import logging
 
 try:
-    # The mod_python version is more efficient, so try importing it first.
-    from mod_python.util import parse_qsl
+    from urllib.parse import parse_qsl
 except ImportError:
     from cgi import parse_qsl
 
@@ -154,7 +153,8 @@ class WSGIRequest(object):
     #@property
     def get_get(self):
         if not hasattr(self, '_get'):
-            self._get = dict((k, v) for k, v in parse_qsl(self.environ.get('QUERY_STRING', ''), True))
+            query_string = self.environ.get('QUERY_STRING', '')
+            self._get = dict((k, v) for k, v in parse_qsl(query_string, True))
         return self._get
     GET = property(get_get)
 

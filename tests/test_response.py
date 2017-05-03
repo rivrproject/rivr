@@ -45,8 +45,8 @@ class ResponseTest(unittest.TestCase):
         self.assertEqual(response.cookies['test_cookie']['expires'],
                          'Mon, 30 Dec 2013 00:00:00')
 
-        self.assertEqual(str(response.cookies['test_cookie']),
-                         'Set-Cookie: test_cookie=testing; Domain=rivr.com; expires=Mon, 30 Dec 2013 00:00:00; Max-Age=3600; Path=/cookie/; secure')
+        self.assertEqual(str(response.cookies['test_cookie']).lower(),
+                         'Set-Cookie: test_cookie=testing; Domain=rivr.com; expires=Mon, 30 Dec 2013 00:00:00; Max-Age=3600; Path=/cookie/; Secure'.lower())
 
     def test_header_items(self):
         response = Response()

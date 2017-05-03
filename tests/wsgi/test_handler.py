@@ -26,7 +26,7 @@ class WSGIHandlerTests(unittest.TestCase):
     def test_returns_content(self):
         handler = WSGIHandler(self.hello_view)
         content = handler({}, self.start_response)
-        self.assertEqual(content, ['Hello World'])
+        self.assertEqual(content, [b'Hello World'])
 
     def test_catches_http_404(self):
         def view(request):

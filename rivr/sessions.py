@@ -40,7 +40,8 @@ class BaseSession(object):
 
     def generate_key(self):
         self.modified = True
-        self.session_key = hashlib.new('sha1', str(time.time()) + str(random())).hexdigest()
+        hsh = hashlib.sha1((str(time.time()) + str(random())).encode('utf-8'))
+        self.session_key = hsh.hexdigest()
 
 
 class MemorySession(BaseSession):

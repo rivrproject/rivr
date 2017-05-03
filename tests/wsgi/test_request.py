@@ -132,7 +132,7 @@ class WSGIRequestTest(unittest.TestCase):
 
     def test_cookies(self):
         request = WSGIRequest({
-            'HTTP_COOKIE': str('Cookie: name=Kyle; username=kylef')
+            'HTTP_COOKIE': str('name=Kyle; username=kylef')
         })
 
         self.assertEqual(request.cookies, {

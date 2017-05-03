@@ -60,6 +60,6 @@ class StaticViewTests(unittest.TestCase):
 
     def test_file(self):
         response = self.client.get('/fixture/file1.py')
-        self.assertEqual(response.content, 'Python!\n')
+        self.assertEqual(response.content, b'Python!\n')
         self.assertEqual(response.headers['Content-Type'], 'text/x-python')
         self.assertEqual(response.headers['Content-Length'], '8')
