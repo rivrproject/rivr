@@ -152,7 +152,9 @@ class StaticView(View):
 
         mimetype = mimetypes.guess_type(fullpath)[0] or \
                                                   'application/octet-stream'
-        contents = open(fullpath, 'rb').read()
+
+        with open(fullpath, 'rb') as fp:
+            contents = fp.read()
 
         response = Response(contents, content_type=mimetype)
         response.headers['Last-Modified'] = '%s GMT' % (
