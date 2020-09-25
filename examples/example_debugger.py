@@ -2,7 +2,7 @@ import rivr
 
 
 def view(request):
-    raise Exception, "Debugger example"
+    raise Exception('Debugger example')
 
 
 if __name__ == '__main__':

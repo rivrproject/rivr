@@ -12,5 +12,5 @@ if __name__ == '__main__':
     port = 8080
 
     zokket.WSGIServer(WSGIHandler(hello_world), host, port)
-    print "Server is running at http://%s:%s/" % (host, port)
+    print('Server is running at http://%s:%s/' % (host, port))
     zokket.DefaultRunloop.run()
