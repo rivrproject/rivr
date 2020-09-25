@@ -1,8 +1,4 @@
-try:
-    from http.cookies import SimpleCookie
-except ImportError:
-    from Cookie import SimpleCookie
-
+from http.cookies import SimpleCookie
 import datetime
 
 from rivr.utils import JSON_CONTENT_TYPES, JSONEncoder

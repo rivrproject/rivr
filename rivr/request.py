@@ -1,7 +1,4 @@
-try:
-    from http.cookies import SimpleCookie, CookieError
-except ImportError:
-    from Cookie import SimpleCookie, CookieError
+from http.cookies import SimpleCookie, CookieError
 
 
 def parse_cookie(cookie):

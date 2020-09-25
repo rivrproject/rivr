@@ -1,21 +1,11 @@
 import os
 import posixpath
-
-try:
-    from urllib.parse import unquote
-except ImportError:
-    from urllib import unquote
-
+from urllib.parse import unquote
 from functools import reduce
-
 import mimetypes
 import stat
 import re
-
-try:
-    from email.utils import formatdate, parsedate_tz, mktime_tz
-except ImportError:
-    from email.Utils import formatdate, parsedate_tz, mktime_tz
+from email.utils import formatdate, parsedate_tz, mktime_tz
 
 from rivr.views.base import View
 from rivr.response import Response, ResponseRedirect, ResponseNotModified, Http404

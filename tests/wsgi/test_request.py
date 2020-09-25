@@ -1,12 +1,7 @@
 # -*- coding: utf8 -*-
 
-from __future__ import unicode_literals
 import unittest
-
-try:
-    from io import StringIO
-except ImportError:
-    from StringIO import StringIO
+from io import StringIO
 
 from rivr.wsgi import WSGIRequest
 

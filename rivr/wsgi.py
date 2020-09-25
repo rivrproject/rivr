@@ -1,10 +1,6 @@
 import sys
 import logging
-
-try:
-    from urllib.parse import parse_qsl
-except ImportError:
-    from cgi import parse_qsl
+from urllib.parse import parse_qsl
 
 from rivr.request import parse_cookie, Request
 from rivr.response import Response, ResponseNotFound, Http404
