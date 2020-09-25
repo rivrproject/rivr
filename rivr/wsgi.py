@@ -1,3 +1,4 @@
+from typing import Optional
 import sys
 import logging
 from urllib.parse import parse_qsl
@@ -74,7 +75,7 @@ class WSGIRequest(object):
         return self._headers
 
     @property
-    def is_secure(self):
+    def is_secure(self) -> bool:
         """
         Returns True if connection was made over HTTPS/TLS.
         """
@@ -82,7 +83,7 @@ class WSGIRequest(object):
         return self.scheme == 'https'
 
     @property
-    def scheme(self):
+    def scheme(self) -> str:
         """
         Scheme used for the request. For example, `https`.
         """
@@ -90,7 +91,7 @@ class WSGIRequest(object):
         return self.environ['wsgi.url_scheme']
 
     @property
-    def host(self):
+    def host(self) -> str:
         """
         Hostname used for the request. For example, `rivr.com`.
         """
@@ -98,7 +99,7 @@ class WSGIRequest(object):
         host = self.environ.get('HTTP_HOST', None)
 
         if host is None:
-            host = self.environ.get('SERVER_NAME', None)
+            host = self.environ.get('SERVER_NAME')
 
         return host
 
@@ -126,7 +127,7 @@ class WSGIRequest(object):
         return url + self.path
 
     @property
-    def content_length(self):
+    def content_length(self) -> int:
         """
         Returns the length of the request's body.
         """
@@ -139,7 +140,7 @@ class WSGIRequest(object):
         return content_length
 
     @property
-    def content_type(self):
+    def content_type(self) -> Optional[str]:
         return self.environ.get('CONTENT_TYPE', None)
 
     @property

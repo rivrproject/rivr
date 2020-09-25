@@ -25,7 +25,7 @@ class Request(object):
     view gets passed the clients request.
     """
 
-    def __init__(self, path='/', method='GET', get=None, attributes=None, headers=None):
+    def __init__(self, path: str ='/', method: str = 'GET', get=None, attributes=None, headers=None):
         self.path = path
         self.method = method
         self.GET = get or {}

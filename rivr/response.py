@@ -1,3 +1,4 @@
+from typing import Optional, List
 from http.cookies import SimpleCookie
 import datetime
 
@@ -14,23 +15,23 @@ class Response(object):
     responsible for either returning a response or raising an exception.
     """
 
-    status_code = 200
+    status_code: int = 200
     """The HTTP status code for the response."""
 
-    def __init__(self, content='', status=None, content_type='text/html; charset=utf8'):
+    def __init__(self, content='', status: Optional[int] = None, content_type: str = 'text/html; charset=utf8'):
         self.content = content
 
         if status:
             self.status_code = status
 
         self.headers = {'Content-Type': content_type}
-        self.cookies = SimpleCookie()
+        self.cookies = SimpleCookie()  # type: ignore
 
     @property
-    def content_type(self):
+    def content_type(self) -> str:
         return self.headers['Content-Type']
 
-    def __str__(self):
+    def __str__(self) -> str:
         headers = ['%s: %s' % (key, value) for key, value in self.headers.items()]
         return '\n'.join(headers) + '\n\n' + self.content
 
@@ -106,12 +107,12 @@ class ResponseRedirect(Response):
 
     status_code = 302
 
-    def __init__(self, redirect_to):
+    def __init__(self, redirect_to: str):
         super(ResponseRedirect, self).__init__()
         self.headers['Location'] = str(redirect_to)
 
     @property
-    def url(self):
+    def url(self) -> str:
         """
         A property that returns the URL for the redirect.
         """
@@ -144,7 +145,7 @@ class ResponseNotAllowed(Response):
 
     status_code = 405
 
-    def __init__(self, permitted_methods):
+    def __init__(self, permitted_methods: List[str]):
         super(ResponseNotAllowed, self).__init__()
         self.headers['Allow'] = ', '.join(permitted_methods)
 
