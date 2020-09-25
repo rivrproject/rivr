@@ -1,1 +1,1 @@
-Python!
+print('Hello World')
