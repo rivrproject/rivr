@@ -143,6 +143,10 @@ class WSGIRequest(object):
         return content_length
 
     @property
+    def content_type(self):
+        return self.environ.get('CONTENT_TYPE', None)
+
+    @property
     def body(self):
         """
         Request body (file descriptor).
@@ -172,8 +176,7 @@ class WSGIRequest(object):
         if not hasattr(self, '_attributes'):
             if self.content_length > 0:
                 content = self.body.read(self.content_length)
-                content_type = self.environ.get('CONTENT_TYPE', None)
-                content_type = content_type.split(';')[0]
+                content_type = self.content_type.split(';')[0]
 
                 if content_type in JSON_CONTENT_TYPES:
                     self._attributes = JSONDecoder().decode(content)

@@ -86,6 +86,13 @@ class WSGIRequestTest(unittest.TestCase):
 
         self.assertEqual(request.url, 'https://example.com/path/')
 
+    def test_content_type(self):
+        request = WSGIRequest({
+            'CONTENT_TYPE': 'text/plain',
+        })
+
+        self.assertEqual(request.content_type, 'text/plain')
+
     def testContentLength(self):
         request = WSGIRequest({
             'CONTENT_LENGTH': 5
