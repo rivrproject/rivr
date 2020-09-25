@@ -49,7 +49,7 @@ class RegexURLPattern(RegexURL):
 
         return self.callback, args, kwargs
 
-    # @property
+    @property
     def callback(self):
         if self._callback is not None:
             return self._callback
@@ -61,8 +61,6 @@ class RegexURLPattern(RegexURL):
             )
 
         return self._callback
-
-    callback = property(callback)
 
     def add_prefix(self, prefix):
         if prefix and hasattr(self, '_callback_str'):
@@ -92,7 +90,7 @@ class RegexURLResolver(RegexURL):
         kwargs.update(self.default_kwargs)
         return callback, args, kwargs
 
-    # @property
+    @property
     def router(self):
         if self._router is not None:
             return self._router
@@ -104,8 +102,6 @@ class RegexURLResolver(RegexURL):
             )
 
         return self._router
-
-    router = property(router)
 
 
 class BaseRouter(object):

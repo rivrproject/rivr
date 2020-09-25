@@ -1,9 +1,9 @@
 import sys
 
 try:
-    from pygments import highlight
-    from pygments.lexers import PythonTracebackLexer
-    from pygments.formatters import HtmlFormatter
+    from pygments import highlight  # type: ignore
+    from pygments.lexers import PythonTracebackLexer  # type: ignore
+    from pygments.formatters import HtmlFormatter  # type: ignore
 
     HAS_PYGMENTS = True
 except ImportError:

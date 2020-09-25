@@ -28,4 +28,4 @@ class TestClient(object):
         return self.http('DELETE', *args, **kwargs)
 
 
-TestClient.__test__ = False
+TestClient.__test__ = False  # type: ignore

@@ -24,7 +24,7 @@ class TestMiddleware(Middleware):
         return self.response
 
 
-TestMiddleware.__test__ = False
+TestMiddleware.__test__ = False  # type: ignore
 
 
 class MiddlewareControllerTests(unittest.TestCase):
