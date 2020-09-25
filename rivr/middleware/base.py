@@ -14,8 +14,10 @@ class Middleware(object):
             response = view(request)
 
         """
+
         def func(*args, **kwargs):
             return cls(*initargs, **initkwargs).dispatch(view, *args, **kwargs)
+
         return func
 
     def __init__(self, **kwargs):
@@ -55,5 +57,3 @@ class Middleware(object):
         passed to it, or a completely new response.
         """
         return response
-
-

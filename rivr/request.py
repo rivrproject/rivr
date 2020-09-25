@@ -3,6 +3,7 @@ try:
 except ImportError:
     from Cookie import SimpleCookie, CookieError
 
+
 def parse_cookie(cookie):
     if cookie == '':
         return {}
@@ -27,8 +28,7 @@ class Request(object):
     view gets passed the clients request.
     """
 
-    def __init__(self, path='/', method='GET', get=None, attributes=None,
-                 headers=None):
+    def __init__(self, path='/', method='GET', get=None, attributes=None, headers=None):
         self.path = path
         self.method = method
         self.GET = get or {}
@@ -40,5 +40,3 @@ class Request(object):
         return parse_cookie(self.headers.get('COOKIE', ''))
 
     COOKIES = cookies  # legacy
-
-

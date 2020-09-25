@@ -21,6 +21,7 @@ class RouterTest(unittest.TestCase):
 
         def func(request):
             pass
+
         r.register(r'^test/$', func)
 
         self.assertEqual(r.resolve('test/'), (func, (), {}))
@@ -51,4 +52,3 @@ class RouterTest(unittest.TestCase):
         response = r(Request('/test/'))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.content, 'It works')
-

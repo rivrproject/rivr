@@ -11,6 +11,7 @@ from functools import reduce
 import mimetypes
 import stat
 import re
+
 try:
     from email.utils import formatdate, parsedate_tz, mktime_tz
 except ImportError:
@@ -58,8 +59,7 @@ class StaticView(View):
         if header is None:
             return True
 
-        matches = re.match(r'^([^;]+)(; length=([0-9]+))?$', header,
-                           re.IGNORECASE)
+        matches = re.match(r'^([^;]+)(; length=([0-9]+))?$', header, re.IGNORECASE)
 
         header_mtime = mktime_tz(parsedate_tz(matches.group(1)))
         header_len = matches.group(3)
@@ -146,20 +146,18 @@ class StaticView(View):
     def file(self, fullpath):
         statobj = os.stat(fullpath)
 
-        if not self.was_modified_since(statobj[stat.ST_MTIME],
-                                       statobj[stat.ST_SIZE]):
+        if not self.was_modified_since(statobj[stat.ST_MTIME], statobj[stat.ST_SIZE]):
             return ResponseNotModified()
 
-        mimetype = mimetypes.guess_type(fullpath)[0] or \
-                                                  'application/octet-stream'
+        mimetype = mimetypes.guess_type(fullpath)[0] or 'application/octet-stream'
 
         with open(fullpath, 'rb') as fp:
             contents = fp.read()
 
         response = Response(contents, content_type=mimetype)
         response.headers['Last-Modified'] = '%s GMT' % (
-                formatdate(statobj[stat.ST_MTIME])[:25])
+            formatdate(statobj[stat.ST_MTIME])[:25]
+        )
         response.headers['Content-Length'] = str(len(contents))
 
         return response
-

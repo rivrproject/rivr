@@ -3,6 +3,7 @@ from wsgiref.simple_server import WSGIServer, WSGIRequestHandler
 from rivr.wsgi import WSGIHandler
 from rivr.middleware.debug import DebugMiddleware
 
+
 def serve(handler, host='localhost', port=8080, debug=True):
     """
     Starts a developent server on the local machine. By default, the

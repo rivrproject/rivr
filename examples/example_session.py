@@ -9,6 +9,7 @@ from rivr.sessions import *
 
 raise NotImplemented('This demo is incomplete.')
 
+
 class SessionView(rivr.views.TemplateView):
     template_name = "sessions.html"
 
@@ -21,6 +22,7 @@ class SessionView(rivr.views.TemplateView):
         request.session['name'] = request.POST.get('name')
         return self.get(request, *args, **kwargs)
 
+
 class ClearView(rivr.views.RedirectView):
     url = '/'
     permanent = False
@@ -29,16 +31,14 @@ class ClearView(rivr.views.RedirectView):
         request.session.clear()
         return super(ClearView, self).get(request, *args, **kwargs)
 
-router = rivr.Router(
-    (r'^clear/$', ClearView.as_view()),
-    (r'^$', SessionView.as_view())
-)
 
-app = rivr.MiddlewareController(router,
+router = rivr.Router((r'^clear/$', ClearView.as_view()), (r'^$', SessionView.as_view()))
+
+app = rivr.MiddlewareController(
+    router,
     SessionMiddleware(session_store=MemorySessionStore()),
-    rivr.TemplateMiddleware(template_dirs='example_templates/')
+    rivr.TemplateMiddleware(template_dirs='example_templates/'),
 )
 
 if __name__ == '__main__':
     rivr.serve(app)
-

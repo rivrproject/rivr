@@ -33,9 +33,9 @@ class StaticViewTests(unittest.TestCase):
         super(StaticViewTests, self).setUp()
 
         self.root = os.path.dirname(__file__)
-        self.view = StaticView.as_view(show_indexes=False,
-                                       document_root=self.root,
-                                       use_request_path=True)
+        self.view = StaticView.as_view(
+            show_indexes=False, document_root=self.root, use_request_path=True
+        )
         self.client = TestClient(self.view)
 
     def test_show_indexes_disabled_by_default(self):
@@ -46,17 +46,16 @@ class StaticViewTests(unittest.TestCase):
             self.client.get('/')
 
     def test_directory_index(self):
-        self.view = StaticView.as_view(show_indexes=True,
-                                       document_root=self.root,
-                                       use_request_path=True)
+        self.view = StaticView.as_view(
+            show_indexes=True, document_root=self.root, use_request_path=True
+        )
         self.client = TestClient(self.view)
 
         def strip(content):
             return content.replace('\n', '').replace(' ', '')
 
         response = self.client.get('/fixture')
-        self.assertEqual(strip(response.content),
-                strip(FIXTURE_DIRECTORY_INDEX))
+        self.assertEqual(strip(response.content), strip(FIXTURE_DIRECTORY_INDEX))
 
     def test_file(self):
         response = self.client.get('/fixture/file1.py')

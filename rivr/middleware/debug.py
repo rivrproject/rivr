@@ -4,6 +4,7 @@ try:
     from pygments import highlight
     from pygments.lexers import PythonTracebackLexer
     from pygments.formatters import HtmlFormatter
+
     HAS_PYGMENTS = True
 except ImportError:
     HAS_PYGMENTS = False
@@ -72,6 +73,7 @@ class DebugMiddleware(Middleware):
             return self.process_404(request)
 
         import traceback
+
         tb = '\n'.join(traceback.format_exception(*sys.exc_info()))
 
         if HAS_PYGMENTS:
@@ -96,6 +98,7 @@ class DebugMiddleware(Middleware):
 
     def process_response(self, request, response):
         if not response:
-            return self.process_exception(request,
-                Exception("View did not return a response."))
+            return self.process_exception(
+                request, Exception("View did not return a response.")
+            )
         return response

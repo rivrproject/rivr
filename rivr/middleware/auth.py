@@ -68,4 +68,3 @@ class AuthMiddleware(Middleware):
 
     def check_password(self, username, password):
         return False
-

@@ -20,8 +20,7 @@ class WSGIHandlerTests(unittest.TestCase):
     def test_sets_headers(self):
         handler = WSGIHandler(self.hello_view)
         handler({}, self.start_response)
-        self.assertEqual(self.headers,
-                         [('Content-Type', 'text/html; charset=utf8')])
+        self.assertEqual(self.headers, [('Content-Type', 'text/html; charset=utf8')])
 
     def test_returns_content(self):
         handler = WSGIHandler(self.hello_view)

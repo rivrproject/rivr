@@ -75,8 +75,10 @@ class SessionMiddleware(Middleware):
 
     def process_request(self, request):
         if self.session_store is None:
-            raise Exception("SessionMiddleware is improperly configured."
-                            "Session store is not defined")
+            raise Exception(
+                "SessionMiddleware is improperly configured."
+                "Session store is not defined"
+            )
 
         session_key = request.COOKIES.get(self.cookie_name, None)
         request.session = self.session_store(session_key)
@@ -89,10 +91,12 @@ class SessionMiddleware(Middleware):
             if not request.session.session_key:
                 request.session.generate_key()
 
-            response.set_cookie(self.cookie_name, request.session.session_key,
-                                path=self.cookie_path,
-                                domain=self.cookie_domain,
-                                secure=self.cookie_secure)
+            response.set_cookie(
+                self.cookie_name,
+                request.session.session_key,
+                path=self.cookie_path,
+                domain=self.cookie_domain,
+                secure=self.cookie_secure,
+            )
 
         return response
-

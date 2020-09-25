@@ -48,4 +48,3 @@ class MiddlewareControllerTests(unittest.TestCase):
         response = self.controller.process_exception(None, None)
         self.assertEqual(self.middleware.processed_exception, 1)
         self.assertEqual(response, self.middleware.response)
-

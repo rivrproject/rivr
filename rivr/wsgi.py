@@ -154,12 +154,13 @@ class WSGIRequest(object):
 
         return self.environ['wsgi.input']
 
-    #@property
+    # @property
     def get_get(self):
         if not hasattr(self, '_get'):
             query_string = self.environ.get('QUERY_STRING', '')
             self._get = dict((k, v) for k, v in parse_qsl(query_string, True))
         return self._get
+
     GET = property(get_get)
 
     # Attributes
@@ -219,12 +220,10 @@ class WSGIHandler(object):
         except Http404:
             response = ResponseNotFound('Page not found')
         except Exception:
-            logger.error('Internal Server Error: {}'.format(request.path),
+            logger.error(
+                'Internal Server Error: {}'.format(request.path),
                 exc_info=sys.exc_info(),
-                extra={
-                    'status_code': 500,
-                    'request': request
-                }
+                extra={'status_code': 500, 'request': request},
             )
 
             response = Response('Internal server error', status=500)
@@ -246,4 +245,3 @@ class WSGIHandler(object):
             response_content = response_content.encode('utf-8')
 
         return [response_content]
-

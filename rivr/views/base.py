@@ -2,14 +2,19 @@ from email.utils import formatdate, parsedate
 from datetime import datetime
 from calendar import timegm
 
-from rivr.response import (Response, ResponseNotAllowed, ResponseRedirect,
-                           ResponsePermanentRedirect, RESTResponse,
-                           ResponseNoContent, ResponseNotModified)
+from rivr.response import (
+    Response,
+    ResponseNotAllowed,
+    ResponseRedirect,
+    ResponsePermanentRedirect,
+    RESTResponse,
+    ResponseNoContent,
+    ResponseNotModified,
+)
 
 
 class View(object):
-    http_method_names = ['get', 'post', 'put', 'delete', 'head', 'options',
-                         'trace']
+    http_method_names = ['get', 'post', 'put', 'delete', 'head', 'options', 'trace']
 
     def __init__(self, **kwargs):
         for key, value in kwargs.items():
@@ -27,14 +32,15 @@ class View(object):
             response = view(request)
 
         """
+
         def view(*args, **kwargs):
             return cls(**initkwargs).dispatch(*args, **kwargs)
+
         return view
 
     def get_handler(self, request):
         if request.method.lower() in self.http_method_names:
-            return getattr(self, request.method.lower(),
-                           self.http_method_not_allowed)
+            return getattr(self, request.method.lower(), self.http_method_not_allowed)
         return self.http_method_not_allowed
 
     def dispatch(self, request, *args, **kwargs):
@@ -99,4 +105,3 @@ class RedirectView(View):
                 return ResponsePermanentRedirect(url)
             return ResponseRedirect(url)
         raise Http404("Redirect URL not found.")
-

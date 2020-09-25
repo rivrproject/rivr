@@ -77,4 +77,3 @@ class ErrorWrapper(object):
 
     def default_error_500(self, request, e):
         return Response("A 500 has occured", status=500)
-

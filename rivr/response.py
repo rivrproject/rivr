@@ -21,8 +21,7 @@ class Response(object):
     status_code = 200
     """The HTTP status code for the response."""
 
-    def __init__(self, content='', status=None,
-                 content_type='text/html; charset=utf8'):
+    def __init__(self, content='', status=None, content_type='text/html; charset=utf8'):
         self.content = content
 
         if status:
@@ -39,8 +38,16 @@ class Response(object):
         headers = ['%s: %s' % (key, value) for key, value in self.headers.items()]
         return '\n'.join(headers) + '\n\n' + self.content
 
-    def set_cookie(self, key, value='', max_age=None, expires=None, path='/',
-                   domain=None, secure=False):
+    def set_cookie(
+        self,
+        key,
+        value='',
+        max_age=None,
+        expires=None,
+        path='/',
+        domain=None,
+        secure=False,
+    ):
         """
         Sets a cookie. The parameters are the same as in the Cookie.Morsel
         object in the Python standard library.
@@ -72,8 +79,13 @@ class Response(object):
         doesn't exist
         """
 
-        self.set_cookie(key, max_age=0, path=path, domain=domain,
-                        expires='Thu, 01-Jan-1970 00:00:00 GMT')
+        self.set_cookie(
+            key,
+            max_age=0,
+            path=path,
+            domain=domain,
+            expires='Thu, 01-Jan-1970 00:00:00 GMT',
+        )
 
     def headers_items(self):
         headers = [(k, v) for k, v in self.headers.items()]
@@ -86,6 +98,7 @@ class Response(object):
 
 class ResponseNoContent(Response):
     """A response that uses the 204 status code to indicate no content."""
+
     status_code = 204
 
 
@@ -111,16 +124,19 @@ class ResponseRedirect(Response):
 
 class ResponsePermanentRedirect(ResponseRedirect):
     """Acts just like a ResponseRedirect, but uses a 301 status code."""
+
     status_code = 301
 
 
 class ResponseNotFound(Response):
     """Acts just like a Response, but uses a 404 status code."""
+
     status_code = 404
 
 
 class ResponseNotModified(Response):
     """Acts just like a Response, but uses a 304 status code."""
+
     status_code = 304
 
 
@@ -129,6 +145,7 @@ class ResponseNotAllowed(Response):
     A response that uses the 405 status code and takes a list of
     permitted HTTP methods.
     """
+
     status_code = 405
 
     def __init__(self, permitted_methods):
@@ -142,4 +159,3 @@ class RESTResponse(Response):
         content_type = JSON_CONTENT_TYPES[0]
 
         super(RESTResponse, self).__init__(content, status, content_type)
-

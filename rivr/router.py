@@ -49,16 +49,19 @@ class RegexURLPattern(RegexURL):
 
         return self.callback, args, kwargs
 
-    #@property
+    # @property
     def callback(self):
         if self._callback is not None:
             return self._callback
         try:
             self._callback = import_module(self._callback_str)
         except ImportError as e:
-            raise ViewDoesNotExist('Could not import %s (%s)' % (self._callback_str, str(e)))
+            raise ViewDoesNotExist(
+                'Could not import %s (%s)' % (self._callback_str, str(e))
+            )
 
         return self._callback
+
     callback = property(callback)
 
     def add_prefix(self, prefix):
@@ -79,7 +82,7 @@ class RegexURLResolver(RegexURL):
         self.default_kwargs = kwargs
 
     def match_found(self, path, match):
-        new_path = path[match.end():]
+        new_path = path[match.end() :]
 
         try:
             callback, args, kwargs = self.router.resolve(new_path)
@@ -89,17 +92,19 @@ class RegexURLResolver(RegexURL):
         kwargs.update(self.default_kwargs)
         return callback, args, kwargs
 
-    #@property
+    # @property
     def router(self):
         if self._router is not None:
             return self._router
         try:
             self._router = import_module(self._router_str)
         except ImportError as e:
-            raise Http404('Could not import %s. Error was: %s' %
-                          (self._router_str, str(e)))
+            raise Http404(
+                'Could not import %s. Error was: %s' % (self._router_str, str(e))
+            )
 
         return self._router
+
     router = property(router)
 
 
@@ -164,6 +169,7 @@ class BaseRouter(object):
 
         if isinstance(t, (list, tuple)):
             if len(t) == 1:
+
                 def func(view):
                     self.register(t[0], view)
                     return view
@@ -192,9 +198,10 @@ class Router(BaseRouter):
 
     def __call__(self, request):
         if self.append_slash and (not request.path.endswith('/')):
-            if (not self.is_valid_path(request.path)) and \
-                    self.is_valid_path(request.path+'/'):
-                return ResponsePermanentRedirect(request.path+'/')
+            if (not self.is_valid_path(request.path)) and self.is_valid_path(
+                request.path + '/'
+            ):
+                return ResponsePermanentRedirect(request.path + '/')
 
         result = RegexURLResolver(r'^/', self).resolve(request.path)
         if result:
@@ -226,8 +233,8 @@ class Domain(BaseRouter):
         url = host + request.path
 
         if self.APPEND_SLASH and (not url.endswith('/')):
-            if (not self.is_valid_url(url)) and self.is_valid_url(url+'/'):
-                return ResponsePermanentRedirect(url+'/')
+            if (not self.is_valid_url(url)) and self.is_valid_url(url + '/'):
+                return ResponsePermanentRedirect(url + '/')
 
         result = self.resolve(url)
         if result:
@@ -255,4 +262,3 @@ def url(regex, view, kwargs={}, name=None, prefix=None):
 
 def include(router):
     return [router]
-

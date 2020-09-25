@@ -3,6 +3,7 @@ import json
 # JSON Utils
 JSON_CONTENT_TYPES = ('application/json', 'text/json', 'text/javascript')
 
+
 class JSONEncoder(json.JSONEncoder):
     def default(self, obj):
         if hasattr(obj, 'isoformat'):
@@ -13,5 +14,3 @@ class JSONEncoder(json.JSONEncoder):
 
 class JSONDecoder(json.JSONDecoder):
     pass
-
-

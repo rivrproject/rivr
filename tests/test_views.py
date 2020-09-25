@@ -101,4 +101,3 @@ class RedirectViewTest(unittest.TestCase):
         response = view(request)
         self.assertEqual(response.status_code, 301)
         self.assertEqual(response.headers['Location'], '/redirect/?foo=bar')
-

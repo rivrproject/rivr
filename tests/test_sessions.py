@@ -68,4 +68,3 @@ class MemorySessionStoreTests(unittest.TestCase):
 
         new_session = self.store('session-key')
         self.assertEqual(new_session['key'], 'value')
-
