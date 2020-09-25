@@ -27,3 +27,5 @@ class TestClient(object):
     def delete(self, *args, **kwargs):
         return self.http('DELETE', *args, **kwargs)
 
+
+TestClient.__test__ = False

@@ -24,6 +24,9 @@ class TestMiddleware(Middleware):
         return self.response
 
 
+TestMiddleware.__test__ = False
+
+
 class MiddlewareControllerTests(unittest.TestCase):
     def setUp(self):
         super(MiddlewareControllerTests, self).setUp()
