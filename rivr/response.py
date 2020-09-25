@@ -31,6 +31,10 @@ class Response(object):
         self.headers = {'Content-Type': content_type}
         self.cookies = SimpleCookie()
 
+    @property
+    def content_type(self):
+        return self.headers['Content-Type']
+
     def __str__(self):
         headers = ['%s: %s' % (key, value) for key, value in self.headers.items()]
         return '\n'.join(headers) + '\n\n' + self.content

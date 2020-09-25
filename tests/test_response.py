@@ -20,6 +20,7 @@ class ResponseTest(unittest.TestCase):
         "Content type header should be set"
 
         response = Response(content_type='application/json')
+        self.assertEqual(response.content_type, 'application/json')
         self.assertEqual(response.headers['Content-Type'], 'application/json')
 
     def test_delete_cookie(self):
