@@ -58,8 +58,8 @@ class WSGIRequest(object):
     def __init__(self, environ):
         self.environ = environ
 
-        self.method = environ.get('REQUEST_METHOD', 'GET').upper()
-        self.path = environ.get('PATH_INFO', '/')
+        self.method = environ['REQUEST_METHOD']
+        self.path = environ['PATH_INFO']
         self.META = environ
 
     @property

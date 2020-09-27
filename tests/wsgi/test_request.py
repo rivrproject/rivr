@@ -7,143 +7,110 @@ from rivr.wsgi import WSGIRequest
 
 
 class WSGIRequestTest(unittest.TestCase):
-    def testMethod(self):
-        request = WSGIRequest(
-            {
-                'REQUEST_METHOD': 'PATCH',
-            }
-        )
+    def setUp(self):
+        super(WSGIRequestTest, self).setUp()
 
-        self.assertEqual(request.method, 'PATCH')
+        self.environ = {
+            'REQUEST_METHOD': 'PATCH',
+            'PATH_INFO': '/path/',
+            'SERVER_NAME': 'example.com',
+            'SERVER_PORT': 443,
+            'wsgi.url_scheme': 'https',
+        }
+        self.request = WSGIRequest(self.environ)
 
-    def testPath(self):
-        request = WSGIRequest(
-            {
-                'PATH_INFO': '/path/',
-            }
-        )
+    def test_method(self):
+        self.assertEqual(self.request.method, 'PATCH')
 
-        self.assertEqual(request.path, '/path/')
+    def test_path(self):
+        self.assertEqual(self.request.path, '/path/')
 
-    def testHeaders(self):
-        request = WSGIRequest(
-            {
-                'HTTP_HEADERX': 'Hello World',
-            }
-        )
+    def test_headers(self):
+        self.environ['HTTP_HEADERX'] = 'Hello World'
+        request = WSGIRequest(self.environ)
 
         self.assertEqual(request.headers, {'HEADERX': 'Hello World'})
 
-    def testQueryString(self):
-        request = WSGIRequest(
-            {
-                'QUERY_STRING': 'name=Kyle&something=else',
-            }
-        )
+    def test_query_string(self):
+        self.environ['QUERY_STRING'] = 'name=Kyle&something=else'
+        request = WSGIRequest(self.environ)
 
         self.assertEqual(request.GET, {'name': 'Kyle', 'something': 'else'})
 
-    def testHTTPIsNotSecure(self):
-        request = WSGIRequest({'wsgi.url_scheme': 'http'})
+    def test_scheme(self):
+        self.assertEqual(self.request.scheme, 'https')
 
-        self.assertFalse(request.is_secure)
+    def test_is_secure_http_scheme(self):
+        self.environ['wsgi.url_scheme'] = 'http'
+        self.request = WSGIRequest(self.environ)
 
-    def testHTTPSIsSecure(self):
-        request = WSGIRequest({'wsgi.url_scheme': 'https'})
+        self.assertFalse(self.request.is_secure)
 
-        self.assertTrue(request.is_secure)
+    def test_is_secure_https_scheme(self):
+        self.environ['wsgi.url_scheme'] = 'https'
+        self.request = WSGIRequest(self.environ)
 
-    def testScheme(self):
-        request = WSGIRequest({'wsgi.url_scheme': 'https'})
+        self.assertTrue(self.request.is_secure)
 
-        self.assertEqual(request.scheme, 'https')
+    def test_host(self):
+        self.assertEqual(self.request.host, 'example.com')
 
-    def testHost(self):
-        request = WSGIRequest({'HTTP_HOST': 'example.com'})
+    def test_host_header_preferred(self):
+        self.environ['HTTP_HOST'] = 'dev.example.com'
 
-        self.assertEqual(request.host, 'example.com')
+        self.assertEqual(self.request.host, 'dev.example.com')
 
-    def testPort(self):
-        request = WSGIRequest(
-            {
-                'wsgi.url_scheme': 'https',
-                'SERVER_HTTP_PORT': 8080,
-            }
-        )
+    def test_port(self):
+        self.assertEqual(self.request.port, 443)
 
-        self.assertEqual(request.port, 8080)
-
-    def testURL(self):
-        request = WSGIRequest(
-            {
-                'wsgi.url_scheme': 'https',
-                'HTTP_HOST': 'example.com',
-                'SERVER_HTTP_PORT': 443,
-                'PATH_INFO': '/path/',
-            }
-        )
-
-        self.assertEqual(request.url, 'https://example.com/path/')
+    def test_url(self):
+        self.assertEqual(self.request.url, 'https://example.com/path/')
 
     def test_content_type(self):
-        request = WSGIRequest(
-            {
-                'CONTENT_TYPE': 'text/plain',
-            }
-        )
+        self.environ['CONTENT_TYPE'] = 'text/plain'
+        self.request = WSGIRequest(self.environ)
 
-        self.assertEqual(request.content_type, 'text/plain')
+        self.assertEqual(self.request.content_type, 'text/plain')
 
-    def testContentLength(self):
-        request = WSGIRequest({'CONTENT_LENGTH': 5})
+    def test_content_length(self):
+        self.environ['CONTENT_LENGTH'] = '5'
+        self.request = WSGIRequest(self.environ)
 
-        self.assertEqual(request.content_length, 5)
+        self.assertEqual(self.request.content_length, 5)
 
-    def testBody(self):
-        wsgi_input = StringIO('Hi')
-        request = WSGIRequest(
-            {
-                'wsgi.input': wsgi_input,
-            }
-        )
+    def test_body(self):
+        self.environ['wsgi.input'] = StringIO('Hi')
+        self.request = WSGIRequest(self.environ)
 
-        self.assertEqual(request.body.read(), 'Hi')
+        self.assertEqual(self.request.body.read(), 'Hi')
 
     # Attributes
 
     def test_depreacted_POST_returns_attributes(self):
         # POST is deprecated, but for now is an alias for attributes
-        request = WSGIRequest({})
-        self.assertEqual(request.POST, {})
+        self.assertEqual(self.request.POST, {})
 
     def test_attributes_deserializes_form_urlencoded(self):
-        wsgi_input = StringIO('test=👍')
-        request = WSGIRequest(
-            {
-                'CONTENT_TYPE': 'application/x-www-form-urlencoded',
-                'CONTENT_LENGTH': 9,
-                'wsgi.input': wsgi_input,
-            }
-        )
+        self.environ['CONTENT_TYPE'] = 'application/x-www-form-urlencoded'
+        self.environ['CONTENT_LENGTH'] = '9'
+        self.environ['wsgi.input'] = StringIO('test=👍')
+        request = WSGIRequest(self.environ)
 
         self.assertEqual(request.attributes, {'test': '👍'})
 
     def test_attributes_deserializes_JSON_HTTP_body(self):
-        wsgi_input = StringIO('{"test": "👍"}')
-        request = WSGIRequest(
-            {
-                'CONTENT_TYPE': 'application/json',
-                'CONTENT_LENGTH': 16,
-                'wsgi.input': wsgi_input,
-            }
-        )
+        self.environ['CONTENT_TYPE'] = 'application/json'
+        self.environ['CONTENT_LENGTH'] = '16'
+        self.environ['wsgi.input'] = StringIO('{"test": "👍"}')
+        request = WSGIRequest(self.environ)
 
         self.assertEqual(request.attributes, {'test': '👍'})
 
     # Cookies
 
     def test_cookies(self):
-        request = WSGIRequest({'HTTP_COOKIE': str('name=Kyle; username=kylef')})
+        self.environ['HTTP_COOKIE'] = 'name=Kyle; username=kylef'
+        request = WSGIRequest(self.environ)
 
         self.assertEqual(
             request.cookies,
