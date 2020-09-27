@@ -55,6 +55,10 @@ STATUS_CODES = {
 
 
 class WSGIRequest(object):
+    """
+    https://wsgi.readthedocs.io/en/latest/definitions.html
+    """
+
     def __init__(self, environ):
         self.environ = environ
 
@@ -104,13 +108,12 @@ class WSGIRequest(object):
         return host
 
     @property
-    def port(self):
+    def port(self) -> int:
         """
         Port used for the connection.
         """
 
-        default = 443 if self.is_secure else 80
-        return int(self.environ.get('SERVER_HTTP_PORT', default))
+        return int(self.environ['SERVER_PORT'])
 
     @property
     def url(self):
