@@ -1,5 +1,7 @@
+from typing import Optional
 from base64 import b64decode
 
+from rivr.request import Request
 from rivr.response import Response
 from rivr.middleware.base import Middleware
 
@@ -13,37 +15,40 @@ class ResponseAuthorizationRequired(Response):
 
 
 class User(object):
-    def __init__(self, username=''):
+    def __init__(self, username: str = ''):
         self.username = username
 
-    def is_anonymous(self):
+    def is_anonymous(self) -> bool:
         return False
 
-    def is_authenticated(self):
+    def is_authenticated(self) -> bool:
         return True
 
 
 class AnnonymousUser(object):
     username = ''
 
-    def is_anonymous(self):
+    def is_anonymous(self) -> bool:
         return True
 
-    def is_authenticated(self):
+    def is_authenticated(self) -> bool:
         return False
 
 
 class AuthMiddleware(Middleware):
     needs_auth = True
 
-    def process_request(self, request):
-        request.user = self.check_login(request)
+    def process_request(self, request: Request) -> Optional[Response]:
+        user = self.check_login(request)
+        setattr(request, 'user', user)
 
-        if not request.user.is_authenticated() and self.needs_auth:
+        if not user.is_authenticated() and self.needs_auth:
             return ResponseAuthorizationRequired()
 
-    def check_login(self, request):
-        authorization = request.META.get('HTTP_AUTHORIZATION', False)
+        return None
+
+    def check_login(self, request: Request):
+        authorization = request.META.get('HTTP_AUTHORIZATION', None)
 
         if not authorization:
             return AnnonymousUser()
@@ -57,7 +62,7 @@ class AuthMiddleware(Middleware):
             return AnnonymousUser()
 
         try:
-            username, password = b64decode(key).split(':')
+            username, password = b64decode(key).decode('utf-8').split(':')
         except ValueError:
             return AnnonymousUser()
 
@@ -66,5 +71,5 @@ class AuthMiddleware(Middleware):
 
         return AnnonymousUser()
 
-    def check_password(self, username, password):
+    def check_password(self, username: str, password: str) -> bool:
         return False

@@ -1,4 +1,7 @@
+from typing import Dict, Optional
 from http.cookies import SimpleCookie, CookieError
+
+__all__ = ['Request']
 
 
 def parse_cookie(cookie):
@@ -25,12 +28,20 @@ class Request(object):
     view gets passed the clients request.
     """
 
-    def __init__(self, path: str ='/', method: str = 'GET', get=None, attributes=None, headers=None):
+    def __init__(
+        self,
+        path: str = '/',
+        method: str = 'GET',
+        get: Optional[Dict[str, str]] = None,
+        attributes=None,
+        headers=None,
+    ):
         self.path = path
         self.method = method
         self.GET = get or {}
         self.attributes = attributes or {}
         self.headers = headers or {}
+        self.META: Dict[str, str] = {}
 
     @property
     def cookies(self):

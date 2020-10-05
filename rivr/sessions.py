@@ -1,15 +1,18 @@
+from typing import Optional, Dict
 import time
 from random import random
 import hashlib
 
 from rivr.middleware import Middleware
+from rivr.request import Request
+from rivr.response import Response
 
 
 class BaseSession(object):
-    def __init__(self, session_key=None):
+    def __init__(self, session_key: Optional[str] = None):
         self.modified = False
         self.session_key = session_key
-        self.data = {}
+        self.data: Dict[str, str] = {}
 
         if self.session_key:
             self.get_session()
@@ -20,17 +23,17 @@ class BaseSession(object):
     def save(self):
         raise NotImplementedError
 
-    def __contains__(self, key):
+    def __contains__(self, key: str) -> bool:
         return key in self.data
 
-    def __getitem__(self, key):
+    def __getitem__(self, key: str) -> str:
         return self.data[key]
 
-    def __setitem__(self, key, value):
+    def __setitem__(self, key: str, value: str):
         self.modified = True
         self.data[key] = value
 
-    def __delitem__(self, key):
+    def __delitem__(self, key: str):
         self.modified = True
         del self.data[key]
 
@@ -73,7 +76,7 @@ class SessionMiddleware(Middleware):
 
     session_store = None
 
-    def process_request(self, request):
+    def process_request(self, request: Request) -> Optional[Response]:
         if self.session_store is None:
             raise Exception(
                 "SessionMiddleware is improperly configured."
@@ -83,17 +86,18 @@ class SessionMiddleware(Middleware):
         session_key = request.COOKIES.get(self.cookie_name, None)
         request.session = self.session_store(session_key)
 
-    def process_response(self, request, response):
-        if request.session.modified:
+    def process_response(self, request: Request, response: Response) -> Response:
+        session = getattr(request, 'session')
+        if session and session.modified:
             # Save the session data and refresh the client cookie.
-            request.session.save()
+            session.save()
 
-            if not request.session.session_key:
-                request.session.generate_key()
+            if not session.session_key:
+                session.generate_key()
 
             response.set_cookie(
                 self.cookie_name,
-                request.session.session_key,
+                session.session_key,
                 path=self.cookie_path,
                 domain=self.cookie_domain,
                 secure=self.cookie_secure,

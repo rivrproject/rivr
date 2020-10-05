@@ -8,6 +8,7 @@ import re
 from email.utils import formatdate, parsedate_tz, mktime_tz
 
 from rivr.views.base import View
+from rivr.request import Request
 from rivr.response import Response, ResponseRedirect, ResponseNotModified, Http404
 
 
@@ -62,7 +63,7 @@ class StaticView(View):
 
         return False
 
-    def directory_index(self, request, path, fullpath):
+    def directory_index(self, request: Request, path: str, fullpath: str) -> Response:
         if not self.show_indexes:
             raise Http404('Directory indexes are not allowed here.')
 
@@ -91,7 +92,10 @@ class StaticView(View):
 
         return Response(DEFAULT_DIRECTORY_INDEX_TEMPLATE.format(**context))
 
-    def get(self, request, path=''):
+    def get(self, request: Request, path: str = '') -> Response:
+        if not self.document_root:
+            raise Exception('Improperly configured view')
+
         if self.use_request_path:
             path = request.path
 
@@ -133,7 +137,7 @@ class StaticView(View):
 
         return self.file(fullpath)
 
-    def file(self, fullpath):
+    def file(self, fullpath: str) -> Response:
         statobj = os.stat(fullpath)
 
         if not self.was_modified_since(statobj[stat.ST_MTIME], statobj[stat.ST_SIZE]):

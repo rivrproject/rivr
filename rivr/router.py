@@ -1,7 +1,9 @@
+from typing import Callable, Optional, Tuple, Iterable, Any, Dict
 import re
 
 from rivr.importlib import import_module
-from rivr.response import Http404, ResponsePermanentRedirect
+from rivr.request import Request
+from rivr.response import Http404, Response, ResponsePermanentRedirect
 
 
 class Resolver404(Http404):
@@ -16,14 +18,30 @@ class RegexURL(object):
     def __init__(self, regex):
         self.regex = re.compile(regex, re.UNICODE)
 
-    def resolve(self, path):
+    def resolve(
+        self, path: str
+    ) -> Optional[Tuple[Callable, Iterable[Any], Dict[str, Any]]]:
         match = self.regex.search(path)
         if match:
             return self.match_found(path, match)
 
+        return None
+
+    def match_found(
+        self, path: str, match: re.Match
+    ) -> Optional[Tuple[Callable, Iterable[Any], Dict[str, Any]]]:
+        raise NotImplementedError
+
 
 class RegexURLPattern(RegexURL):
-    def __init__(self, regex, callback, kwargs={}, name=None, prefix=None):
+    def __init__(
+        self,
+        regex,
+        callback: Callable[..., Response],
+        kwargs={},
+        name: Optional[str] = None,
+        prefix: Optional[str] = None,
+    ):
         super(RegexURLPattern, self).__init__(regex)
 
         if callable(callback):
@@ -37,11 +55,13 @@ class RegexURLPattern(RegexURL):
 
         self.add_prefix(prefix)
 
-    def match_found(self, path, match):
+    def match_found(
+        self, path: str, match: re.Match
+    ) -> Optional[Tuple[Callable, Iterable[Any], Dict[str, Any]]]:
         kwargs = match.groupdict()
 
         if kwargs:
-            args = tuple()
+            args: Iterable = tuple()
         else:
             args = match.groups()
 
@@ -79,13 +99,15 @@ class RegexURLResolver(RegexURL):
 
         self.default_kwargs = kwargs
 
-    def match_found(self, path, match):
+    def match_found(
+        self, path: str, match: re.Match
+    ) -> Optional[Tuple[Callable, Iterable[Any], Dict[str, Any]]]:
         new_path = path[match.end() :]
 
         try:
             callback, args, kwargs = self.router.resolve(new_path)
         except Http404:
-            return
+            return None
 
         kwargs.update(self.default_kwargs)
         return callback, args, kwargs
@@ -185,14 +207,14 @@ class Router(BaseRouter):
     any issues to the same URL with a slash appended.
     """
 
-    def resolve(self, path):
+    def resolve(self, path: str) -> Tuple[Callable, Iterable[Any], Dict[str, Any]]:
         for pattern in self.urlpatterns:
             result = pattern.resolve(path)
             if result is not None:
                 return result
         raise Resolver404('No URL pattern matched.')
 
-    def __call__(self, request):
+    def __call__(self, request: Request) -> Response:
         if self.append_slash and (not request.path.endswith('/')):
             if (not self.is_valid_path(request.path)) and self.is_valid_path(
                 request.path + '/'
@@ -205,7 +227,7 @@ class Router(BaseRouter):
             return callback(request, *args, **kwargs)
         raise Resolver404('No URL pattern matched.')
 
-    def is_valid_path(self, path):
+    def is_valid_path(self, path: str) -> bool:
         try:
             self.resolve(path)
             return True
@@ -216,14 +238,14 @@ class Router(BaseRouter):
 class Domain(BaseRouter):
     APPEND_SLASH = True
 
-    def resolve(self, path):
+    def resolve(self, path: str) -> Tuple[Callable, Iterable[Any], Dict[str, Any]]:
         for pattern in self.urlpatterns:
             result = pattern.resolve(path)
             if result is not None:
                 return result
         raise Resolver404('No URL pattern matched.')
 
-    def __call__(self, request):
+    def __call__(self, request: Request) -> Response:
         host = request.META.get('HTTP_HOST', 'localhost:80')
         host = ':'.join(host.split(':')[:-1])
         url = host + request.path
@@ -238,7 +260,7 @@ class Domain(BaseRouter):
             return callback(request, *args, **kwargs)
         raise Resolver404('No URL pattern matched.')
 
-    def is_valid_url(self, path):
+    def is_valid_url(self, path: str) -> bool:
         try:
             self.resolve(path)
             return True
@@ -247,11 +269,13 @@ class Domain(BaseRouter):
 
 
 # Shortcuts
-def url(regex, view, kwargs={}, name=None, prefix=None):
+def url(regex, view: Callable[..., Response], kwargs={}, name=None, prefix=None):
     if isinstance(view, list):
         return RegexURLResolver(regex, view[0], kwargs)
-    elif hasattr(view, 'as_view') and callable(view.as_view):
-        view = view.as_view()
+
+    as_view = getattr(view, 'as_view', None)
+    if as_view and callable(as_view):
+        view = as_view()
 
     return RegexURLPattern(regex, view, kwargs, name, prefix)
 

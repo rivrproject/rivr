@@ -11,8 +11,10 @@ except ImportError:
 
 from rivr import VERSION
 from rivr.middleware import Middleware
+from rivr.request import Request
 from rivr.response import Response, ResponseNotFound, Http404
 
+__all__ = ['DebugMiddleware']
 
 ERROR_CSS = """
     html * { padding:0; margin:0; }
@@ -65,10 +67,10 @@ ERROR_TEMPLATE = """
 
 
 class DebugMiddleware(Middleware):
-    def process_404(self, request):
+    def process_404(self, request: Request) -> Response:
         return ResponseNotFound('Page Not Found')
 
-    def process_exception(self, request, e):
+    def process_exception(self, request: Request, e: Exception) -> Response:
         if isinstance(e, Http404):
             return self.process_404(request)
 
@@ -96,7 +98,7 @@ class DebugMiddleware(Middleware):
 
         return Response(ERROR_TEMPLATE.format(**context), status=500)
 
-    def process_response(self, request, response):
+    def process_response(self, request: Request, response: Response) -> Response:
         if not response:
             return self.process_exception(
                 request, Exception("View did not return a response.")

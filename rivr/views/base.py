@@ -1,8 +1,11 @@
+from typing import Callable, List, Optional
 from email.utils import formatdate, parsedate
 from datetime import datetime
 from calendar import timegm
 
+from rivr.request import Request
 from rivr.response import (
+    Http404,
     Response,
     ResponseNotAllowed,
     ResponseRedirect,
@@ -11,6 +14,8 @@ from rivr.response import (
     ResponseNoContent,
     ResponseNotModified,
 )
+
+__all__ = ['View', 'RedirectView']
 
 
 class View(object):
@@ -21,7 +26,7 @@ class View(object):
             setattr(self, key, value)
 
     @classmethod
-    def as_view(cls, **initkwargs):
+    def as_view(cls, **initkwargs) -> Callable[..., Response]:
         """
         This method will return a callable which will generate a new instance
         of the class passing it the kwargs passed to it.
@@ -38,37 +43,38 @@ class View(object):
 
         return view
 
-    def get_handler(self, request):
+    def get_handler(self, request: Request) -> Callable[..., Response]:
         if request.method.lower() in self.http_method_names:
             return getattr(self, request.method.lower(), self.http_method_not_allowed)
         return self.http_method_not_allowed
 
-    def dispatch(self, request, *args, **kwargs):
+    def dispatch(self, request: Request, *args, **kwargs) -> Response:
         self.request = request
         self.args = args
         self.kwargs = kwargs
 
         return self.get_handler(request)(request, *args, **kwargs)
 
-    def http_method_not_allowed(self, request, *args, **kwargs):
+    def http_method_not_allowed(self, request: Request, *args, **kwargs) -> Response:
         return ResponseNotAllowed(self.get_allowed_methods())
 
-    def get_allowed_methods(self):
+    def get_allowed_methods(self) -> List[str]:
         allowed_methods = [m for m in self.http_method_names if hasattr(self, m)]
         if not hasattr(self, 'get'):
             allowed_methods.remove('head')
 
         return allowed_methods
 
-    def options(self, request, *args, **kwargs):
+    def options(self, request: Request, *args, **kwargs) -> Response:
         allowed_methods = [m.upper() for m in self.get_allowed_methods()]
         response = ResponseNoContent()
         response.headers['Allow'] = ','.join(allowed_methods)
         return response
 
-    def head(self, request, *args, **kwargs):
-        if hasattr(self, 'get'):
-            response = self.get(request, *args, **kwargs)
+    def head(self, request: Request, *args, **kwargs) -> Response:
+        get = getattr(self, 'get', None)
+        if get:
+            response = get(request, *args, **kwargs)
             response.content = ''
             return response
 
@@ -81,10 +87,10 @@ class RedirectView(View):
     """
 
     permanent = True
-    url = None
+    url: Optional[str] = None
     query_string = False
 
-    def get_redirect_url(self, **kwargs):
+    def get_redirect_url(self, **kwargs) -> Optional[str]:
         """
         Return the URL we should redirect to
         """
@@ -98,7 +104,7 @@ class RedirectView(View):
             return url % kwargs
         return None
 
-    def get(self, request, *args, **kwargs):
+    def get(self, request: Request, *args, **kwargs) -> Response:
         url = self.get_redirect_url(**kwargs)
         if url:
             if self.permanent:

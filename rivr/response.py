@@ -18,7 +18,12 @@ class Response(object):
     status_code: int = 200
     """The HTTP status code for the response."""
 
-    def __init__(self, content='', status: Optional[int] = None, content_type: str = 'text/html; charset=utf8'):
+    def __init__(
+        self,
+        content='',
+        status: Optional[int] = None,
+        content_type: str = 'text/html; charset=utf8',
+    ):
         self.content = content
 
         if status:

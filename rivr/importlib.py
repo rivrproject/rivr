@@ -1,4 +1,4 @@
-def import_module(name):
+def import_module(name: str):
     if callable(name):
         return name
 
