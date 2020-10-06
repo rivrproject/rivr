@@ -1,4 +1,4 @@
-from typing import Optional, Dict, Any, Callable, Iterable
+from typing import Optional, Dict, Any, Callable, Iterable, IO
 import sys
 import logging
 from urllib.parse import parse_qsl
@@ -147,7 +147,7 @@ class WSGIRequest(object):
         return self.environ.get('CONTENT_TYPE', None)
 
     @property
-    def body(self):
+    def body(self) -> IO[bytes]:
         """
         Request body (file descriptor).
         """
