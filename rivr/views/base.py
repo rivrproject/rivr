@@ -38,7 +38,7 @@ class View(object):
 
         """
 
-        def view(*args, **kwargs):
+        def view(*args, **kwargs) -> Response:
             return cls(**initkwargs).dispatch(*args, **kwargs)
 
         return view

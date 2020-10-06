@@ -15,7 +15,7 @@ class ViewDoesNotExist(Exception):
 
 
 class RegexURL(object):
-    def __init__(self, regex):
+    def __init__(self, regex: str):
         self.regex = re.compile(regex, re.UNICODE)
 
     def resolve(
@@ -36,7 +36,7 @@ class RegexURL(object):
 class RegexURLPattern(RegexURL):
     def __init__(
         self,
-        regex,
+        regex: str,
         callback: Callable[..., Response],
         kwargs={},
         name: Optional[str] = None,

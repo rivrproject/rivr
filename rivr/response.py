@@ -1,7 +1,8 @@
-from typing import Optional, List
+from typing import Optional, List, Union, Iterable, Tuple
 from http.cookies import SimpleCookie
 import datetime
 
+from rivr.request import Request
 from rivr.utils import JSON_CONTENT_TYPES, JSONEncoder
 
 
@@ -20,17 +21,20 @@ class Response(object):
 
     def __init__(
         self,
-        content='',
+        content: Union[str, bytes] = '',
         status: Optional[int] = None,
-        content_type: str = 'text/html; charset=utf8',
+        content_type: Optional[str] = 'text/html; charset=utf8',
     ):
         self.content = content
 
         if status:
             self.status_code = status
 
-        self.headers = {'Content-Type': content_type}
-        self.cookies = SimpleCookie()  # type: ignore
+        self.headers = {}
+        if content_type:
+            self.headers['Content-Type'] = content_type
+
+        self.cookies: SimpleCookie = SimpleCookie()
 
     @property
     def content_type(self) -> str:
@@ -38,17 +42,20 @@ class Response(object):
 
     def __str__(self) -> str:
         headers = ['%s: %s' % (key, value) for key, value in self.headers.items()]
+        if isinstance(self.content, bytes):
+            return '\n'.join(headers) + '\n\n' + self.content.decode('utf-8')
+
         return '\n'.join(headers) + '\n\n' + self.content
 
     def set_cookie(
         self,
-        key,
-        value='',
+        key: str,
+        value: str = '',
         max_age=None,
-        expires=None,
-        path='/',
-        domain=None,
-        secure=False,
+        expires: Union[datetime.datetime, str] = None,
+        path: str = '/',
+        domain: Optional[str] = None,
+        secure: bool = False,
     ):
         """
         Sets a cookie. The parameters are the same as in the Cookie.Morsel
@@ -75,7 +82,7 @@ class Response(object):
         if secure:
             self.cookies[key]['secure'] = True
 
-    def delete_cookie(self, key, path='/', domain=None):
+    def delete_cookie(self, key: str, path: str = '/', domain: Optional[str] = None):
         """
         Deletes the cookie with the given key. Fails silently if the key
         doesn't exist
@@ -89,7 +96,7 @@ class Response(object):
             expires='Thu, 01-Jan-1970 00:00:00 GMT',
         )
 
-    def headers_items(self):
+    def headers_items(self) -> Iterable[Tuple[str, str]]:
         headers = [(k, v) for k, v in self.headers.items()]
 
         for cookie in self.cookies.values():
@@ -156,7 +163,7 @@ class ResponseNotAllowed(Response):
 
 
 class RESTResponse(Response):
-    def __init__(self, request, payload, status=None):
+    def __init__(self, request: Request, payload, status: Optional[int] = None):
         content = JSONEncoder().encode(payload)
         content_type = JSON_CONTENT_TYPES[0]
 

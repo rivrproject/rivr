@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Dict, Any, Callable, Iterable
 import sys
 import logging
 from urllib.parse import parse_qsl
@@ -59,15 +59,15 @@ class WSGIRequest(object):
     https://wsgi.readthedocs.io/en/latest/definitions.html
     """
 
-    def __init__(self, environ):
+    def __init__(self, environ: Dict[str, Any]):
         self.environ = environ
 
-        self.method = environ['REQUEST_METHOD']
-        self.path = environ['PATH_INFO']
+        self.method: str = environ['REQUEST_METHOD']
+        self.path: str = environ['PATH_INFO']
         self.META = environ
 
     @property
-    def headers(self):
+    def headers(self) -> Dict[str, Any]:
         if not hasattr(self, '_headers'):
             headers = {}
 
@@ -207,10 +207,12 @@ class WSGIRequest(object):
 class WSGIHandler(object):
     request_class = WSGIRequest
 
-    def __init__(self, view):
+    def __init__(self, view: Callable[..., Response]):
         self.view = view
 
-    def __call__(self, environ, start_response):
+    def __call__(
+        self, environ: Dict[str, Any], start_response: Callable[[str, Any], Any]
+    ) -> Iterable[bytes]:
         request = self.request_class(environ)
 
         try:

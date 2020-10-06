@@ -1,4 +1,8 @@
-def import_module(name: str):
+from typing import Callable
+from rivr.response import Response
+
+
+def import_module(name: str) -> Callable[..., Response]:
     if callable(name):
         return name
 

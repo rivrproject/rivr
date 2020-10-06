@@ -1,4 +1,4 @@
-from typing import Optional, Callable
+from typing import Optional, Callable, List
 from rivr.middleware.base import Middleware
 from rivr.request import Request
 from rivr.response import Response, ResponseNotFound, Http404
@@ -19,9 +19,11 @@ class MiddlewareController(Middleware):
     """
 
     def __init__(self, *middleware):
-        self.request_middleware = []
-        self.response_middleware = []
-        self.exception_middleware = []
+        self.request_middleware: List[Callable[[Request], Optional[Response]]] = []
+        self.response_middleware: List[Callable[[Request, Response], Response]] = []
+        self.exception_middleware: List[
+            Callable[[Request, Exception], Optional[Response]]
+        ] = []
 
         for mw_instance in middleware:
             self.append(mw_instance)

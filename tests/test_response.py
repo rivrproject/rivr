@@ -88,6 +88,12 @@ class ResponseTest(unittest.TestCase):
             str(response), 'Content-Type: text/html; charset=utf8\n\nHello World'
         )
 
+    def test_to_string_bytes_content(self):
+        response = Response(b'Hello World')
+        self.assertEqual(
+            str(response), 'Content-Type: text/html; charset=utf8\n\nHello World'
+        )
+
 
 class ResponseNoContentTest(unittest.TestCase):
     def test_status_code(self):

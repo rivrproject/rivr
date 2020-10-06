@@ -34,7 +34,7 @@ class Request(object):
         method: str = 'GET',
         get: Optional[Dict[str, str]] = None,
         attributes=None,
-        headers=None,
+        headers: Optional[Dict[str, str]] = None,
     ):
         self.path = path
         self.method = method
