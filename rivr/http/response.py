@@ -4,6 +4,7 @@ from wsgiref.headers import Headers
 import datetime
 
 from rivr.http.request import Request
+from rivr.http.message import HTTPMessage
 from rivr.utils import JSON_CONTENT_TYPES, JSONEncoder
 
 
@@ -11,7 +12,7 @@ class Http404(Exception):
     pass
 
 
-class Response(object):
+class Response(HTTPMessage):
     """
     Response is an object for describing a HTTP response. Every view is
     responsible for either returning a response or raising an exception.
@@ -26,20 +27,17 @@ class Response(object):
         status: Optional[int] = None,
         content_type: Optional[str] = 'text/html; charset=utf8',
     ):
+        super(Response, self).__init__()
+
         self.content = content
 
         if status:
             self.status_code = status
 
-        self.headers = Headers()
         if content_type:
-            self.headers['Content-Type'] = content_type
+            self.content_type = content_type
 
         self.cookies: SimpleCookie = SimpleCookie()
-
-    @property
-    def content_type(self) -> Optional[str]:
-        return self.headers['Content-Type']
 
     def __str__(self) -> str:
         headers = ['%s: %s' % (key, value) for key, value in self.headers.items()]

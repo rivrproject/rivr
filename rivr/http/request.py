@@ -2,6 +2,8 @@ from typing import Dict, Optional
 from wsgiref.headers import Headers
 from http.cookies import SimpleCookie, CookieError
 
+from rivr.http.message import HTTPMessage
+
 __all__ = ['Request']
 
 
@@ -22,7 +24,7 @@ def parse_cookie(cookie):
     return cookiedict
 
 
-class Request(object):
+class Request(HTTPMessage):
     """
     A request is an object which represents a HTTP request. You wouldn't
     normally create a request yourself but instead be passed a request. Each
@@ -44,9 +46,7 @@ class Request(object):
         self.headers = Headers()
         self.META: Dict[str, str] = {}
 
-        if headers:
-            for (name, value) in headers.items():
-                self.headers[name] = value
+        super(Request, self).__init__(headers)
 
     @property
     def cookies(self):

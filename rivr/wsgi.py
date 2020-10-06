@@ -4,6 +4,7 @@ import logging
 from wsgiref.headers import Headers
 from urllib.parse import parse_qsl
 
+from rivr.http.message import HTTPMessage
 from rivr.http.request import parse_cookie, Request
 from rivr.http.response import Response, ResponseNotFound, Http404
 from rivr.utils import JSON_CONTENT_TYPES, JSONDecoder
@@ -55,29 +56,31 @@ STATUS_CODES = {
 }
 
 
-class WSGIRequest(object):
+class WSGIRequest(HTTPMessage):
     """
     https://wsgi.readthedocs.io/en/latest/definitions.html
     """
 
     def __init__(self, environ: Dict[str, Any]):
+        super(WSGIRequest, self).__init__()
+
         self.environ = environ
 
         self.method: str = environ['REQUEST_METHOD']
         self.path: str = environ['PATH_INFO']
         self.META = environ
 
-    @property
-    def headers(self) -> Headers:
-        if not hasattr(self, '_headers'):
-            headers = Headers()
+        content_type = self.environ.get('CONTENT_TYPE', None)
+        if content_type:
+            self.content_type = content_type
 
-            for key in self.META:
-                if key.startswith('HTTP_'):
-                    headers[key[5:]] = self.META[key]
+        content_length = self.environ.get('CONTENT_LENGTH', None)
+        if content_length:
+            self.headers['Content-Length'] = content_length
 
-            self._headers = headers
-        return self._headers
+        for key in self.META:
+            if key.startswith('HTTP_'):
+                self.headers[key[5:]] = self.META[key]
 
     @property
     def is_secure(self) -> bool:
@@ -131,23 +134,6 @@ class WSGIRequest(object):
         return url + self.path
 
     @property
-    def content_length(self) -> int:
-        """
-        Returns the length of the request's body.
-        """
-
-        try:
-            content_length = int(self.environ.get('CONTENT_LENGTH', 0))
-        except (ValueError, TypeError):
-            content_length = 0
-
-        return content_length
-
-    @property
-    def content_type(self) -> Optional[str]:
-        return self.environ.get('CONTENT_TYPE', None)
-
-    @property
     def body(self) -> IO[bytes]:
         """
         Request body (file descriptor).
@@ -176,7 +162,7 @@ class WSGIRequest(object):
         """
 
         if not hasattr(self, '_attributes'):
-            if self.content_length > 0:
+            if self.content_length and self.content_length > 0:
                 content = self.body.read(self.content_length)
                 content_type = self.content_type.split(';')[0]
 
