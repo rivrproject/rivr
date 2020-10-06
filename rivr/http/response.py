@@ -1,5 +1,6 @@
 from typing import Optional, List, Union, Iterable, Tuple
 from http.cookies import SimpleCookie
+from wsgiref.headers import Headers
 import datetime
 
 from rivr.http.request import Request
@@ -30,14 +31,14 @@ class Response(object):
         if status:
             self.status_code = status
 
-        self.headers = {}
+        self.headers = Headers()
         if content_type:
             self.headers['Content-Type'] = content_type
 
         self.cookies: SimpleCookie = SimpleCookie()
 
     @property
-    def content_type(self) -> str:
+    def content_type(self) -> Optional[str]:
         return self.headers['Content-Type']
 
     def __str__(self) -> str:
@@ -124,7 +125,7 @@ class ResponseRedirect(Response):
         self.headers['Location'] = str(redirect_to)
 
     @property
-    def url(self) -> str:
+    def url(self) -> Optional[str]:
         """
         A property that returns the URL for the redirect.
         """

@@ -1,4 +1,5 @@
 from typing import Dict, Optional
+from wsgiref.headers import Headers
 from http.cookies import SimpleCookie, CookieError
 
 __all__ = ['Request']
@@ -40,8 +41,12 @@ class Request(object):
         self.method = method
         self.GET = get or {}
         self.attributes = attributes or {}
-        self.headers = headers or {}
+        self.headers = Headers()
         self.META: Dict[str, str] = {}
+
+        if headers:
+            for (name, value) in headers.items():
+                self.headers[name] = value
 
     @property
     def cookies(self):

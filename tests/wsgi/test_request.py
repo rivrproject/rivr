@@ -29,7 +29,7 @@ class WSGIRequestTest(unittest.TestCase):
         self.environ['HTTP_HEADERX'] = 'Hello World'
         request = WSGIRequest(self.environ)
 
-        self.assertEqual(request.headers, {'HEADERX': 'Hello World'})
+        self.assertEqual(request.headers['headerx'], 'Hello World')
 
     def test_query_string(self):
         self.environ['QUERY_STRING'] = 'name=Kyle&something=else'

@@ -1,6 +1,7 @@
 from typing import Optional, Dict, Any, Callable, Iterable, IO
 import sys
 import logging
+from wsgiref.headers import Headers
 from urllib.parse import parse_qsl
 
 from rivr.http.request import parse_cookie, Request
@@ -67,9 +68,9 @@ class WSGIRequest(object):
         self.META = environ
 
     @property
-    def headers(self) -> Dict[str, Any]:
+    def headers(self) -> Headers:
         if not hasattr(self, '_headers'):
-            headers = {}
+            headers = Headers()
 
             for key in self.META:
                 if key.startswith('HTTP_'):
