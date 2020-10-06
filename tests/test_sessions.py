@@ -1,7 +1,6 @@
 import unittest
 
-from rivr.request import Request
-from rivr.response import Response
+from rivr.http import Request, Response
 from rivr.sessions import SessionMiddleware, MemorySessionStore, BaseSession
 
 

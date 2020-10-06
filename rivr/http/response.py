@@ -2,7 +2,7 @@ from typing import Optional, List, Union, Iterable, Tuple
 from http.cookies import SimpleCookie
 import datetime
 
-from rivr.request import Request
+from rivr.http.request import Request
 from rivr.utils import JSON_CONTENT_TYPES, JSONEncoder
 
 

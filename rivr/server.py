@@ -3,8 +3,7 @@ from wsgiref.simple_server import WSGIServer, WSGIRequestHandler
 
 from rivr.wsgi import WSGIHandler
 from rivr.middleware.debug import DebugMiddleware
-from rivr.request import Request
-from rivr.response import Response
+from rivr.http import Request, Response
 
 __all__ = ['serve']
 

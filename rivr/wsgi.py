@@ -3,8 +3,8 @@ import sys
 import logging
 from urllib.parse import parse_qsl
 
-from rivr.request import parse_cookie, Request
-from rivr.response import Response, ResponseNotFound, Http404
+from rivr.http.request import parse_cookie, Request
+from rivr.http.response import Response, ResponseNotFound, Http404
 from rivr.utils import JSON_CONTENT_TYPES, JSONDecoder
 
 logger = logging.getLogger('rivr.request')

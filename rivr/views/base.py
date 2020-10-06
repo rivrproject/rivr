@@ -3,8 +3,8 @@ from email.utils import formatdate, parsedate
 from datetime import datetime
 from calendar import timegm
 
-from rivr.request import Request
-from rivr.response import (
+from rivr.http import (
+    Request,
     Http404,
     Response,
     ResponseNotAllowed,

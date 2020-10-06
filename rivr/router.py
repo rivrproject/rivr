@@ -2,8 +2,7 @@ from typing import Callable, Optional, Tuple, Iterable, Any, Dict
 import re
 
 from rivr.importlib import import_module
-from rivr.request import Request
-from rivr.response import Http404, Response, ResponsePermanentRedirect
+from rivr.http import Request, Http404, Response, ResponsePermanentRedirect
 
 
 class Resolver404(Http404):

@@ -1,6 +1,6 @@
 import os
 import unittest
-from rivr.response import Http404
+from rivr.http import Http404
 from rivr.tests import TestClient
 from rivr.views.static import StaticView
 

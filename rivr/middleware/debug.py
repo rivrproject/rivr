@@ -11,8 +11,7 @@ except ImportError:
 
 from rivr import VERSION
 from rivr.middleware import Middleware
-from rivr.request import Request
-from rivr.response import Response, ResponseNotFound, Http404
+from rivr.http import Request, Response, ResponseNotFound, Http404
 
 __all__ = ['DebugMiddleware']
 

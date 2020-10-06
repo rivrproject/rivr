@@ -1,7 +1,7 @@
 import unittest
 import datetime
 
-from rivr.response import (
+from rivr.http import (
     Response,
     ResponseNoContent,
     ResponseRedirect,

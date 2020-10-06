@@ -11,7 +11,7 @@ setup(
     author_email='inbox@kylefuller.co.uk',
     url='http://github.com/rivrproject/rivr/',
     download_url='http://github.com/rivrproject/rivr/zipball/%s' % VERSION,
-    packages=['rivr', 'rivr.middleware', 'rivr.views'],
+    packages=['rivr', 'rivr.http', 'rivr.middleware', 'rivr.views'],
     package_data={
         'rivr': ['py.typed'],
     },

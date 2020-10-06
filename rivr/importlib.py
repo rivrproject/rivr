@@ -1,5 +1,5 @@
 from typing import Callable
-from rivr.response import Response
+from rivr.http import Response
 
 
 def import_module(name: str) -> Callable[..., Response]:

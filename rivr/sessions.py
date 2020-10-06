@@ -4,8 +4,7 @@ from random import random
 import hashlib
 
 from rivr.middleware import Middleware
-from rivr.request import Request
-from rivr.response import Response
+from rivr.http import Request, Response
 
 
 class BaseSession(object):

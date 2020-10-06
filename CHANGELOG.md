@@ -1,5 +1,12 @@
 # rivr changelog
 
+## TBD
+
+### Breaking Changes
+
+- The `rivr.request` and `rivr.response` modules have been merged into
+  `rivr.http`.
+
 ## 0.8.0 (2020-10-06)
 
 ### Breaking Changes
