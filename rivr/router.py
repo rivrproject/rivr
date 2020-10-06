@@ -28,7 +28,7 @@ class RegexURL(object):
         return None
 
     def match_found(
-        self, path: str, match: re.Match
+        self, path: str, match
     ) -> Optional[Tuple[Callable, Iterable[Any], Dict[str, Any]]]:
         raise NotImplementedError
 
@@ -56,7 +56,7 @@ class RegexURLPattern(RegexURL):
         self.add_prefix(prefix)
 
     def match_found(
-        self, path: str, match: re.Match
+        self, path: str, match
     ) -> Optional[Tuple[Callable, Iterable[Any], Dict[str, Any]]]:
         kwargs = match.groupdict()
 
@@ -100,7 +100,7 @@ class RegexURLResolver(RegexURL):
         self.default_kwargs = kwargs
 
     def match_found(
-        self, path: str, match: re.Match
+        self, path: str, match
     ) -> Optional[Tuple[Callable, Iterable[Any], Dict[str, Any]]]:
         new_path = path[match.end() :]
 
