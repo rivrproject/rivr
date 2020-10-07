@@ -230,7 +230,5 @@ class WSGIHandler(object):
 
         if isinstance(response_content, str):
             response_content = response_content.encode('utf-8')
-        elif sys.version_info[0] < 3 and isinstance(response.content, unicode):
-            response_content = response_content.encode('utf-8')
 
         return [response_content]
