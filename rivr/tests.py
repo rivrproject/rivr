@@ -24,6 +24,12 @@ class TestClient(object):
 
         return self.handler(request)
 
+    def options(self, path: str, *args, **kwargs) -> Response:
+        return self.http('OPTIONS', path, *args, **kwargs)
+
+    def head(self, path: str, *args, **kwargs) -> Response:
+        return self.http('HEAD', path, **kwargs)
+
     def get(self, path: str, *args, **kwargs) -> Response:
         return self.http('GET', path, *args, **kwargs)
 
@@ -32,6 +38,9 @@ class TestClient(object):
 
     def post(self, path: str, *args, **kwargs) -> Response:
         return self.http('POST', path, *args, **kwargs)
+
+    def patch(self, path: str, *args, **kwargs) -> Response:
+        return self.http('PATCH', path, *args, **kwargs)
 
     def delete(self, path: str, *args, **kwargs) -> Response:
         return self.http('DELETE', path, *args, **kwargs)

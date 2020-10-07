@@ -14,6 +14,14 @@ class TestClientTests(unittest.TestCase):
         response = self.client.http('METHOD', '/path/')
         self.assertEqual(response.content, 'METHOD /path/')
 
+    def test_options(self):
+        response = self.client.options('/')
+        self.assertEqual(response.content, 'OPTIONS /')
+
+    def test_head(self):
+        response = self.client.head('/')
+        self.assertEqual(response.content, 'HEAD /')
+
     def test_get(self):
         response = self.client.get('/')
         self.assertEqual(response.content, 'GET /')
@@ -25,6 +33,10 @@ class TestClientTests(unittest.TestCase):
     def test_post(self):
         response = self.client.post('/')
         self.assertEqual(response.content, 'POST /')
+
+    def test_patch(self):
+        response = self.client.patch('/')
+        self.assertEqual(response.content, 'PATCH /')
 
     def test_delete(self):
         response = self.client.delete('/resource')
