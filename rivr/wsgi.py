@@ -5,7 +5,7 @@ from wsgiref.headers import Headers
 from urllib.parse import parse_qsl
 
 from rivr.http.message import HTTPMessage
-from rivr.http.request import parse_cookie, Request
+from rivr.http.request import parse_cookie, Query, Request
 from rivr.http.response import Response, ResponseNotFound, Http404
 from rivr.utils import JSON_CONTENT_TYPES, JSONDecoder
 
@@ -141,14 +141,13 @@ class WSGIRequest(HTTPMessage):
 
         return self.environ['wsgi.input']
 
-    # @property
-    def get_get(self):
-        if not hasattr(self, '_get'):
-            query_string = self.environ.get('QUERY_STRING', '')
-            self._get = dict((k, v) for k, v in parse_qsl(query_string, True))
-        return self._get
+    @property
+    def query(self) -> Query:
+        return Query(self.environ.get('QUERY_STRING', ''))
 
-    GET = property(get_get)
+    @property
+    def GET(self) -> Dict[str, str]:
+        return dict((k, v) for k, v in self.query._query)
 
     # Attributes
 

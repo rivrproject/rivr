@@ -36,11 +36,7 @@ def test_content_type_setter():
 
 
 def test_content_length_getter():
-    message = HTTPMessage(
-        {
-            'Content-Length': '1024'
-        }
-    )
+    message = HTTPMessage({'Content-Length': '1024'})
 
     assert message.content_length == 1024
 

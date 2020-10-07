@@ -7,6 +7,11 @@
 - The `rivr.request` and `rivr.response` modules have been merged into
   `rivr.http`.
 
+### Enhancements
+
+- `Request` now accepts and contains a query parameter. This change deprecates
+  get parameter and `GET` property on `Request`.
+
 ## 0.8.0 (2020-10-06)
 
 ### Breaking Changes
