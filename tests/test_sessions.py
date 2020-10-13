@@ -67,3 +67,28 @@ class MemorySessionStoreTests(unittest.TestCase):
 
         new_session = self.store('session-key')
         self.assertEqual(new_session['key'], 'value')
+
+    def test_process_request_loads_session(self):
+        session = self.store('session-key')
+        session['key'] = 'value'
+        session.save()
+
+        request = Request()
+        request.cookies['sessionid'] = 'session-key'
+        self.middleware.process_request(request)
+
+        request_session = getattr(request, 'session')
+        assert request_session['key'] == 'value'
+
+    def test_process_request_creates_session(self):
+        request = Request()
+        self.middleware.process_request(request)
+
+        request_session = getattr(request, 'session')
+        request_session['key'] = 'value'
+
+        response = Response()
+        self.middleware.process_response(request, response)
+
+        assert len(self.middleware.session_store.sessions) == 1
+        assert response.cookies['sessionid'].value

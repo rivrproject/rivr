@@ -112,10 +112,5 @@ class WSGIRequestTest(unittest.TestCase):
         self.environ['HTTP_COOKIE'] = 'name=Kyle; username=kylef'
         request = WSGIRequest(self.environ)
 
-        self.assertEqual(
-            request.cookies,
-            {
-                'name': 'Kyle',
-                'username': 'kylef',
-            },
-        )
+        assert request.cookies['name'].value == 'Kyle'
+        assert request.cookies['username'].value == 'kylef'

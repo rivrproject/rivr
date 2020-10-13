@@ -1,4 +1,4 @@
-from typing import Dict, Optional, Union
+from typing import Dict, Optional, Union, List
 from wsgiref.headers import Headers
 from http.cookies import SimpleCookie, CookieError
 from urllib.parse import parse_qsl, urlencode
@@ -8,21 +8,16 @@ from rivr.http.message import HTTPMessage
 __all__ = ['Query', 'Request']
 
 
-def parse_cookie(cookie):
-    if cookie == '':
-        return {}
+def parse_cookie(values: List[str]) -> SimpleCookie:
+    cookies: SimpleCookie = SimpleCookie()
 
-    try:
-        c = SimpleCookie()
-        c.load(cookie)
-    except CookieError:
-        return {}
+    for value in values:
+        try:
+            cookies.load(value)
+        except CookieError:
+            pass
 
-    cookiedict = {}
-    for key in c.keys():
-        cookiedict[key] = c.get(key).value
-
-    return cookiedict
+    return cookies
 
 
 QueryConvertible = Union[str, Dict[str, str]]
@@ -82,9 +77,10 @@ class Request(HTTPMessage):
 
     @property
     def cookies(self):
-        return parse_cookie(self.headers.get('COOKIE', ''))
+        if not hasattr(self, '_cookies'):
+            self._cookies = parse_cookie(self.headers.get_all('Cookie'))
 
-    COOKIES = cookies  # legacy
+        return self._cookies
 
     # Deprecated
     @property

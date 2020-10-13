@@ -82,17 +82,20 @@ class SessionMiddleware(Middleware):
                 "Session store is not defined"
             )
 
-        session_key = request.COOKIES.get(self.cookie_name, None)
-        request.session = self.session_store(session_key)
+        session_key = request.cookies.get(self.cookie_name)
+        if session_key:
+            request.session = self.session_store(session_key.value)
+        else:
+            request.session = self.session_store(None)
 
     def process_response(self, request: Request, response: Response) -> Response:
         session = getattr(request, 'session')
         if session and session.modified:
             # Save the session data and refresh the client cookie.
-            session.save()
-
             if not session.session_key:
                 session.generate_key()
+
+            session.save()
 
             response.set_cookie(
                 self.cookie_name,

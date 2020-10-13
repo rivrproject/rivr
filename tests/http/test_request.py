@@ -53,3 +53,25 @@ def test_get():  # deprecated
     request = Request(query={'message': 'Hello World'})
 
     assert request.GET['message'] == 'Hello World'
+
+
+def test_cookies():
+    request = Request(headers={'Cookie': 'name=Kyle; username=kylef'})
+
+    assert request.cookies['name'].value == 'Kyle'
+    assert request.cookies['username'].value == 'kylef'
+
+
+def test_multiple_cookies():
+    request = Request()
+    request.headers.add_header('Cookie', 'name=Kyle')
+    request.headers.add_header('Cookie', 'username=kylef')
+
+    assert request.cookies['name'].value == 'Kyle'
+    assert request.cookies['username'].value == 'kylef'
+
+
+def test_no_cookies():
+    request = Request()
+
+    assert len(request.cookies) == 0

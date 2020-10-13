@@ -179,15 +179,10 @@ class WSGIRequest(HTTPMessage):
 
     @property
     def cookies(self):
-        """
-        Dictionary returning all of the cookies sent with the request.
-        """
-
         if not hasattr(self, '_cookies'):
-            self._cookies = parse_cookie(self.headers.get('COOKIE', ''))
-        return self._cookies
+            self._cookies = parse_cookie(self.headers.get_all('Cookie'))
 
-    COOKIES = cookies  # legacy
+        return self._cookies
 
 
 class WSGIHandler(object):

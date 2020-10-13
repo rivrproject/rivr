@@ -6,6 +6,8 @@
 
 - The `rivr.request` and `rivr.response` modules have been merged into
   `rivr.http`.
+- `Request` object's `cookies` is now an instance of
+  `http.cookies.SimpleCookie`.
 
 ### Enhancements
 
