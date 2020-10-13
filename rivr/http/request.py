@@ -1,4 +1,5 @@
-from typing import Dict, Optional, Union, List
+from typing import Dict, Optional, Union, List, IO
+from io import BytesIO
 from wsgiref.headers import Headers
 from http.cookies import SimpleCookie, CookieError
 from urllib.parse import parse_qsl, urlencode
@@ -72,6 +73,7 @@ class Request(HTTPMessage):
             raise ValueError('Cannot set both query and get. Use query')
 
         self.query = Query(query or get)
+        self.body: IO[bytes] = BytesIO()
 
         super(Request, self).__init__(headers)
 
