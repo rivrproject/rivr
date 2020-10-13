@@ -9,7 +9,7 @@ Request
 
 .. autoclass:: Request
 
-    :members: path, method, GET, POST, headers, cookies
+    :members: method, path, query, headers, cookies, body
 
 Response
 ========

@@ -47,7 +47,7 @@ class AuthMiddleware(Middleware):
         return None
 
     def check_login(self, request: Request):
-        authorization = request.META.get('HTTP_AUTHORIZATION', None)
+        authorization = request.headers['Authorization']
 
         if not authorization:
             return AnnonymousUser()

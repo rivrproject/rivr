@@ -1,4 +1,4 @@
-from typing import Callable, Dict, Optional
+from typing import Callable, Dict, Optional, Union, IO
 from rivr.http import Request, Response
 
 __all__ = ['TestClient']
@@ -12,16 +12,11 @@ class TestClient(object):
         self,
         method: str,
         path: str,
-        data=None,
+        query: Optional[Dict[str, str]] = None,
         headers: Optional[Dict[str, str]] = None,
+        body: Optional[Union[bytes, IO[bytes]]] = None,
     ) -> Response:
-        if method == 'GET':
-            get = data
-        else:
-            get = {}
-
-        request = Request(path, method, get, data, headers)
-
+        request = Request(path, method, headers=headers, query=query, body=body)
         return self.handler(request)
 
     def options(self, path: str, *args, **kwargs) -> Response:

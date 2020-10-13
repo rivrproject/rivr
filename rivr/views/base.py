@@ -96,9 +96,8 @@ class RedirectView(View):
         """
 
         if self.url:
-            args = self.request.META["QUERY_STRING"]
-            if args and self.query_string:
-                url = "%s?%s" % (self.url, args)
+            if len(self.request.query) > 0 and self.query_string:
+                url = "%s?%s" % (self.url, self.request.query)
             else:
                 url = self.url
             return url % kwargs

@@ -47,6 +47,9 @@ class Query:
 
         return None
 
+    def __len__(self) -> int:
+        return len(self._query)
+
 
 class Request(HTTPMessage):
     """
@@ -60,20 +63,21 @@ class Request(HTTPMessage):
         path: str = '/',
         method: str = 'GET',
         query: Optional[Dict[str, str]] = None,
-        get: Optional[Dict[str, str]] = None,
-        attributes=None,
         headers: Optional[Dict[str, str]] = None,
+        body: Optional[Union[bytes, IO[bytes]]] = None,
     ):
+        self.host = 'localhost'
         self.path = path
         self.method = method
-        self.attributes = attributes or {}
-        self.META: Dict[str, str] = {}
+        self.query = Query(query)
 
-        if query and get:
-            raise ValueError('Cannot set both query and get. Use query')
-
-        self.query = Query(query or get)
-        self.body: IO[bytes] = BytesIO()
+        if body:
+            if isinstance(body, bytes):
+                self.body: IO[bytes] = BytesIO(body)
+            else:
+                self.body = body
+        else:
+            self.body = BytesIO()
 
         super(Request, self).__init__(headers)
 

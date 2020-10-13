@@ -245,8 +245,7 @@ class Domain(BaseRouter):
         raise Resolver404('No URL pattern matched.')
 
     def __call__(self, request: Request) -> Response:
-        host = request.META.get('HTTP_HOST', 'localhost:80')
-        host = ':'.join(host.split(':')[:-1])
+        host = ':'.join(request.host.split(':')[:-1])
         url = host + request.path
 
         if self.APPEND_SLASH and (not url.endswith('/')):

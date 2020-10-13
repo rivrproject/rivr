@@ -1,3 +1,4 @@
+from io import BytesIO
 from rivr.http.request import Query, Request
 from wsgiref.headers import Headers
 
@@ -43,16 +44,25 @@ def test_init_query():
     assert request.query['message'] == 'Hello World'
 
 
-def test_init_get():  # deprecated
-    request = Request(get={'message': 'Hello World'})
+def test_init_body_bytes():
+    request = Request(body=b'Hello World')
 
-    assert request.query['message'] == 'Hello World'
+    assert isinstance(request.body, BytesIO)
+    assert request.body.read() == b'Hello World'
 
 
-def test_get():  # deprecated
-    request = Request(query={'message': 'Hello World'})
+def test_init_body_io():
+    request = Request(body=BytesIO(b'Hello World'))
 
-    assert request.GET['message'] == 'Hello World'
+    assert isinstance(request.body, BytesIO)
+    assert request.body.read() == b'Hello World'
+
+
+def test_init_body_empty():
+    request = Request()
+
+    assert isinstance(request.body, BytesIO)
+    assert request.body.read() == b''
 
 
 def test_cookies():

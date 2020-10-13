@@ -69,7 +69,6 @@ class RedirectViewTest(unittest.TestCase):
         view = RedirectView.as_view(url='/redirect/')
 
         request = Request()
-        request.META = {'QUERY_STRING': ''}
         response = view(request)
         self.assertEqual(response.status_code, 301)
         self.assertEqual(response.headers['Location'], '/redirect/')
@@ -78,7 +77,6 @@ class RedirectViewTest(unittest.TestCase):
         view = RedirectView.as_view(url='/redirect/', permanent=False)
 
         request = Request()
-        request.META = {'QUERY_STRING': ''}
         response = view(request)
         self.assertEqual(response.status_code, 302)
         self.assertEqual(response.headers['Location'], '/redirect/')
@@ -86,8 +84,7 @@ class RedirectViewTest(unittest.TestCase):
     def test_doesnt_include_args(self):
         view = RedirectView.as_view(url='/redirect/')
 
-        request = Request('/test/')
-        request.META = {'QUERY_STRING': 'foo=bar'}
+        request = Request('/test/', query={'foo': 'bar'})
         response = view(request)
         self.assertEqual(response.status_code, 301)
         self.assertEqual(response.headers['Location'], '/redirect/')
@@ -95,8 +92,7 @@ class RedirectViewTest(unittest.TestCase):
     def test_include_args(self):
         view = RedirectView.as_view(url='/redirect/', query_string=True)
 
-        request = Request('/test/')
-        request.META = {'QUERY_STRING': 'foo=bar'}
+        request = Request('/test/', query={'foo': 'bar'})
         response = view(request)
         self.assertEqual(response.status_code, 301)
         self.assertEqual(response.headers['Location'], '/redirect/?foo=bar')
