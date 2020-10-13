@@ -7,8 +7,6 @@ persistent sessions.
 import rivr
 from rivr.sessions import *
 
-raise NotImplemented('This demo is incomplete.')
-
 
 class SessionView(rivr.views.TemplateView):
     template_name = "sessions.html"

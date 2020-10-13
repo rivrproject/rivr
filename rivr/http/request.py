@@ -35,12 +35,30 @@ class Query:
             self._query = []
 
     def __str__(self) -> str:
+        """
+        >>> query = Query({'category': 'fruits'})
+        >>> str(query)
+        'category=fruits'
+        """
+
         return urlencode(self._query)
 
     def __contains__(self, name: str) -> bool:
+        """
+        >>> query = Query('category=fruits')
+        >>> 'category' in query
+        True
+        """
+
         return self[name] is not None
 
     def __getitem__(self, name: str) -> Optional[str]:
+        """
+        >>> query = Query('category=fruits')
+        >>> query['category']
+        'fruits'
+        """
+
         for (key, value) in self._query:
             if key == name:
                 return value
@@ -48,6 +66,12 @@ class Query:
         return None
 
     def __len__(self) -> int:
+        """
+        >>> query = Query('category=fruits&limit=10')
+        >>> len(query)
+        2
+        """
+
         return len(self._query)
 
 
