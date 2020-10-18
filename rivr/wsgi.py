@@ -176,8 +176,10 @@ class WSGIRequest(object):
                 content_type = content_type.split(';')[0]
 
                 if content_type in JSON_CONTENT_TYPES:
+                    content = content.decode('utf-8')
                     self._attributes = JSONDecoder().decode(content)
                 elif content_type == 'application/x-www-form-urlencoded':
+                    content = content.decode('utf-8')
                     data = parse_qsl(content, True)
                     self._attributes = dict((k, v) for k, v in data)
             else:
