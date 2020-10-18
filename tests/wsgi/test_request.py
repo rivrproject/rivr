@@ -1,7 +1,7 @@
 # -*- coding: utf8 -*-
 
 import unittest
-from io import StringIO
+from io import BytesIO
 
 from rivr.wsgi import WSGIRequest
 
@@ -79,10 +79,10 @@ class WSGIRequestTest(unittest.TestCase):
         self.assertEqual(self.request.content_length, 5)
 
     def test_body(self):
-        self.environ['wsgi.input'] = StringIO('Hi')
+        self.environ['wsgi.input'] = BytesIO(b'Hi')
         self.request = WSGIRequest(self.environ)
 
-        self.assertEqual(self.request.body.read(), 'Hi')
+        self.assertEqual(self.request.body.read(), b'Hi')
 
     # Attributes
 
@@ -93,7 +93,7 @@ class WSGIRequestTest(unittest.TestCase):
     def test_attributes_deserializes_form_urlencoded(self):
         self.environ['CONTENT_TYPE'] = 'application/x-www-form-urlencoded'
         self.environ['CONTENT_LENGTH'] = '9'
-        self.environ['wsgi.input'] = StringIO('test=👍')
+        self.environ['wsgi.input'] = BytesIO('test=👍'.encode('utf-8'))
         request = WSGIRequest(self.environ)
 
         self.assertEqual(request.attributes, {'test': '👍'})
@@ -101,7 +101,7 @@ class WSGIRequestTest(unittest.TestCase):
     def test_attributes_deserializes_JSON_HTTP_body(self):
         self.environ['CONTENT_TYPE'] = 'application/json'
         self.environ['CONTENT_LENGTH'] = '16'
-        self.environ['wsgi.input'] = StringIO('{"test": "👍"}')
+        self.environ['wsgi.input'] = BytesIO('{"test": "👍"}'.encode('utf-8'))
         request = WSGIRequest(self.environ)
 
         self.assertEqual(request.attributes, {'test': '👍'})
