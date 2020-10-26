@@ -1,10 +1,35 @@
 import hashlib
 import time
 from random import random
-from typing import Dict, Optional
+from typing import Any, Dict, Optional, Protocol
 
 from rivr.http import Request, Response
 from rivr.middleware import Middleware
+
+
+class Session(Protocol):
+    def __contains__(self, key: str) -> bool:
+        raise NotImplementedError
+
+    def __getitem__(self, key: str) -> str:
+        raise NotImplementedError
+
+    def __setitem__(self, key: str, value: str) -> None:
+        raise NotImplementedError
+
+    def __delitem__(self, key: str) -> None:
+        raise NotImplementedError
+
+    def clear(self) -> None:
+        raise NotImplementedError
+
+    def save(self) -> None:
+        raise NotImplementedError
+
+
+class SessionStore(Protocol):
+    def __call__(self, *args, **kwargs) -> Session:
+        raise NotImplementedError
 
 
 class BaseSession(object):
@@ -19,7 +44,7 @@ class BaseSession(object):
     def get_session(self):
         raise NotImplementedError
 
-    def save(self):
+    def save(self) -> None:
         raise NotImplementedError
 
     def __contains__(self, key: str) -> bool:
@@ -28,27 +53,27 @@ class BaseSession(object):
     def __getitem__(self, key: str) -> str:
         return self.data[key]
 
-    def __setitem__(self, key: str, value: str):
+    def __setitem__(self, key: str, value: str) -> None:
         self.modified = True
         self.data[key] = value
 
-    def __delitem__(self, key: str):
+    def __delitem__(self, key: str) -> None:
         self.modified = True
         del self.data[key]
 
-    def clear(self):
+    def clear(self) -> None:
         self.modified = True
         self.data = {}
 
-    def generate_key(self):
+    def generate_key(self) -> None:
         self.modified = True
         hsh = hashlib.sha1((str(time.time()) + str(random())).encode('utf-8'))
         self.session_key = hsh.hexdigest()
 
 
-class MemorySession(BaseSession):
+class MemorySession(BaseSession, Session):
     def __init__(self, store, *args, **kwargs):
-        self.store = store
+        self.store: Optional[Any] = store
         super(MemorySession, self).__init__(*args, **kwargs)
 
     def get_session(self):
@@ -59,11 +84,11 @@ class MemorySession(BaseSession):
         self.store.sessions[self.session_key] = self.data
 
 
-class MemorySessionStore(object):
+class MemorySessionStore(SessionStore):
     def __init__(self):
         self.sessions = {}
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args, **kwargs) -> Session:
         return MemorySession(self, *args, **kwargs)
 
 
@@ -73,7 +98,7 @@ class SessionMiddleware(Middleware):
     cookie_path = '/'
     cookie_domain = None
 
-    session_store = None
+    session_store: Optional[SessionStore] = None
 
     def process_request(self, request: Request) -> Optional[Response]:
         if self.session_store is None:
@@ -84,9 +109,13 @@ class SessionMiddleware(Middleware):
 
         session_key = request.cookies.get(self.cookie_name)
         if session_key:
-            request.session = self.session_store(session_key.value)
+            session = self.session_store(session_key.value)
         else:
-            request.session = self.session_store(None)
+            session = self.session_store(None)
+
+        setattr(request, 'session', session)
+
+        return None
 
     def process_response(self, request: Request, response: Response) -> Response:
         session = getattr(request, 'session')

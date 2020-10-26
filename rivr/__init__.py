@@ -1,3 +1,5 @@
+VERSION = '0.8.0'
+
 from rivr import views
 from rivr.http import Http404, Response
 from rivr.middleware import ErrorWrapper, Middleware, MiddlewareController
@@ -21,5 +23,3 @@ __all__ = [
     'url',
     'serve',
 ]
-
-VERSION = '0.8.0'

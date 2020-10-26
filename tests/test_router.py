@@ -1,53 +1,57 @@
 import unittest
 
+import pytest
+
 from rivr.http import Request, Response
 from rivr.router import Resolver404, Router
 from rivr.views import View
 
 
 class RouterTest(unittest.TestCase):
-    def test_decorator(self):
+    def test_decorator(self) -> None:
         r = Router()
 
         @r.register(r'^test/$')
         def func(request):
             pass
 
-        self.assertEqual(r.resolve('test/'), (func, (), {}))
+        assert r.resolve('test/') == (func, (), {})
 
-    def test_register(self):
+    def test_register(self) -> None:
         r = Router()
 
-        def func(request):
-            pass
+        def func(request: Request) -> Response:
+            return Response()
 
         r.register(r'^test/$', func)
 
-        self.assertEqual(r.resolve('test/'), (func, (), {}))
+        assert r.resolve('test/') == (func, (), {})
 
-    def test_404(self):
+    def test_404(self) -> None:
         r = Router()
-        self.assertRaises(Resolver404, r.resolve, 'test')
 
-    def test_resolver(self):
-        def func(request):
-            pass
+        with pytest.raises(Resolver404):
+            r.resolve('test')
+
+    def test_resolver(self) -> None:
+        def func(request: Request) -> Response:
+            return Response()
 
         r = Router(
             (r'^test/$', func),
         )
 
-        self.assertTrue(r.is_valid_path('test/'))
-        self.assertFalse(r.is_valid_path('not-found/'))
+        assert r.is_valid_path('test/')
+        assert not r.is_valid_path('not-found/')
 
-    def test_register_class_view(self):
+    def test_register_class_view(self) -> None:
         r = Router()
 
         @r.register(r'^test/$')
         class TestView(View):
-            def get(self, request):
+            def get(self, request: Request) -> Response:
                 return Response('It works')
 
         response = r(Request('/test/'))
-        self.assertEqual(response.status_code, 200)
-        self.assertEqual(response.content, 'It works')
+        assert response.status_code == 200
+        assert response.content == 'It works'

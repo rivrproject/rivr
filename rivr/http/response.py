@@ -54,7 +54,7 @@ class Response(HTTPMessage):
         path: str = '/',
         domain: Optional[str] = None,
         secure: bool = False,
-    ):
+    ) -> None:
         """
         Sets a cookie. The parameters are the same as in the Cookie.Morsel
         object in the Python standard library.
@@ -80,7 +80,9 @@ class Response(HTTPMessage):
         if secure:
             self.cookies[key]['secure'] = True
 
-    def delete_cookie(self, key: str, path: str = '/', domain: Optional[str] = None):
+    def delete_cookie(
+        self, key: str, path: str = '/', domain: Optional[str] = None
+    ) -> None:
         """
         Deletes the cookie with the given key. Fails silently if the key
         doesn't exist

@@ -1,33 +1,33 @@
 import unittest
 
-from rivr.http import Http404
+from rivr.http import Http404, Request, Response
 from rivr.middleware.debug import DebugMiddleware
 
 
 class DebugMiddlewareTests(unittest.TestCase):
-    def test_catches_exception(self):
-        def view(request):
+    def test_catches_exception(self) -> None:
+        def view(request: Request) -> Response:
             raise Exception('Testing')
 
         middleware = DebugMiddleware.wrap(view)
-        response = middleware(None)
+        response = middleware(Request('/', 'GET'))
 
-        self.assertEqual(response.status_code, 500)
+        assert response.status_code == 500
 
-    def test_errors_when_nothing_is_returned_from_view(self):
-        def view(request):
+    def test_errors_when_nothing_is_returned_from_view(self) -> None:
+        def view(request: Request) -> None:
             pass
 
-        middleware = DebugMiddleware.wrap(view)
-        response = middleware(None)
+        middleware = DebugMiddleware.wrap(view)  # type: ignore
+        response = middleware(Request('/', 'GET'))
 
-        self.assertEqual(response.status_code, 500)
+        assert response.status_code == 500
 
-    def test_catches_Http404(self):
-        def view(request):
+    def test_catches_Http404(self) -> None:
+        def view(request: Request) -> Response:
             raise Http404('Page not found')
 
         middleware = DebugMiddleware.wrap(view)
-        response = middleware(None)
+        response = middleware(Request('/', 'GET'))
 
-        self.assertEqual(response.status_code, 404)
+        assert response.status_code == 404

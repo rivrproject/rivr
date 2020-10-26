@@ -13,32 +13,33 @@ from rivr.http import (
 
 
 class ResponseTest(unittest.TestCase):
-    def test_status_code(self):
+    def test_status_code(self) -> None:
         "Status code should be successful by default"
 
-        self.assertEqual(Response().status_code, 200)
+        assert Response().status_code == 200
 
-    def test_custom_status_code(self):
+    def test_custom_status_code(self) -> None:
         response = Response(status=302)
-        self.assertEqual(response.status_code, 302)
+        assert response.status_code == 302
 
-    def test_content_type(self):
+    def test_content_type(self) -> None:
         "Content type header should be set"
 
         response = Response(content_type='application/json')
-        self.assertEqual(response.content_type, 'application/json')
-        self.assertEqual(response.headers['Content-Type'], 'application/json')
+        assert response.content_type == 'application/json'
+        assert response.headers['Content-Type'] == 'application/json'
 
-    def test_delete_cookie(self):
+    def test_delete_cookie(self) -> None:
         response = Response()
         response.delete_cookie('test_cookie')
-        self.assertEqual(response.cookies['test_cookie']['path'], '/')
-        self.assertEqual(response.cookies['test_cookie']['domain'], '')
-        self.assertEqual(
-            response.cookies['test_cookie']['expires'], 'Thu, 01-Jan-1970 00:00:00 GMT'
+        assert response.cookies['test_cookie']['path'] == '/'
+        assert response.cookies['test_cookie']['domain'] == ''
+        assert (
+            response.cookies['test_cookie']['expires']
+            == 'Thu, 01-Jan-1970 00:00:00 GMT'
         )
 
-    def test_set_cookie(self):
+    def test_set_cookie(self) -> None:
         expires = datetime.datetime(2013, 12, 30)
 
         response = Response()
@@ -51,94 +52,86 @@ class ResponseTest(unittest.TestCase):
             path='/cookie/',
             secure=True,
         )
-        self.assertEqual(response.cookies['test_cookie'].value, 'testing')
-        self.assertEqual(response.cookies['test_cookie']['path'], '/cookie/')
-        self.assertEqual(response.cookies['test_cookie']['domain'], 'rivr.com')
-        self.assertEqual(response.cookies['test_cookie']['secure'], True)
-        self.assertEqual(response.cookies['test_cookie']['max-age'], 3600)
-        self.assertEqual(
-            response.cookies['test_cookie']['expires'], 'Mon, 30 Dec 2013 00:00:00'
+        assert response.cookies['test_cookie'].value == 'testing'
+        assert response.cookies['test_cookie']['path'] == '/cookie/'
+        assert response.cookies['test_cookie']['domain'] == 'rivr.com'
+        assert response.cookies['test_cookie']['secure']
+        assert response.cookies['test_cookie']['max-age'] == 3600
+        assert response.cookies['test_cookie']['expires'] == 'Mon, 30 Dec 2013 00:00:00'
+        assert (
+            str(response.cookies['test_cookie'])
+            == 'Set-Cookie: test_cookie=testing; Domain=rivr.com; expires=Mon, 30 Dec 2013 00:00:00; Max-Age=3600; Path=/cookie/; Secure'
         )
 
-        self.assertEqual(
-            str(response.cookies['test_cookie']).lower(),
-            'Set-Cookie: test_cookie=testing; Domain=rivr.com; expires=Mon, 30 Dec 2013 00:00:00; Max-Age=3600; Path=/cookie/; Secure'.lower(),
-        )
-
-    def test_header_items(self):
+    def test_header_items(self) -> None:
         response = Response()
         response.delete_cookie('test_cookie')
         response.headers['Location'] = '/'
 
-        self.assertEqual(
-            response.headers_items().sort(),
+        assert sorted(response.headers_items()) == sorted(
             [
                 ('Content-Type', 'text/html; charset=utf8'),
                 ('Location', '/'),
                 (
                     'Set-Cookie',
-                    ' test_cookie=; expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; Path=/',
+                    ' test_cookie=""; expires=Thu, 01-Jan-1970 00:00:00 GMT; Max-Age=0; Path=/',
                 ),
-            ].sort(),
+            ]
         )
 
-    def test_to_string(self):
+    def test_to_string(self) -> None:
         response = Response('Hello World')
-        self.assertEqual(
-            str(response), 'Content-Type: text/html; charset=utf8\n\nHello World'
-        )
+        assert str(response) == 'Content-Type: text/html; charset=utf8\n\nHello World'
 
-    def test_to_string_bytes_content(self):
+    def test_to_string_bytes_content(self) -> None:
         response = Response(b'Hello World')
-        self.assertEqual(
-            str(response), 'Content-Type: text/html; charset=utf8\n\nHello World'
-        )
+        assert str(response) == 'Content-Type: text/html; charset=utf8\n\nHello World'
 
 
 class ResponseNoContentTest(unittest.TestCase):
-    def test_status_code(self):
+    def test_status_code(self) -> None:
         response = ResponseNoContent()
-        self.assertEqual(response.status_code, 204)
+        assert response.status_code == 204
 
 
 class ResponseRedirectTest(unittest.TestCase):
-    def test_redirect(self):
+    def test_redirect(self) -> None:
         response = ResponseRedirect('/redirect/')
-        self.assertEqual(response.status_code, 302)
+        assert response.status_code == 302
 
-    def test_sets_location_header(self):
+    def test_sets_location_header(self) -> None:
         response = ResponseRedirect('/redirect/')
-        self.assertEqual(response.headers['Location'], '/redirect/')
+        assert response.headers['Location'] == '/redirect/'
 
-    def test_url_property(self):
+    def test_url_property(self) -> None:
         response = ResponseRedirect('/redirect/')
-        self.assertEqual(response.url, '/redirect/')
+        assert response.url == '/redirect/'
 
 
 class ResponsePermanentRedirectTest(unittest.TestCase):
-    def test_redirect(self):
+    def test_redirect(self) -> None:
         response = ResponsePermanentRedirect('/redirect/')
-        self.assertEqual(response.status_code, 301)
-        self.assertEqual(response.headers['Location'], '/redirect/')
+        assert response.status_code == 301
+        assert response.headers['Location'] == '/redirect/'
 
 
 class ResponseNotFoundTest(unittest.TestCase):
-    def test_status_code(self):
+    def test_status_code(self) -> None:
         response = ResponseNotFound()
-        self.assertEqual(response.status_code, 404)
+        assert response.status_code == 404
 
 
 class ResponseNotModifiedTest(unittest.TestCase):
-    def test_status_code(self):
+    def test_status_code(self) -> None:
         response = ResponseNotModified()
-        self.assertEqual(response.status_code, 304)
+        assert response.status_code == 304
 
 
 class ResponseNotAllowedTest(unittest.TestCase):
-    def test_status_code(self):
+    def test_status_code(self) -> None:
         response = ResponseNotAllowed(['GET'])
-        self.assertEqual(response.status_code, 405)
+        assert response.status_code == 405
 
-    def test_permitted_methods(self):
+    def test_permitted_methods(self) -> None:
         response = ResponseNotAllowed(['GET', 'HEAD', 'OPTIONS'])
-        self.assertEqual(response.headers['Allow'], 'GET, HEAD, OPTIONS')
+        assert response.headers['Allow'] == 'GET, HEAD, OPTIONS'

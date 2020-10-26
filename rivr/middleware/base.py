@@ -7,7 +7,9 @@ __all__ = ['Middleware']
 
 class Middleware(object):
     @classmethod
-    def wrap(cls, view: Callable[..., Response], *initargs, **initkwargs):
+    def wrap(
+        cls, view: Callable[..., Response], *initargs, **initkwargs
+    ) -> Callable[..., Response]:
         """
         The wrap method allows you to wrap a view calling the middleware's
         process_request and process_response before and after the view.

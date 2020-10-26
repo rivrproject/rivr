@@ -1,44 +1,53 @@
-import unittest
+import pytest
 
-from rivr.http import Response
+from rivr.http import Request, Response
 from rivr.tests import TestClient
 
 
-class TestClientTests(unittest.TestCase):
-    def setUp(self):
-        def view(request):
-            return Response('{} {}'.format(request.method, request.path))
+def view(request: Request) -> Response:
+    return Response('{} {}'.format(request.method, request.path))
 
-        self.client = TestClient(view)
 
-    def test_http(self):
-        response = self.client.http('METHOD', '/path/')
-        self.assertEqual(response.content, 'METHOD /path/')
+@pytest.fixture
+def client() -> TestClient:
+    return TestClient(view)
 
-    def test_options(self):
-        response = self.client.options('/')
-        self.assertEqual(response.content, 'OPTIONS /')
 
-    def test_head(self):
-        response = self.client.head('/')
-        self.assertEqual(response.content, 'HEAD /')
+def test_http(client: TestClient) -> None:
+    response = client.http('METHOD', '/path/')
+    assert response.content == 'METHOD /path/'
 
-    def test_get(self):
-        response = self.client.get('/')
-        self.assertEqual(response.content, 'GET /')
 
-    def test_put(self):
-        response = self.client.put('/')
-        self.assertEqual(response.content, 'PUT /')
+def test_options(client: TestClient) -> None:
+    response = client.options('/')
+    assert response.content == 'OPTIONS /'
 
-    def test_post(self):
-        response = self.client.post('/')
-        self.assertEqual(response.content, 'POST /')
 
-    def test_patch(self):
-        response = self.client.patch('/')
-        self.assertEqual(response.content, 'PATCH /')
+def test_head(client: TestClient) -> None:
+    response = client.head('/')
+    assert response.content == 'HEAD /'
 
-    def test_delete(self):
-        response = self.client.delete('/resource')
-        self.assertEqual(response.content, 'DELETE /resource')
+
+def test_get(client: TestClient) -> None:
+    response = client.get('/')
+    assert response.content == 'GET /'
+
+
+def test_put(client: TestClient) -> None:
+    response = client.put('/')
+    assert response.content == 'PUT /'
+
+
+def test_post(client: TestClient) -> None:
+    response = client.post('/')
+    assert response.content == 'POST /'
+
+
+def test_patch(client: TestClient) -> None:
+    response = client.patch('/')
+    assert response.content == 'PATCH /'
+
+
+def test_delete(client: TestClient) -> None:
+    response = client.delete('/resource')
+    assert response.content == 'DELETE /resource'

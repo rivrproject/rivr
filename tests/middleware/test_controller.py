@@ -1,6 +1,7 @@
 import unittest
+from typing import Optional
 
-from rivr.http import Response
+from rivr.http import Request, Response
 from rivr.middleware import Middleware, MiddlewareController
 
 
@@ -9,18 +10,19 @@ class TestMiddleware(Middleware):
         self.processed_request = 0
         self.processed_response = 0
         self.processed_exception = 0
-        self.response = None
+        self.response: Optional[Response] = None
 
-    def process_request(self, request):
+    def process_request(self, request: Request) -> Optional[Response]:
         self.processed_request += 1
         return self.response
 
-    def process_response(self, request, response):
+    def process_response(self, request: Request, response: Response) -> Response:
         self.processed_response += 1
         return self.response or response
 
-    def process_exception(self, request, exception):
+    def process_exception(self, request: Request, exception: Exception) -> Response:
         self.processed_exception += 1
+        assert self.response
         return self.response
 
 
@@ -28,23 +30,23 @@ TestMiddleware.__test__ = False  # type: ignore
 
 
 class MiddlewareControllerTests(unittest.TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         super(MiddlewareControllerTests, self).setUp()
         self.middleware = TestMiddleware()
         self.controller = MiddlewareController(self.middleware)
 
-    def test_processes_request(self):
+    def test_processes_request(self) -> None:
         self.middleware.response = Response()
-        response = self.controller.process_request(None)
-        self.assertEqual(self.middleware.processed_request, 1)
-        self.assertEqual(response, self.middleware.response)
+        response = self.controller.process_request(Request('/', 'GET'))
+        assert self.middleware.processed_request == 1
+        assert response == self.middleware.response
 
-    def test_processes_response(self):
-        self.controller.process_response(None, None)
-        self.assertEqual(self.middleware.processed_response, 1)
+    def test_processes_response(self) -> None:
+        self.controller.process_response(Request('/', 'GET'), Response())
+        assert self.middleware.processed_response == 1
 
-    def test_processes_exception(self):
+    def test_processes_exception(self) -> None:
         self.middleware.response = Response()
-        response = self.controller.process_exception(None, None)
-        self.assertEqual(self.middleware.processed_exception, 1)
-        self.assertEqual(response, self.middleware.response)
+        response = self.controller.process_exception(Request('/', 'GET'), Exception())
+        assert self.middleware.processed_exception == 1
+        assert response == self.middleware.response

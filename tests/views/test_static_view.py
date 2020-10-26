@@ -29,7 +29,7 @@ FIXTURE_DIRECTORY_INDEX = """
 
 
 class StaticViewTests(unittest.TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         super(StaticViewTests, self).setUp()
 
         self.root = os.path.dirname(__file__)
@@ -38,14 +38,14 @@ class StaticViewTests(unittest.TestCase):
         )
         self.client = TestClient(self.view)
 
-    def test_show_indexes_disabled_by_default(self):
+    def test_show_indexes_disabled_by_default(self) -> None:
         self.assertFalse(StaticView().show_indexes)
 
-    def test_directory_index_404s_when_disabled(self):
+    def test_directory_index_404s_when_disabled(self) -> None:
         with self.assertRaises(Http404):
             self.client.get('/')
 
-    def test_directory_index(self):
+    def test_directory_index(self) -> None:
         self.view = StaticView.as_view(
             show_indexes=True, document_root=self.root, use_request_path=True
         )
@@ -55,10 +55,10 @@ class StaticViewTests(unittest.TestCase):
             return content.replace('\n', '').replace(' ', '')
 
         response = self.client.get('/fixture')
-        self.assertEqual(strip(response.content), strip(FIXTURE_DIRECTORY_INDEX))
+        assert strip(response.content) == strip(FIXTURE_DIRECTORY_INDEX)
 
-    def test_file(self):
+    def test_file(self) -> None:
         response = self.client.get('/fixture/file1.py')
-        self.assertEqual(response.content, b"print('Hello World')\n")
-        self.assertEqual(response.headers['Content-Type'], 'text/x-python')
-        self.assertEqual(response.headers['Content-Length'], '21')
+        assert response.content == b"print('Hello World')\n"
+        assert response.headers['Content-Type'] == 'text/x-python'
+        assert response.headers['Content-Length'] == '21'

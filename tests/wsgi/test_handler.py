@@ -1,11 +1,12 @@
 import unittest
+from typing import List, Tuple
 
-from rivr.http import Http404, Response
+from rivr.http import Http404, Request, Response
 from rivr.wsgi import WSGIHandler
 
 
 class WSGIHandlerTests(unittest.TestCase):
-    def setUp(self):
+    def setUp(self) -> None:
         super(WSGIHandlerTests, self).setUp()
 
         self.environ = {
@@ -16,48 +17,48 @@ class WSGIHandlerTests(unittest.TestCase):
             'wsgi.url_scheme': 'https',
         }
 
-    def hello_view(self, request):
+    def hello_view(self, request: Request) -> Response:
         return Response('Hello World')
 
-    def start_response(self, status, headers):
+    def start_response(self, status: str, headers: List[Tuple[str, str]]) -> None:
         self.status = status
         self.headers = headers
 
-    def test_sets_status(self):
+    def test_sets_status(self) -> None:
         handler = WSGIHandler(self.hello_view)
         handler(self.environ, self.start_response)
-        self.assertEqual(self.status, '200 OK')
+        assert self.status == '200 OK'
 
-    def test_sets_headers(self):
+    def test_sets_headers(self) -> None:
         handler = WSGIHandler(self.hello_view)
         handler(self.environ, self.start_response)
-        self.assertEqual(self.headers, [('Content-Type', 'text/html; charset=utf8')])
+        assert self.headers == [('Content-Type', 'text/html; charset=utf8')]
 
-    def test_returns_content(self):
+    def test_returns_content(self) -> None:
         handler = WSGIHandler(self.hello_view)
         content = handler(self.environ, self.start_response)
-        self.assertEqual(content, [b'Hello World'])
+        assert content == [b'Hello World']
 
-    def test_catches_http_404(self):
-        def view(request):
+    def test_catches_http_404(self) -> None:
+        def view(request: Request) -> Response:
             raise Http404('Not found.')
 
         handler = WSGIHandler(view)
         handler(self.environ, self.start_response)
-        self.assertEqual(self.status, '404 NOT FOUND')
+        assert self.status == '404 NOT FOUND'
 
-    def test_catches_exceptions(self):
-        def view(request):
+    def test_catches_exceptions(self) -> None:
+        def view(request: Request) -> Response:
             raise Exception('Not found.')
 
         handler = WSGIHandler(view)
         handler(self.environ, self.start_response)
-        self.assertEqual(self.status, '500 INTERNAL SERVER ERROR')
+        assert self.status == '500 INTERNAL SERVER ERROR'
 
-    def test_handles_view_not_returning_response(self):
-        def view(request):
+    def test_handles_view_not_returning_response(self) -> None:
+        def view(request: Request) -> None:
             pass
 
-        handler = WSGIHandler(view)
+        handler = WSGIHandler(view)  # type: ignore
         handler(self.environ, self.start_response)
-        self.assertEqual(self.status, '500 INTERNAL SERVER ERROR')
+        assert self.status == '500 INTERNAL SERVER ERROR'
