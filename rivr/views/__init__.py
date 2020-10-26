@@ -1,1 +1,3 @@
-from rivr.views.base import View, RedirectView
+from rivr.views.base import RedirectView, View
+
+__all__ = ['View', 'RedirectView']

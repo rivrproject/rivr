@@ -1,5 +1,5 @@
-from typing import Optional
 from base64 import b64decode
+from typing import Optional
 
 from rivr.http import Request, Response
 from rivr.middleware.base import Middleware

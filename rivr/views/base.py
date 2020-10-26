@@ -1,18 +1,13 @@
 from typing import Callable, List, Optional
-from email.utils import formatdate, parsedate
-from datetime import datetime
-from calendar import timegm
 
 from rivr.http import (
-    Request,
     Http404,
+    Request,
     Response,
-    ResponseNotAllowed,
-    ResponseRedirect,
-    ResponsePermanentRedirect,
-    RESTResponse,
     ResponseNoContent,
-    ResponseNotModified,
+    ResponseNotAllowed,
+    ResponsePermanentRedirect,
+    ResponseRedirect,
 )
 
 __all__ = ['View', 'RedirectView']

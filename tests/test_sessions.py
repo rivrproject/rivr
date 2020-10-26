@@ -1,7 +1,7 @@
 import unittest
 
 from rivr.http import Request, Response
-from rivr.sessions import SessionMiddleware, MemorySessionStore, BaseSession
+from rivr.sessions import BaseSession, MemorySessionStore, SessionMiddleware
 
 
 class SessionMiddlewareTests(unittest.TestCase):

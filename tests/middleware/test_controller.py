@@ -1,7 +1,7 @@
 import unittest
 
 from rivr.http import Response
-from rivr.middleware import MiddlewareController, Middleware
+from rivr.middleware import Middleware, MiddlewareController
 
 
 class TestMiddleware(Middleware):

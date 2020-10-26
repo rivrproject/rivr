@@ -1,12 +1,11 @@
-from typing import Optional, Dict, Any, Callable, Iterable, IO
-import sys
 import logging
-from wsgiref.headers import Headers
+import sys
+from typing import IO, Any, Callable, Dict, Iterable
 from urllib.parse import parse_qsl
 
 from rivr.http.message import HTTPMessage
-from rivr.http.request import parse_cookie, Query, Request
-from rivr.http.response import Response, ResponseNotFound, Http404
+from rivr.http.request import Query, parse_cookie
+from rivr.http.response import Http404, Response, ResponseNotFound
 from rivr.utils import JSON_CONTENT_TYPES, JSONDecoder
 
 logger = logging.getLogger('rivr.request')

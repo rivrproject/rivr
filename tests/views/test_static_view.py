@@ -1,9 +1,9 @@
 import os
 import unittest
+
 from rivr.http import Http404
 from rivr.tests import TestClient
 from rivr.views.static import StaticView
-
 
 FIXTURE_DIRECTORY_INDEX = """
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"

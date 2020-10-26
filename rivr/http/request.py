@@ -1,7 +1,6 @@
-from typing import Dict, Optional, Union, List, IO
+from http.cookies import CookieError, SimpleCookie
 from io import BytesIO
-from wsgiref.headers import Headers
-from http.cookies import SimpleCookie, CookieError
+from typing import IO, Dict, List, Optional, Union
 from urllib.parse import parse_qsl, urlencode
 
 from rivr.http.message import HTTPMessage

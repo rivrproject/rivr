@@ -9,7 +9,7 @@ class JSONEncoder(json.JSONEncoder):
         if hasattr(obj, 'isoformat'):
             return obj.isoformat()
 
-        return super(DateTimeJSONEncoder, self).default(obj)
+        return super(JSONEncoder, self).default(obj)
 
 
 class JSONDecoder(json.JSONDecoder):

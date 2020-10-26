@@ -1,15 +1,14 @@
+import mimetypes
 import os
 import posixpath
-from urllib.parse import unquote
-from functools import reduce
-import mimetypes
-import stat
 import re
-from email.utils import formatdate, parsedate_tz, mktime_tz
+import stat
+from email.utils import formatdate, mktime_tz, parsedate_tz
+from functools import reduce
+from urllib.parse import unquote
 
+from rivr.http import Http404, Request, Response, ResponseNotModified, ResponseRedirect
 from rivr.views.base import View
-from rivr.http import Request, Response, ResponseRedirect, ResponseNotModified, Http404
-
 
 DEFAULT_DIRECTORY_INDEX_TEMPLATE = """
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"

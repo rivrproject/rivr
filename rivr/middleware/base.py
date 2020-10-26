@@ -1,4 +1,5 @@
-from typing import Optional, Callable
+from typing import Callable, Optional
+
 from rivr.http import Request, Response
 
 __all__ = ['Middleware']

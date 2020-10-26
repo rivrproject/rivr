@@ -1,8 +1,8 @@
-from typing import Callable, Optional, Tuple, Iterable, Any, Dict
 import re
+from typing import Any, Callable, Dict, Iterable, Optional, Tuple
 
+from rivr.http import Http404, Request, Response, ResponsePermanentRedirect
 from rivr.importlib import import_module
-from rivr.http import Request, Http404, Response, ResponsePermanentRedirect
 
 
 class Resolver404(Http404):

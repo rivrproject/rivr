@@ -1,4 +1,5 @@
 from typing import Callable
+
 from rivr.http import Response
 
 

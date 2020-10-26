@@ -1,12 +1,25 @@
-VERSION = '0.8.0'
-
-from rivr.http import Response, Http404
+from rivr import views
+from rivr.http import Http404, Response
+from rivr.middleware import ErrorWrapper, Middleware, MiddlewareController
+from rivr.middleware.auth import AuthMiddleware
+from rivr.middleware.debug import DebugMiddleware
+from rivr.router import Domain, Router, include, url
 from rivr.server import serve
 
-from rivr.middleware import Middleware, MiddlewareController, ErrorWrapper
-from rivr.middleware.debug import DebugMiddleware
-from rivr.middleware.auth import AuthMiddleware
+__all__ = [
+    'views',
+    'Http404',
+    'Response',
+    'ErrorWrapper',
+    'Middleware',
+    'MiddlewareController',
+    'AuthMiddleware',
+    'DebugMiddleware',
+    'Domain',
+    'Router',
+    'include',
+    'url',
+    'serve',
+]
 
-from rivr.router import Router, Domain, url, include
-
-from rivr import views
+VERSION = '0.8.0'

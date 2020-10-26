@@ -1,9 +1,9 @@
 from typing import Callable
-from wsgiref.simple_server import WSGIServer, WSGIRequestHandler
+from wsgiref.simple_server import WSGIRequestHandler, WSGIServer
 
-from rivr.wsgi import WSGIHandler
-from rivr.middleware.debug import DebugMiddleware
 from rivr.http import Request, Response
+from rivr.middleware.debug import DebugMiddleware
+from rivr.wsgi import WSGIHandler
 
 __all__ = ['serve']
 

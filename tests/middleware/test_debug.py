@@ -1,6 +1,7 @@
 import unittest
-from rivr.middleware.debug import DebugMiddleware
+
 from rivr.http import Http404
+from rivr.middleware.debug import DebugMiddleware
 
 
 class DebugMiddlewareTests(unittest.TestCase):

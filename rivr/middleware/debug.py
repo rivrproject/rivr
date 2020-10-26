@@ -2,16 +2,16 @@ import sys
 
 try:
     from pygments import highlight  # type: ignore
-    from pygments.lexers import PythonTracebackLexer  # type: ignore
     from pygments.formatters import HtmlFormatter  # type: ignore
+    from pygments.lexers import PythonTracebackLexer  # type: ignore
 
     HAS_PYGMENTS = True
 except ImportError:
     HAS_PYGMENTS = False
 
 from rivr import VERSION
+from rivr.http import Http404, Request, Response, ResponseNotFound
 from rivr.middleware import Middleware
-from rivr.http import Request, Response, ResponseNotFound, Http404
 
 __all__ = ['DebugMiddleware']
 

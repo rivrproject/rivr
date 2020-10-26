@@ -1,14 +1,14 @@
-import unittest
 import datetime
+import unittest
 
 from rivr.http import (
     Response,
     ResponseNoContent,
-    ResponseRedirect,
     ResponseNotAllowed,
-    ResponsePermanentRedirect,
     ResponseNotFound,
     ResponseNotModified,
+    ResponsePermanentRedirect,
+    ResponseRedirect,
 )
 
 

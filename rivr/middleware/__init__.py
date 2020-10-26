@@ -1,6 +1,7 @@
-from typing import Optional, Callable, List
+from typing import Callable, List, Optional
+
+from rivr.http import Http404, Request, Response, ResponseNotFound
 from rivr.middleware.base import Middleware
-from rivr.http import Request, Response, ResponseNotFound, Http404
 
 
 class MiddlewareController(Middleware):

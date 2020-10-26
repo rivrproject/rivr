@@ -1,10 +1,10 @@
-from typing import Optional, Dict
+import hashlib
 import time
 from random import random
-import hashlib
+from typing import Dict, Optional
 
-from rivr.middleware import Middleware
 from rivr.http import Request, Response
+from rivr.middleware import Middleware
 
 
 class BaseSession(object):

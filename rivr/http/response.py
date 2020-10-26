@@ -1,10 +1,9 @@
-from typing import Optional, List, Union, Iterable, Tuple
-from http.cookies import SimpleCookie
-from wsgiref.headers import Headers
 import datetime
+from http.cookies import SimpleCookie
+from typing import Iterable, List, Optional, Tuple, Union
 
-from rivr.http.request import Request
 from rivr.http.message import HTTPMessage
+from rivr.http.request import Request
 from rivr.utils import JSON_CONTENT_TYPES, JSONEncoder
 
 

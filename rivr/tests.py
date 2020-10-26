@@ -1,4 +1,5 @@
-from typing import Callable, Dict, Optional, Union, IO
+from typing import IO, Callable, Dict, Optional, Union
+
 from rivr.http import Request, Response
 
 __all__ = ['TestClient']

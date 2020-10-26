@@ -1,5 +1,4 @@
-from typing import Union, Optional, Dict, BinaryIO
-from io import BytesIO
+from typing import Dict, Optional, Union
 from wsgiref.headers import Headers
 
 

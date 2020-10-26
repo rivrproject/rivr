@@ -1,6 +1,6 @@
 from io import BytesIO
+
 from rivr.http.request import Query, Request
-from wsgiref.headers import Headers
 
 
 def test_query_parse():

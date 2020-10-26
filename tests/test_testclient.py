@@ -1,4 +1,5 @@
 import unittest
+
 from rivr.http import Response
 from rivr.tests import TestClient
 
