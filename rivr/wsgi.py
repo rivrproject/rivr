@@ -1,10 +1,9 @@
 import logging
 import sys
-from typing import IO, Any, Callable, Dict, Iterable
+from typing import Any, Callable, Dict, Iterable
 from urllib.parse import parse_qsl
 
-from rivr.http.message import HTTPMessage
-from rivr.http.request import Query, parse_cookie
+from rivr.http.request import Query, parse_cookie, Request
 from rivr.http.response import Http404, Response, ResponseNotFound
 from rivr.utils import JSON_CONTENT_TYPES, JSONDecoder
 
@@ -55,19 +54,28 @@ STATUS_CODES = {
 }
 
 
-class WSGIRequest(HTTPMessage):
+class WSGIRequest(Request):
     """
     https://wsgi.readthedocs.io/en/latest/definitions.html
     """
 
     def __init__(self, environ: Dict[str, Any]):
-        super(WSGIRequest, self).__init__()
+        method: str = environ['REQUEST_METHOD']
+        path: str = environ['PATH_INFO']
+
+        query = Query(environ.get('QUERY_STRING', ''))
+
+        super(WSGIRequest, self).__init__(
+            path, method, query=query, body=environ['wsgi.input']
+        )
 
         self.environ = environ
-
-        self.method: str = environ['REQUEST_METHOD']
-        self.path: str = environ['PATH_INFO']
         self.META = environ
+
+        if 'HTTP_HOST' in environ:
+            self.host = environ['HTTP_HOST']
+        else:
+            self.host = environ['SERVER_NAME']
 
         content_type = self.environ.get('CONTENT_TYPE', None)
         if content_type:
@@ -98,19 +106,6 @@ class WSGIRequest(HTTPMessage):
         return self.environ['wsgi.url_scheme']
 
     @property
-    def host(self) -> str:
-        """
-        Hostname used for the request. For example, `rivr.com`.
-        """
-
-        host = self.environ.get('HTTP_HOST', None)
-
-        if host is None:
-            host = self.environ.get('SERVER_NAME')
-
-        return host
-
-    @property
     def port(self) -> int:
         """
         Port used for the connection.
@@ -131,22 +126,6 @@ class WSGIRequest(HTTPMessage):
             url += ':' + str(port)
 
         return url + self.path
-
-    @property
-    def body(self) -> IO[bytes]:
-        """
-        Request body (file descriptor).
-        """
-
-        return self.environ['wsgi.input']
-
-    @property
-    def query(self) -> Query:
-        return Query(self.environ.get('QUERY_STRING', ''))
-
-    @property
-    def GET(self) -> Dict[str, str]:
-        return dict((k, v) for k, v in self.query._query)
 
     # Attributes
 
@@ -189,7 +168,7 @@ class WSGIRequest(HTTPMessage):
 class WSGIHandler(object):
     request_class = WSGIRequest
 
-    def __init__(self, view: Callable[..., Response]):
+    def __init__(self, view: Callable[[Request], Response]):
         self.view = view
 
     def __call__(

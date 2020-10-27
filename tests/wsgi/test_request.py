@@ -16,6 +16,7 @@ class WSGIRequestTest(unittest.TestCase):
             'SERVER_NAME': 'example.com',
             'SERVER_PORT': 443,
             'wsgi.url_scheme': 'https',
+            'wsgi.input': BytesIO(),
         }
         self.request = WSGIRequest(self.environ)
 
@@ -57,6 +58,8 @@ class WSGIRequestTest(unittest.TestCase):
 
     def test_host_header_preferred(self) -> None:
         self.environ['HTTP_HOST'] = 'dev.example.com'
+
+        self.request = WSGIRequest(self.environ)
 
         assert self.request.host == 'dev.example.com'
 

@@ -81,18 +81,26 @@ class Request(HTTPMessage):
     view gets passed the clients request.
     """
 
+    host = 'localhost'
+
     def __init__(
         self,
         path: str = '/',
         method: str = 'GET',
-        query: Optional[Dict[str, str]] = None,
+        query: Optional[Union[Dict[str, str], Query]] = None,
         headers: Optional[Dict[str, str]] = None,
         body: Optional[Union[bytes, IO[bytes]]] = None,
     ):
-        self.host = 'localhost'
         self.path = path
         self.method = method
-        self.query = Query(query)
+
+        if query:
+            if isinstance(query, Query):
+                self.query = query
+            else:
+                self.query = Query(query)
+        else:
+            self.query = Query()
 
         if body:
             if isinstance(body, bytes):

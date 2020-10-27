@@ -1,5 +1,6 @@
 import unittest
 from typing import List, Tuple
+from io import BytesIO
 
 from rivr.http import Http404, Request, Response
 from rivr.wsgi import WSGIHandler
@@ -15,6 +16,7 @@ class WSGIHandlerTests(unittest.TestCase):
             'SERVER_NAME': 'example.com',
             'SERVER_PORT': 443,
             'wsgi.url_scheme': 'https',
+            'wsgi.input': BytesIO(),
         }
 
     def hello_view(self, request: Request) -> Response:
