@@ -2,10 +2,10 @@ from typing import IO, Callable, Dict, Optional, Union
 
 from rivr.http import Request, Response
 
-__all__ = ['TestClient']
+__all__ = ['Client']
 
 
-class TestClient(object):
+class Client(object):
     def __init__(self, handler: Callable[[Request], Response]):
         self.handler = handler
 
@@ -87,4 +87,4 @@ class TestClient(object):
         return self.http('DELETE', path, query=query, headers=headers, body=body)
 
 
-TestClient.__test__ = False  # type: ignore
+Client.__test__ = False  # type: ignore

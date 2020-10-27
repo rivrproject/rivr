@@ -13,6 +13,7 @@
 - `_` in `Request`s headers are now replaced by dashes (`-`), thus the header
   `Content-Type` is named as `Content-Type` instead of `Content_Type`.
 - `RESTResponse` has been removed.
+- `rivr.tests.TestClient` has been renamed to `rivr.test.Client`
 
 ### Enhancements
 

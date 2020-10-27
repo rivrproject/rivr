@@ -29,6 +29,7 @@ Contents:
    middleware
    server
    router
+   testing
 
 Indices and tables
 ==================

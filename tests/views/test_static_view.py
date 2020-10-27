@@ -2,7 +2,7 @@ import os
 import unittest
 
 from rivr.http import Http404
-from rivr.tests import TestClient
+from rivr.test import Client
 from rivr.views.static import StaticView
 
 FIXTURE_DIRECTORY_INDEX = """
@@ -36,7 +36,7 @@ class StaticViewTests(unittest.TestCase):
         self.view = StaticView.as_view(
             show_indexes=False, document_root=self.root, use_request_path=True
         )
-        self.client = TestClient(self.view)
+        self.client = Client(self.view)
 
     def test_show_indexes_disabled_by_default(self) -> None:
         self.assertFalse(StaticView().show_indexes)
@@ -49,7 +49,7 @@ class StaticViewTests(unittest.TestCase):
         self.view = StaticView.as_view(
             show_indexes=True, document_root=self.root, use_request_path=True
         )
-        self.client = TestClient(self.view)
+        self.client = Client(self.view)
 
         def strip(content):
             return content.replace('\n', '').replace(' ', '')
