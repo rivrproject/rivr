@@ -87,7 +87,7 @@ class WSGIRequest(Request):
 
         for key in self.META:
             if key.startswith('HTTP_'):
-                self.headers[key[5:]] = self.META[key]
+                self.headers[key[5:].replace('_', '-')] = self.META[key]
 
     @property
     def is_secure(self) -> bool:

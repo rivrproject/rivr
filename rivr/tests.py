@@ -17,6 +17,11 @@ class TestClient(object):
         headers: Optional[Dict[str, str]] = None,
         body: Optional[Union[bytes, IO[bytes]]] = None,
     ) -> Response:
+        if headers:
+            for key in headers.keys():
+                if '_' in key:
+                    raise Exception('Replace _ with - in header keys "{}"'.format(key))
+
         request = Request(path, method, headers=headers, query=query, body=body)
         return self.handler(request)
 
