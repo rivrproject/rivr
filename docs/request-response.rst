@@ -11,6 +11,13 @@ HTTP Message
 
    :members: headers, content_type, content_length
 
+.. autoclass:: wsgiref.headers.Headers
+
+   .. automethod:: __len__
+   .. automethod:: __contains__
+   .. automethod:: __getitem__
+   .. automethod:: __setitem__
+
 Request
 =======
 
