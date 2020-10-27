@@ -1,6 +1,6 @@
 import unittest
-from typing import List, Tuple
 from io import BytesIO
+from typing import List, Tuple
 
 from rivr.http import Http404, Request, Response
 from rivr.wsgi import WSGIHandler

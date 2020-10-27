@@ -3,8 +3,6 @@ from http.cookies import SimpleCookie
 from typing import Iterable, List, Optional, Tuple, Union
 
 from rivr.http.message import HTTPMessage
-from rivr.http.request import Request
-from rivr.utils import JSON_CONTENT_TYPES, JSONEncoder
 
 
 class Http404(Exception):
@@ -160,11 +158,3 @@ class ResponseNotAllowed(Response):
     def __init__(self, permitted_methods: List[str]):
         super(ResponseNotAllowed, self).__init__()
         self.headers['Allow'] = ', '.join(permitted_methods)
-
-
-class RESTResponse(Response):
-    def __init__(self, request: Request, payload, status: Optional[int] = None):
-        content = JSONEncoder().encode(payload)
-        content_type = JSON_CONTENT_TYPES[0]
-
-        super(RESTResponse, self).__init__(content, status, content_type)

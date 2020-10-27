@@ -1,11 +1,11 @@
+import json
 import logging
 import sys
 from typing import Any, Callable, Dict, Iterable
 from urllib.parse import parse_qsl
 
-from rivr.http.request import Query, parse_cookie, Request
+from rivr.http.request import Query, Request, parse_cookie
 from rivr.http.response import Http404, Response, ResponseNotFound
-from rivr.utils import JSON_CONTENT_TYPES, JSONDecoder
 
 logger = logging.getLogger('rivr.request')
 
@@ -143,9 +143,9 @@ class WSGIRequest(Request):
                 content = self.body.read(self.content_length)
                 content_type = self.content_type.split(';')[0]
 
-                if content_type in JSON_CONTENT_TYPES:
+                if content_type == 'application/json':
                     content = content.decode('utf-8')
-                    self._attributes = JSONDecoder().decode(content)
+                    self._attributes = json.loads(content)
                 elif content_type == 'application/x-www-form-urlencoded':
                     content = content.decode('utf-8')
                     data = parse_qsl(content, True)

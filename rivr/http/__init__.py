@@ -8,7 +8,6 @@ from rivr.http.response import (
     ResponseNotModified,
     ResponsePermanentRedirect,
     ResponseRedirect,
-    RESTResponse,
 )
 
 __all__ = [
@@ -21,5 +20,4 @@ __all__ = [
     'ResponseNotModified',
     'ResponsePermanentRedirect',
     'ResponseRedirect',
-    'RESTResponse',
 ]
