@@ -1,13 +1,13 @@
 import hashlib
 import time
 from random import random
-from typing import Any, Dict, Optional, Protocol
+from typing import Any, Dict, Optional
 
 from rivr.http import Request, Response
 from rivr.middleware import Middleware
 
 
-class Session(Protocol):
+class Session:  # FIXME: once dropped py 3.7 move to Protocol
     def __contains__(self, key: str) -> bool:
         raise NotImplementedError
 
@@ -27,7 +27,7 @@ class Session(Protocol):
         raise NotImplementedError
 
 
-class SessionStore(Protocol):
+class SessionStore:  # FIXME: once dropped py 3.7 move to Protocol
     def __call__(self, *args, **kwargs) -> Session:
         raise NotImplementedError
 
