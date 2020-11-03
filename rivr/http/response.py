@@ -98,7 +98,7 @@ class Response(HTTPMessage):
         headers = [(k, v) for k, v in self.headers.items()]
 
         for cookie in self.cookies.values():
-            headers.append(('Set-Cookie', str(cookie.output(header=''))))
+            headers.append(('Set-Cookie', cookie.OutputString()))
 
         return headers
 
