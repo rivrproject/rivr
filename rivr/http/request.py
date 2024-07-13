@@ -1,3 +1,5 @@
+from datetime import datetime
+from email.utils import parsedate_to_datetime
 from http.cookies import CookieError, SimpleCookie
 from io import BytesIO
 from typing import IO, Dict, List, Optional, Union
@@ -118,6 +120,51 @@ class Request(HTTPMessage):
             self._cookies = parse_cookie(self.headers.get_all('Cookie'))
 
         return self._cookies
+
+    # Header accessors
+
+    @property
+    def if_match(self) -> Optional[List[str]]:
+        if_match = self.headers.get('if-match')
+        if not if_match:
+            return None
+
+        return [m.strip() for m in if_match.split(',')]
+
+    @property
+    def if_none_match(self) -> Optional[List[str]]:
+        if_none_match = self.headers.get('if-none-match')
+        if not if_none_match:
+            return None
+
+        return [m.strip() for m in if_none_match.split(',')]
+
+    @property
+    def if_modified_since(self) -> Optional[datetime]:
+        value = self.headers.get('if-modified-since')
+        if value is None:
+            return None
+
+        try:
+            return parsedate_to_datetime(value)
+        except ValueError:
+            # A recipient MUST ignore the If-Modified-Since header field if
+            # the received field value is not a valid HTTP-date
+            return None
+
+    @property
+    def if_unmodified_since(self) -> Optional[datetime]:
+        value = self.headers.get('if-unmodified-since')
+        if value is None:
+            return None
+
+        try:
+            return parsedate_to_datetime(value)
+        except ValueError:
+            # A recipient MUST ignore the If-Unmodified-Since header field
+            # if the received field value is not a valid HTTP-date
+            # (including when the field value appears to be a list of dates).
+            return None
 
     # Deprecated
     @property

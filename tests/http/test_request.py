@@ -1,3 +1,4 @@
+import datetime
 from io import BytesIO
 
 from rivr.http.request import Query, Request
@@ -85,3 +86,53 @@ def test_no_cookies() -> None:
     request = Request()
 
     assert len(request.cookies) == 0
+
+
+def test_if_match() -> None:
+    request = Request(headers={})
+    assert request.if_match is None
+
+    request = Request(headers={'If-Match': '"tag1", "tag2"'})
+    assert request.if_match == ['"tag1"', '"tag2"']
+
+
+def test_if_none_match() -> None:
+    request = Request(headers={})
+    assert request.if_none_match is None
+
+    request = Request(headers={'If-None-Match': '"tag1", "tag2"'})
+    assert request.if_none_match == ['"tag1"', '"tag2"']
+
+
+def test_if_modified_since() -> None:
+    request = Request(headers={})
+    assert request.if_modified_since is None
+
+    request = Request(headers={'If-Modified-Since': 'invalid'})
+    assert request.if_modified_since is None
+
+    request = Request(
+        headers={
+            'If-Modified-Since': 'Sat, 29 Oct 1994 19:43:31 GMT',
+        }
+    )
+    assert request.if_modified_since == datetime.datetime(
+        1994, 10, 29, 19, 43, 31, tzinfo=datetime.timezone.utc
+    )
+
+
+def test_if_unmodified_since() -> None:
+    request = Request(headers={})
+    assert request.if_unmodified_since is None
+
+    request = Request(headers={'If-Unmodified-Since': 'invalid'})
+    assert request.if_unmodified_since is None
+
+    request = Request(
+        headers={
+            'If-Unmodified-Since': 'Sat, 29 Oct 1994 19:43:31 GMT',
+        }
+    )
+    assert request.if_unmodified_since == datetime.datetime(
+        1994, 10, 29, 19, 43, 31, tzinfo=datetime.timezone.utc
+    )
