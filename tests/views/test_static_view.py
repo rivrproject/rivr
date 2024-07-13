@@ -62,3 +62,29 @@ class StaticViewTests(unittest.TestCase):
         assert response.content == b"print('Hello World')\n"
         assert response.headers['Content-Type'] == 'text/x-python'
         assert response.headers['Content-Length'] == '21'
+        assert response.headers['Last-Modified'] == 'Sat, 13 Jul 2024 19:47:43 GMT'
+
+    def test_file_not_modified(self) -> None:
+        response = self.client.get(
+            '/fixture/file1.py',
+            headers={
+                'If-Modified-Since': 'Sat, 13 Jul 2024 19:47:43 GMT',
+            },
+        )
+        assert response.status_code == 304
+
+        response = self.client.get(
+            '/fixture/file1.py',
+            headers={
+                'If-Modified-Since': 'Sat, 13 Jul 2024 20:47:43 GMT',
+            },
+        )
+        assert response.status_code == 304
+
+        response = self.client.get(
+            '/fixture/file1.py',
+            headers={
+                'If-Modified-Since': 'Sat, 13 Jul 2024 18:47:43 GMT',
+            },
+        )
+        assert response.status_code == 200

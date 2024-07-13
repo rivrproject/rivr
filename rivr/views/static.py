@@ -1,3 +1,4 @@
+import datetime
 import mimetypes
 import os
 import posixpath
@@ -44,29 +45,13 @@ class StaticView(View):
     use_request_path = False
     index = None
 
-    def was_modified_since(self, mtime=0, size=0) -> bool:
-        header = self.request.headers.get('HTTP_IF_MODIFIED_SINCE')
-        if header is None:
+    def was_modified_since(self, mtime: float) -> bool:
+        if_modified_since = self.request.if_modified_since
+        if not if_modified_since:
             return True
 
-        matches = re.match(r'^([^;]+)(; length=([0-9]+))?$', header, re.IGNORECASE)
-        if not matches:
-            return True
-
-        date = parsedate_tz(matches.group(1))
-        if not date:
-            return True
-
-        header_mtime = mktime_tz(date)
-        header_len = matches.group(3)
-
-        if header_len and int(header_len) != size:
-            return True
-
-        if mtime > header_mtime:
-            return True
-
-        return False
+        modified_time = datetime.datetime.fromtimestamp(mtime, tz=datetime.timezone.utc)
+        return modified_time > if_modified_since
 
     def directory_index(self, request: Request, path: str, fullpath: str) -> Response:
         if not self.show_indexes:
@@ -99,7 +84,7 @@ class StaticView(View):
 
     def get(self, request: Request, path: str = '') -> Response:
         if not self.document_root:
-            raise Exception('Improperly configured view')
+            raise Exception('StaticView document_root must be set')
 
         if self.use_request_path:
             path = request.path
@@ -114,8 +99,8 @@ class StaticView(View):
                 # Strip empty path components.
                 continue
 
-            drive, part = os.path.splitdrive(part)
-            head, part = os.path.split(part)
+            _, part = os.path.splitdrive(part)
+            _, part = os.path.split(part)
 
             if part in (os.curdir, os.pardir):
                 # Strip '.' and '..' in path.
@@ -143,9 +128,9 @@ class StaticView(View):
         return self.file(fullpath)
 
     def file(self, fullpath: str) -> Response:
-        statobj = os.stat(fullpath)
+        mtime = os.stat(fullpath)[stat.ST_MTIME]
 
-        if not self.was_modified_since(statobj[stat.ST_MTIME], statobj[stat.ST_SIZE]):
+        if not self.was_modified_since(mtime):
             return ResponseNotModified()
 
         mimetype = mimetypes.guess_type(fullpath)[0] or 'application/octet-stream'
@@ -154,9 +139,7 @@ class StaticView(View):
             contents = fp.read()
 
         response = Response(contents, content_type=mimetype)
-        response.headers['Last-Modified'] = '%s GMT' % (
-            formatdate(statobj[stat.ST_MTIME])[:25]
-        )
+        response.headers['Last-Modified'] = '%s GMT' % (formatdate(mtime)[:25])
         response.headers['Content-Length'] = str(len(contents))
 
         return response
