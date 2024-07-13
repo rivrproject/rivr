@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "rivr"
+version = "0.9.0"
+description = "microweb framework"
+authors = ["Kyle Fuller <kyle@fuller.li>"]
+license = "BSD"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.6"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
