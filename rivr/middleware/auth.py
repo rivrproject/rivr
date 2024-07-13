@@ -47,21 +47,16 @@ class AuthMiddleware(Middleware):
         return None
 
     def check_login(self, request: Request) -> Union[AnnonymousUser, User]:
-        authorization = request.headers['Authorization']
-
+        authorization = request.authorization
         if not authorization:
             return AnnonymousUser()
 
-        try:
-            method, key = authorization.split()
-        except ValueError:
-            return AnnonymousUser()
-
-        if method != 'Basic':
+        scheme, token = authorization
+        if scheme != 'Basic':
             return AnnonymousUser()
 
         try:
-            username, password = b64decode(key).decode('utf-8').split(':')
+            username, password = b64decode(token).decode('utf-8').split(':')
         except ValueError:
             return AnnonymousUser()
 

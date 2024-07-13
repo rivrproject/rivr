@@ -88,6 +88,18 @@ def test_no_cookies() -> None:
     assert len(request.cookies) == 0
 
 
+def test_authorization() -> None:
+    request = Request(headers={})
+    assert request.authorization is None
+
+    request = Request(headers={'authorization': 'scheme token'})
+    assert request.authorization == ('scheme', 'token')
+
+    # auth-params are currently encoded within token field
+    request = Request(headers={'authorization': 'Digest username="test"'})
+    assert request.authorization == ('Digest', 'username="test"')
+
+
 def test_if_match() -> None:
     request = Request(headers={})
     assert request.if_match is None

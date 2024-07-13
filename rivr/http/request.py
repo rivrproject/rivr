@@ -2,7 +2,7 @@ from datetime import datetime
 from email.utils import parsedate_to_datetime
 from http.cookies import CookieError, SimpleCookie
 from io import BytesIO
-from typing import IO, Dict, List, Optional, Union
+from typing import IO, Dict, List, Optional, Tuple, Union
 from urllib.parse import parse_qsl, urlencode
 
 from rivr.http.message import HTTPMessage
@@ -122,6 +122,15 @@ class Request(HTTPMessage):
         return self._cookies
 
     # Header accessors
+
+    @property
+    def authorization(self) -> Optional[Tuple[str, str]]:
+        authorization = self.headers.get('authorization')
+        if not authorization:
+            return None
+
+        scheme, _, token = authorization.partition(' ')
+        return (scheme, token)
 
     @property
     def if_match(self) -> Optional[List[str]]:
