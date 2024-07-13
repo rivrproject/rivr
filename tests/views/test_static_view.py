@@ -57,12 +57,32 @@ class StaticViewTests(unittest.TestCase):
         response = self.client.get('/fixture')
         assert strip(response.content) == strip(FIXTURE_DIRECTORY_INDEX)
 
-    def test_file(self) -> None:
-        response = self.client.get('/fixture/file1.py')
+    def test_index_file(self) -> None:
+        self.view = StaticView.as_view(
+            show_indexes=True,
+            document_root=self.root,
+            use_request_path=True,
+            index='file1.py',
+        )
+        self.client = Client(self.view)
+        response = self.client.get('/fixture')
+        assert response.status_code == 200
         assert response.content == b"print('Hello World')\n"
         assert response.headers['Content-Type'] == 'text/x-python'
         assert response.headers['Content-Length'] == '21'
         assert response.headers['Last-Modified'] == 'Sat, 13 Jul 2024 19:47:43 GMT'
+
+    def test_file(self) -> None:
+        response = self.client.get('/fixture/file1.py')
+        assert response.status_code == 200
+        assert response.content == b"print('Hello World')\n"
+        assert response.headers['Content-Type'] == 'text/x-python'
+        assert response.headers['Content-Length'] == '21'
+        assert response.headers['Last-Modified'] == 'Sat, 13 Jul 2024 19:47:43 GMT'
+
+    def test_non_existent_file(self) -> None:
+        with self.assertRaises(Http404):
+            self.client.get('/fixture/not_found.py')
 
     def test_file_not_modified(self) -> None:
         response = self.client.get(
