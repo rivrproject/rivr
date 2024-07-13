@@ -38,11 +38,11 @@ class RouterTest(unittest.TestCase):
             return Response()
 
         r = Router(
-            (r'^test/$', func),
+            (r'^/test/$', func),
         )
 
-        assert r.is_valid_path('test/')
-        assert not r.is_valid_path('not-found/')
+        assert r.is_valid_path('/test/')
+        assert not r.is_valid_path('/not-found/')
 
     def test_register_class_view(self) -> None:
         r = Router()
@@ -55,3 +55,29 @@ class RouterTest(unittest.TestCase):
         response = r(Request('/test/'))
         assert response.status_code == 200
         assert response.content == 'It works'
+
+    def test_append_slashes(self) -> None:
+        def func(request: Request) -> Response:
+            return Response()
+
+        r = Router(
+            (r'^/test/$', func),
+        )
+
+        response = r(Request('/test'))
+        assert response.status_code == 301
+        assert response.headers['location'] == '/test/'
+
+    def test_joining_routers(self) -> None:
+        def func(request: Request) -> Response:
+            return Response()
+
+        router = Router(
+            (r'^/test1/$', func),
+        )
+        assert len(router.urlpatterns) == 1
+
+        router += Router(
+            (r'^/test2/$', func),
+        )
+        assert len(router.urlpatterns) == 2
