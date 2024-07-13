@@ -1,6 +1,7 @@
 import json
 import logging
 import sys
+from http.cookies import SimpleCookie
 from typing import Any, Callable, Dict, Iterable
 from urllib.parse import parse_qsl
 
@@ -114,7 +115,7 @@ class WSGIRequest(Request):
         return int(self.environ['SERVER_PORT'])
 
     @property
-    def url(self):
+    def url(self) -> str:
         """
         Hostname used for the request. For example, `https://rivr.com/about`.
         """
@@ -130,7 +131,7 @@ class WSGIRequest(Request):
     # Attributes
 
     @property
-    def attributes(self):
+    def attributes(self) -> Any:
         """
         A request body, deserialized as a dictionary.
 
@@ -139,16 +140,18 @@ class WSGIRequest(Request):
         """
 
         if not hasattr(self, '_attributes'):
-            if self.content_length and self.content_length > 0:
-                content = self.body.read(self.content_length)
-                content_type = self.content_type.split(';')[0]
+            content_type = self.content_type
+            content_length = self.content_length
+            if content_type and content_length and content_length > 0:
+                content = self.body.read(content_length)
+                content_type = content_type.partition(';')[0]
 
                 if content_type == 'application/json':
-                    content = content.decode('utf-8')
-                    self._attributes = json.loads(content)
+                    decoded_content = content.decode('utf-8')
+                    self._attributes = json.loads(decoded_content)
                 elif content_type == 'application/x-www-form-urlencoded':
-                    content = content.decode('utf-8')
-                    data = parse_qsl(content, True)
+                    decoded_content = content.decode('utf-8')
+                    data = parse_qsl(decoded_content, True)
                     self._attributes = dict((k, v) for k, v in data)
             else:
                 self._attributes = {}
@@ -158,7 +161,7 @@ class WSGIRequest(Request):
     POST = attributes  # Deprecated
 
     @property
-    def cookies(self):
+    def cookies(self) -> SimpleCookie:
         if not hasattr(self, '_cookies'):
             self._cookies = parse_cookie(self.headers.get_all('Cookie'))
 

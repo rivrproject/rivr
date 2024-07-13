@@ -58,7 +58,7 @@ class Query:
         'fruits'
         """
 
-        for (key, value) in self._query:
+        for key, value in self._query:
             if key == name:
                 return value
 
@@ -113,7 +113,7 @@ class Request(HTTPMessage):
         super(Request, self).__init__(headers)
 
     @property
-    def cookies(self):
+    def cookies(self) -> SimpleCookie:
         if not hasattr(self, '_cookies'):
             self._cookies = parse_cookie(self.headers.get_all('Cookie'))
 

@@ -1,5 +1,5 @@
 from base64 import b64decode
-from typing import Optional
+from typing import Optional, Union
 
 from rivr.http import Request, Response
 from rivr.middleware.base import Middleware
@@ -46,7 +46,7 @@ class AuthMiddleware(Middleware):
 
         return None
 
-    def check_login(self, request: Request):
+    def check_login(self, request: Request) -> Union[AnnonymousUser, User]:
         authorization = request.headers['Authorization']
 
         if not authorization:

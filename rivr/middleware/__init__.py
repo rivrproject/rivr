@@ -18,7 +18,7 @@ class MiddlewareController(Middleware):
         response = view(request)
     """
 
-    def __init__(self, *middleware):
+    def __init__(self, *middleware: Middleware):
         self.request_middleware: List[Callable[[Request], Optional[Response]]] = []
         self.response_middleware: List[Callable[[Request, Response], Response]] = []
         self.exception_middleware: List[
@@ -28,7 +28,7 @@ class MiddlewareController(Middleware):
         for mw_instance in middleware:
             self.append(mw_instance)
 
-    def append(self, middleware: Middleware):
+    def append(self, middleware: Middleware) -> None:
         if hasattr(middleware, 'process_request'):
             self.request_middleware.append(middleware.process_request)
 

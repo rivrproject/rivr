@@ -8,7 +8,7 @@ class HTTPMessage:
             if isinstance(headers, dict):
                 self.headers = Headers()
 
-                for (name, value) in headers.items():
+                for name, value in headers.items():
                     self.headers[name] = value
 
             elif isinstance(headers, Headers):

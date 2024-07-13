@@ -13,7 +13,7 @@ def serve(
     host: str = 'localhost',
     port: int = 8080,
     debug: bool = True,
-):
+) -> None:
     """
     Starts a developent server on the local machine. By default, the
     server runs on port 8080 on localhost. You can pass in a different

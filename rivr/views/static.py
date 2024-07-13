@@ -5,6 +5,7 @@ import re
 import stat
 from email.utils import formatdate, mktime_tz, parsedate_tz
 from functools import reduce
+from typing import List
 from urllib.parse import unquote
 
 from rivr.http import Http404, Request, Response, ResponseNotModified, ResponseRedirect
@@ -43,14 +44,20 @@ class StaticView(View):
     use_request_path = False
     index = None
 
-    def was_modified_since(self, mtime=0, size=0):
+    def was_modified_since(self, mtime=0, size=0) -> bool:
         header = self.request.headers.get('HTTP_IF_MODIFIED_SINCE')
         if header is None:
             return True
 
         matches = re.match(r'^([^;]+)(; length=([0-9]+))?$', header, re.IGNORECASE)
+        if not matches:
+            return True
 
-        header_mtime = mktime_tz(parsedate_tz(matches.group(1)))
+        date = parsedate_tz(matches.group(1))
+        if not date:
+            return True
+
+        header_mtime = mktime_tz(date)
         header_len = matches.group(3)
 
         if header_len and int(header_len) != size:
@@ -65,8 +72,8 @@ class StaticView(View):
         if not self.show_indexes:
             raise Http404('Directory indexes are not allowed here.')
 
-        directories = []
-        files = []
+        directories: List[str] = []
+        files: List[str] = []
         for f in os.listdir(fullpath):
             if not f.startswith('.'):
                 if os.path.isdir(os.path.join(fullpath, f)):
@@ -80,7 +87,7 @@ class StaticView(View):
         directories.sort()
         files.sort()
 
-        def render(accumulator, path):
+        def render(accumulator: str, path: str) -> str:
             return accumulator + '<li><a href="{0}">{0}</a></li>\n'.format(path)
 
         context = {

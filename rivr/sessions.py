@@ -33,7 +33,7 @@ class SessionStore:  # FIXME: once dropped py 3.7 move to Protocol
 
 
 class BaseSession(object):
-    def __init__(self, session_key: Optional[str] = None):
+    def __init__(self, session_key: Optional[str] = None) -> None:
         self.modified = False
         self.session_key = session_key
         self.data: Dict[str, str] = {}
@@ -71,25 +71,26 @@ class BaseSession(object):
         self.session_key = hsh.hexdigest()
 
 
-class MemorySession(BaseSession, Session):
-    def __init__(self, store, *args, **kwargs):
-        self.store: Optional[Any] = store
-        super(MemorySession, self).__init__(*args, **kwargs)
-
-    def get_session(self):
-        if self.session_key in self.store.sessions:
-            self.data = self.store.sessions[self.session_key]
-
-    def save(self):
-        self.store.sessions[self.session_key] = self.data
-
-
 class MemorySessionStore(SessionStore):
-    def __init__(self):
-        self.sessions = {}
+    def __init__(self) -> None:
+        self.sessions: Dict[str, Dict[str, str]] = {}
 
     def __call__(self, *args, **kwargs) -> Session:
         return MemorySession(self, *args, **kwargs)
+
+
+class MemorySession(BaseSession, Session):
+    def __init__(self, store: MemorySessionStore, *args, **kwargs) -> None:
+        self.store: MemorySessionStore = store
+        super(MemorySession, self).__init__(*args, **kwargs)
+
+    def get_session(self) -> None:
+        if self.session_key in self.store.sessions:
+            self.data = self.store.sessions[self.session_key]
+
+    def save(self) -> None:
+        assert self.session_key
+        self.store.sessions[self.session_key] = self.data
 
 
 class SessionMiddleware(Middleware):
