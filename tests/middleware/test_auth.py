@@ -30,6 +30,16 @@ def test_authorized(client: Client) -> None:
     assert response.status_code == 200
 
 
+def test_authorized_case_insensitive_auth_scheme(client: Client) -> None:
+    response = client.get(
+        '/',
+        headers={
+            'Authorization': 'basic a3lsZWY6bGV0bWVpbg==',
+        },
+    )
+    assert response.status_code == 200
+
+
 def test_unauthorized_no_credentials(client: Client) -> None:
     response = client.get('/')
     assert response.status_code == 401

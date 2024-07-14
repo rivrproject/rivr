@@ -52,7 +52,7 @@ class AuthMiddleware(Middleware):
             return AnnonymousUser()
 
         scheme, token = authorization
-        if scheme != 'Basic':
+        if scheme.casefold() != 'basic':
             return AnnonymousUser()
 
         try:
