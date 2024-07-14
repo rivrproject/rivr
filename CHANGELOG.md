@@ -1,6 +1,21 @@
 # rivr changelog
 
-## TBD
+## 0.10.0 (2024/07/14)
+
+### Enhancements
+
+- `rivr.Request` provides accessors for parsing header values:
+    - `authorization`
+    - `if_match`
+    - `if_not_match`
+    - `if_modified_since`
+    - `if_unmodified_since`
+
+### Bug Fixes
+
+- StaticView respects If-Modified-Since request header.
+
+## 0.9.0
 
 ### Breaking Changes
 
