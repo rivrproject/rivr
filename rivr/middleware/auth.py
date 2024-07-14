@@ -54,10 +54,14 @@ class AuthMiddleware(Middleware):
         scheme, token = authorization
         if scheme.casefold() == 'basic':
             return self.authorize_basic_token(request, token)
+        elif scheme.casefold() == 'bearer':
+            return self.authorize_bearer(request, token)
 
         return AnnonymousUser()
 
-    def authorize_basic_token(self, request: Request, token: str) -> Union[AnnonymousUser, User]:
+    def authorize_basic_token(
+        self, request: Request, token: str
+    ) -> Union[AnnonymousUser, User]:
         try:
             userid, password = b64decode(token).decode('utf-8').split(':')
         except ValueError:
@@ -65,7 +69,9 @@ class AuthMiddleware(Middleware):
 
         return self.authorize_basic(request, userid, password)
 
-    def authorize_basic(self, request: Request, userid: str, password: str) -> Union[AnnonymousUser, User]:
+    def authorize_basic(
+        self, request: Request, userid: str, password: str
+    ) -> Union[AnnonymousUser, User]:
         if self.check_password(userid, password):
             return User(userid)
 
@@ -73,3 +79,8 @@ class AuthMiddleware(Middleware):
 
     def check_password(self, userid: str, password: str) -> bool:
         return False
+
+    def authorize_bearer(
+        self, request: Request, token: str
+    ) -> Union[AnnonymousUser, User]:
+        return AnnonymousUser()
