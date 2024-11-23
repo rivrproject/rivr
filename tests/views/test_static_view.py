@@ -1,5 +1,6 @@
 import os
 import unittest
+from pathlib import Path
 
 from rivr.http import Http404
 from rivr.test import Client
@@ -31,6 +32,9 @@ FIXTURE_DIRECTORY_INDEX = """
 class StaticViewTests(unittest.TestCase):
     def setUp(self) -> None:
         super(StaticViewTests, self).setUp()
+
+        fixture_file = Path(__file__).parent / 'fixture' / 'file1.py'
+        os.utime(fixture_file, (10000, 1720900063))
 
         self.root = os.path.dirname(__file__)
         self.view = StaticView.as_view(
