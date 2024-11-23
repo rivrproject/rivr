@@ -156,7 +156,7 @@ class Request(HTTPMessage):
 
         try:
             return parsedate_to_datetime(value)
-        except ValueError:
+        except (ValueError, TypeError):
             # A recipient MUST ignore the If-Modified-Since header field if
             # the received field value is not a valid HTTP-date
             return None
@@ -169,7 +169,7 @@ class Request(HTTPMessage):
 
         try:
             return parsedate_to_datetime(value)
-        except ValueError:
+        except (ValueError, TypeError):
             # A recipient MUST ignore the If-Unmodified-Since header field
             # if the received field value is not a valid HTTP-date
             # (including when the field value appears to be a list of dates).
