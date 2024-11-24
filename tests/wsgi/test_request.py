@@ -110,6 +110,13 @@ class WSGIRequestTest(unittest.TestCase):
 
         assert request.attributes == {'test': '👍'}
 
+    def test_attributes_deserializes_JSON_HTTP_body_with_chunk_encoding(self) -> None:
+        self.environ['CONTENT_TYPE'] = 'application/json'
+        self.environ['wsgi.input'] = BytesIO('{"test": "👍"}'.encode('utf-8'))
+        request = WSGIRequest(self.environ)
+
+        assert request.attributes == {'test': '👍'}
+
     # Cookies
 
     def test_cookies(self) -> None:

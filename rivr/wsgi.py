@@ -141,22 +141,20 @@ class WSGIRequest(Request):
 
         if not hasattr(self, '_attributes'):
             content_type = self.content_type
-            content_length = self.content_length
-            if content_type and content_length and content_length > 0:
-                content = self.body.read(content_length)
+
+            if content_type:
+                text = self.text(max_bytes=None)
 
                 if (
                     content_type.type == 'application'
                     and content_type.subtype == 'json'
                 ):
-                    decoded_content = content.decode('utf-8')
-                    self._attributes = json.loads(decoded_content)
+                    self._attributes = json.loads(text)
                 elif (
                     content_type.type == 'application'
                     and content_type.subtype == 'x-www-form-urlencoded'
                 ):
-                    decoded_content = content.decode('utf-8')
-                    data = parse_qsl(decoded_content, True)
+                    data = parse_qsl(text, True)
                     self._attributes = dict((k, v) for k, v in data)
             else:
                 self._attributes = {}
