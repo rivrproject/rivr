@@ -1,6 +1,8 @@
 import datetime
 from io import BytesIO
 
+import pytest
+
 from rivr.http.request import Query, Request
 
 
@@ -64,6 +66,55 @@ def test_init_body_empty() -> None:
 
     assert isinstance(request.body, BytesIO)
     assert request.body.read() == b''
+
+
+def test_text() -> None:
+    request = Request(body=BytesIO(b'Hello World'))
+
+    assert request.text() == 'Hello World'
+
+
+def test_text_with_text_content_type_charset() -> None:
+    request = Request(
+        headers={'content-type': 'text/plain; charset=gb2312'},
+        body=BytesIO('还'.encode('gb2312')),
+    )
+
+    assert request.text() == '还'
+
+
+def test_text_with_content_length_too_big() -> None:
+    request = Request(
+        headers={'content-length': str(1000001)}, body=BytesIO(b'Hello World')
+    )
+
+    with pytest.raises(IOError):
+        request.text()
+
+    # verify no IO bytes had been read
+    assert request.body.read() == b'Hello World'
+
+
+def test_text_with_chunked_transfer_too_big() -> None:
+    request = Request(body=BytesIO(b'.' * 1000002))
+
+    with pytest.raises(IOError):
+        request.text()
+
+    # verify only read up until limit + 1
+    assert request.body.read() == b'.'
+
+
+def test_text_with_content_length_and_chunked_transfer() -> None:
+    request = Request(
+        headers={
+            'content-length': str(1000001),
+            'transfer-encoding': 'chunked',
+        },
+        body=BytesIO(b'.' * 5),
+    )
+
+    assert request.text() == '.....'
 
 
 def test_cookies() -> None:

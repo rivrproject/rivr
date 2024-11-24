@@ -175,6 +175,46 @@ class Request(HTTPMessage):
             # (including when the field value appears to be a list of dates).
             return None
 
+    # Body
+
+    def text(self, max_bytes: Optional[int] = 1000000) -> str:
+        """
+        Read the request body into a string, up until a default limit of 1mb.
+
+        By default utf-8 will be used, or the charset of the content type
+        for text types.
+
+        text is a blocking method, and can block if a client slowly
+        streams a request body.
+        """
+
+        if max_bytes:
+            transfer_encoding = self.headers['transfer-encoding']
+            is_chunked = False
+            if transfer_encoding:
+                supported_encodings = set(
+                    map(lambda te: te.strip(), transfer_encoding.split(','))
+                )
+                is_chunked = 'chunked' in supported_encodings
+
+            if not is_chunked:
+                content_length = self.content_length
+                if content_length and content_length > max_bytes:
+                    raise IOError('Message body is above max bytes limit')
+
+        encoding = 'utf-8'
+
+        content_type = self.content_type
+        if content_type and content_type.type == 'text' and 'charset' in content_type:
+            encoding = content_type['charset']
+
+        buffer = self.body.read(max_bytes or -1)
+
+        if len(self.body.read(1)) > 0:
+            raise IOError('Message body is above max bytes limit')
+
+        return buffer.decode(encoding)
+
     # Deprecated
     @property
     def GET(self) -> Dict[str, str]:
