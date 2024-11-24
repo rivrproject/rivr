@@ -1,3 +1,4 @@
+from rivr.http.media_type import MediaType
 from rivr.http.request import Request
 from rivr.http.response import (
     Http404,
@@ -20,4 +21,5 @@ __all__ = [
     'ResponseNotModified',
     'ResponsePermanentRedirect',
     'ResponseRedirect',
+    'MediaType',
 ]

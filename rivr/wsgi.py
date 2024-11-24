@@ -144,12 +144,17 @@ class WSGIRequest(Request):
             content_length = self.content_length
             if content_type and content_length and content_length > 0:
                 content = self.body.read(content_length)
-                content_type = content_type.partition(';')[0]
 
-                if content_type == 'application/json':
+                if (
+                    content_type.type == 'application'
+                    and content_type.subtype == 'json'
+                ):
                     decoded_content = content.decode('utf-8')
                     self._attributes = json.loads(decoded_content)
-                elif content_type == 'application/x-www-form-urlencoded':
+                elif (
+                    content_type.type == 'application'
+                    and content_type.subtype == 'x-www-form-urlencoded'
+                ):
                     decoded_content = content.decode('utf-8')
                     data = parse_qsl(decoded_content, True)
                     self._attributes = dict((k, v) for k, v in data)

@@ -2,6 +2,7 @@ import datetime
 import unittest
 
 from rivr.http import (
+    MediaType,
     Response,
     ResponseNoContent,
     ResponseNotAllowed,
@@ -26,7 +27,7 @@ class ResponseTest(unittest.TestCase):
         "Content type header should be set"
 
         response = Response(content_type='application/json')
-        assert response.content_type == 'application/json'
+        assert response.content_type == MediaType('application', 'json')
         assert response.headers['Content-Type'] == 'application/json'
 
     def test_delete_cookie(self) -> None:

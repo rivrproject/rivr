@@ -1,5 +1,12 @@
 # rivr changelog
 
+## TBD
+
+### Breaking Changes
+
+- `Request` and `Response` `content_type` properties now return `MediaType`
+  instead of a string. Use `str(request.content_type)` for former behaviour.
+
 ## 0.10.0 (2024/07/14)
 
 ### Enhancements

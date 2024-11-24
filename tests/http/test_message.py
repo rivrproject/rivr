@@ -1,6 +1,6 @@
 from wsgiref.headers import Headers
 
-from rivr.http.message import HTTPMessage
+from rivr.http.message import HTTPMessage, MediaType
 
 
 def test_headers() -> None:
@@ -26,13 +26,16 @@ def test_content_type_getter() -> None:
         }
     )
 
-    assert message.content_type == 'text/plain'
+    assert message.content_type == MediaType('text', 'plain')
 
 
 def test_content_type_setter() -> None:
     message = HTTPMessage()
-    message.content_type = 'text/plain'
 
+    message.content_type = 'text/plain'
+    assert message.headers['Content-Type'] == 'text/plain'
+
+    message.content_type = MediaType('text', 'plain')
     assert message.headers['Content-Type'] == 'text/plain'
 
 

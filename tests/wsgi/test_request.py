@@ -3,6 +3,7 @@
 import unittest
 from io import BytesIO
 
+from rivr.http import MediaType
 from rivr.wsgi import WSGIRequest
 
 
@@ -73,7 +74,7 @@ class WSGIRequestTest(unittest.TestCase):
         self.environ['CONTENT_TYPE'] = 'text/plain'
         self.request = WSGIRequest(self.environ)
 
-        assert self.request.content_type == 'text/plain'
+        assert self.request.content_type == MediaType('text', 'plain')
 
     def test_content_length(self) -> None:
         self.environ['CONTENT_LENGTH'] = '5'

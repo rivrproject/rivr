@@ -1,6 +1,8 @@
 from typing import Dict, Optional, Union
 from wsgiref.headers import Headers
 
+from rivr.http.media_type import MediaType
+
 
 class HTTPMessage:
     def __init__(self, headers: Optional[Union[Headers, Dict[str, str]]] = None):
@@ -17,12 +19,15 @@ class HTTPMessage:
             self.headers = Headers()
 
     @property
-    def content_type(self) -> Optional[str]:
-        return self.headers['Content-Type']
+    def content_type(self) -> Optional[MediaType]:
+        content_type = self.headers['Content-Type']
+        if content_type:
+            return MediaType.parse(content_type)
+        return None
 
     @content_type.setter
-    def content_type(self, value: str):
-        self.headers['Content-Type'] = value
+    def content_type(self, value: Union[str, MediaType]):
+        self.headers['Content-Type'] = str(value)
 
     @property
     def content_length(self) -> Optional[int]:
