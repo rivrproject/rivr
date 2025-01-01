@@ -1,9 +1,9 @@
-from typing import List, Optional, Self, Tuple
+from typing import List, Optional
 
 
 class Parameter:
     @classmethod
-    def parse(cls, parameter: str) -> Self:
+    def parse(cls, parameter: str) -> 'Parameter':
         name, _, value = parameter.strip().partition('=')
         if value.startswith('"') and value.endswith('"'):
             value = value[1:-1]
@@ -28,7 +28,7 @@ class Parameter:
 
 class MediaType:
     @classmethod
-    def parse(cls, media_type: str) -> Self:
+    def parse(cls, media_type: str) -> 'MediaType':
         first, _, parameters = media_type.partition(';')
         type, _, subtype = first.partition('/')
         if parameters:
