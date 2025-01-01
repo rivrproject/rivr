@@ -27,6 +27,12 @@ class WSGIRequestTest(unittest.TestCase):
     def test_path(self) -> None:
         assert self.request.path == '/path/'
 
+    def test_path_with_unicode(self) -> None:
+        # https://peps.python.org/pep-3333/#unicode-issues
+        self.environ['PATH_INFO'] = '/lang/英文'.encode().decode('iso-8859-1')
+        self.request = WSGIRequest(self.environ)
+        assert self.request.path == '/lang/英文'
+
     def test_headers(self) -> None:
         self.environ['HTTP_HEADERX'] = 'Hello World'
         request = WSGIRequest(self.environ)

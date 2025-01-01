@@ -11,6 +11,10 @@
 
 - `Request` contains `text()` method for decoding a request body.
 
+### Bug Fixes
+
+- Support unicode paths and query strings from WSGI.
+
 ## 0.10.0 (2024/07/14)
 
 ### Enhancements

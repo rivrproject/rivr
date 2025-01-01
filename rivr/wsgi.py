@@ -55,6 +55,12 @@ STATUS_CODES = {
 }
 
 
+def get_wsgi_str(environ, key: str, default) -> str:
+    # https://peps.python.org/pep-3333/#unicode-issues
+    value = environ.get(key, default)
+    return value.encode('iso-8859-1').decode()
+
+
 class WSGIRequest(Request):
     """
     https://wsgi.readthedocs.io/en/latest/definitions.html
@@ -62,9 +68,9 @@ class WSGIRequest(Request):
 
     def __init__(self, environ: Dict[str, Any]):
         method: str = environ['REQUEST_METHOD']
-        path: str = environ['PATH_INFO']
+        path = get_wsgi_str(environ, 'PATH_INFO', '/')
 
-        query = Query(environ.get('QUERY_STRING', ''))
+        query = Query(get_wsgi_str(environ, 'QUERY_STRING', ''))
 
         super(WSGIRequest, self).__init__(
             path, method, query=query, body=environ['wsgi.input']
