@@ -1,8 +1,9 @@
+import json
 from datetime import datetime
 from email.utils import parsedate_to_datetime
 from http.cookies import CookieError, SimpleCookie
 from io import BytesIO
-from typing import IO, Dict, List, Optional, Tuple, Union
+from typing import IO, Any, Dict, List, Optional, Tuple, Union
 from urllib.parse import parse_qsl, urlencode
 
 from rivr.http.message import HTTPMessage
@@ -219,3 +220,36 @@ class Request(HTTPMessage):
     @property
     def GET(self) -> Dict[str, str]:
         return dict((k, v) for k, v in self.query._query)
+
+    @property
+    def attributes(self) -> Any:
+        """
+        A request body, deserialized as a dictionary.
+
+        This will automatically deserialize form or JSON encoded request
+        bodies.
+        """
+
+        if not hasattr(self, '_attributes'):
+            content_type = self.content_type
+
+            if content_type:
+                text = self.text(max_bytes=None)
+
+                if (
+                    content_type.type == 'application'
+                    and content_type.subtype == 'json'
+                ):
+                    self._attributes = json.loads(text)
+                elif (
+                    content_type.type == 'application'
+                    and content_type.subtype == 'x-www-form-urlencoded'
+                ):
+                    data = parse_qsl(text, True)
+                    self._attributes = dict((k, v) for k, v in data)
+            else:
+                self._attributes = {}
+
+        return self._attributes
+
+    POST = attributes  # Deprecated

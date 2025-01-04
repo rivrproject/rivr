@@ -1,11 +1,8 @@
-import json
 import logging
 import sys
-from http.cookies import SimpleCookie
 from typing import Any, Callable, Dict, Iterable
-from urllib.parse import parse_qsl
 
-from rivr.http.request import Query, Request, parse_cookie
+from rivr.http.request import Query, Request
 from rivr.http.response import Http404, Response, ResponseNotFound
 
 logger = logging.getLogger('rivr.request')
@@ -133,48 +130,6 @@ class WSGIRequest(Request):
             url += ':' + str(port)
 
         return url + self.path
-
-    # Attributes
-
-    @property
-    def attributes(self) -> Any:
-        """
-        A request body, deserialized as a dictionary.
-
-        This will automatically deserialize form or JSON encoded request
-        bodies.
-        """
-
-        if not hasattr(self, '_attributes'):
-            content_type = self.content_type
-
-            if content_type:
-                text = self.text(max_bytes=None)
-
-                if (
-                    content_type.type == 'application'
-                    and content_type.subtype == 'json'
-                ):
-                    self._attributes = json.loads(text)
-                elif (
-                    content_type.type == 'application'
-                    and content_type.subtype == 'x-www-form-urlencoded'
-                ):
-                    data = parse_qsl(text, True)
-                    self._attributes = dict((k, v) for k, v in data)
-            else:
-                self._attributes = {}
-
-        return self._attributes
-
-    POST = attributes  # Deprecated
-
-    @property
-    def cookies(self) -> SimpleCookie:
-        if not hasattr(self, '_cookies'):
-            self._cookies = parse_cookie(self.headers.get_all('Cookie'))
-
-        return self._cookies
 
 
 class WSGIHandler(object):

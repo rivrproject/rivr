@@ -1,7 +1,7 @@
 import hashlib
 import time
 from random import random
-from typing import Any, Dict, Optional
+from typing import Dict, Optional
 
 from rivr.http import Request, Response
 from rivr.middleware import Middleware
