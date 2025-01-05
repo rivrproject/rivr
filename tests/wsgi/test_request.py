@@ -118,6 +118,7 @@ class WSGIRequestTest(unittest.TestCase):
 
     def test_attributes_deserializes_JSON_HTTP_body_with_chunk_encoding(self) -> None:
         self.environ['CONTENT_TYPE'] = 'application/json'
+        self.environ['HTTP_TRANSFER_ENCODING'] = 'chunked'
         self.environ['wsgi.input'] = BytesIO('{"test": "👍"}'.encode('utf-8'))
         request = WSGIRequest(self.environ)
 

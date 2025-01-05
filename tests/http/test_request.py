@@ -69,14 +69,19 @@ def test_init_body_empty() -> None:
 
 
 def test_text() -> None:
-    request = Request(body=BytesIO(b'Hello World'))
+    request = Request(
+        headers={'transfer-encoding': 'chunked'}, body=BytesIO(b'Hello World')
+    )
 
     assert request.text() == 'Hello World'
 
 
 def test_text_with_text_content_type_charset() -> None:
     request = Request(
-        headers={'content-type': 'text/plain; charset=gb2312'},
+        headers={
+            'transfer-encoding': 'chunked',
+            'content-type': 'text/plain; charset=gb2312',
+        },
         body=BytesIO('还'.encode('gb2312')),
     )
 
@@ -96,7 +101,12 @@ def test_text_with_content_length_too_big() -> None:
 
 
 def test_text_with_chunked_transfer_too_big() -> None:
-    request = Request(body=BytesIO(b'.' * 1000002))
+    request = Request(
+        headers={
+            'transfer-encoding': 'chunked',
+        },
+        body=BytesIO(b'.' * 1000002),
+    )
 
     with pytest.raises(IOError):
         request.text()

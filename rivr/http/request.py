@@ -189,30 +189,38 @@ class Request(HTTPMessage):
         streams a request body.
         """
 
-        if max_bytes:
-            transfer_encoding = self.headers['transfer-encoding']
-            is_chunked = False
-            if transfer_encoding:
-                supported_encodings = set(
-                    map(lambda te: te.strip(), transfer_encoding.split(','))
-                )
-                is_chunked = 'chunked' in supported_encodings
-
-            if not is_chunked:
-                content_length = self.content_length
-                if content_length and content_length > max_bytes:
-                    raise IOError('Message body is above max bytes limit')
+        transfer_encoding = self.headers['transfer-encoding']
+        is_chunked = False
+        if transfer_encoding:
+            supported_encodings = set(
+                map(lambda te: te.strip(), transfer_encoding.split(','))
+            )
+            is_chunked = 'chunked' in supported_encodings
 
         encoding = 'utf-8'
 
         content_type = self.content_type
         if content_type and content_type.type == 'text' and 'charset' in content_type:
-            encoding = content_type['charset']
+            charset = content_type['charset']
+            if charset:
+                encoding = charset
 
-        buffer = self.body.read(max_bytes or -1)
+        if is_chunked:
+            buffer = self.body.read(max_bytes or -1)
+            if max_bytes and len(self.body.read(1)) > 0:
+                raise IOError('Message body is above max bytes limit')
+        else:
+            content_length = self.content_length
 
-        if len(self.body.read(1)) > 0:
-            raise IOError('Message body is above max bytes limit')
+            if content_length is None:
+                raise IOError(
+                    'Message body was not chunked nor contained content-length'
+                )
+
+            if max_bytes and content_length > max_bytes:
+                raise IOError('Message body is above max bytes limit')
+
+            buffer = self.body.read(content_length)
 
         return buffer.decode(encoding)
 
