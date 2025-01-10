@@ -1,6 +1,6 @@
 import pytest
 
-from rivr.http import Request, Response
+from rivr import Request, Response
 from rivr.test import Client
 
 

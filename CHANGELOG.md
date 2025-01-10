@@ -10,6 +10,7 @@
 ### Enhancements
 
 - `Request` contains `text()` method for decoding a request body.
+- `Request` is now available for import from the `rivr` module.
 
 ### Bug Fixes
 
