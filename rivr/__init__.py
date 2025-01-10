@@ -11,6 +11,7 @@ from rivr.server import serve
 __all__ = [
     'views',
     'Http404',
+    'Request',
     'Response',
     'ErrorWrapper',
     'Middleware',
