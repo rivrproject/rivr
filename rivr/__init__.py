@@ -1,7 +1,7 @@
 VERSION = '0.10.0'
 
 from rivr import views
-from rivr.http import Http404, Response, Request
+from rivr.http import Http404, Request, Response
 from rivr.middleware import ErrorWrapper, Middleware, MiddlewareController
 from rivr.middleware.auth import AuthMiddleware
 from rivr.middleware.debug import DebugMiddleware

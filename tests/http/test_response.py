@@ -23,12 +23,14 @@ class ResponseTest(unittest.TestCase):
         response = Response(status=302)
         assert response.status_code == 302
 
-    def test_content_type(self) -> None:
-        "Content type header should be set"
-
+    def test_content_type_str(self) -> None:
         response = Response(content_type='application/json')
         assert response.content_type == MediaType('application', 'json')
         assert response.headers['Content-Type'] == 'application/json'
+
+    def test_content_type(self) -> None:
+        response = Response(content_type=MediaType('application', 'json'))
+        assert response.content_type == MediaType('application', 'json')
 
     def test_delete_cookie(self) -> None:
         response = Response()

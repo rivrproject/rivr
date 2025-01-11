@@ -2,7 +2,7 @@ import datetime
 from http.cookies import SimpleCookie
 from typing import Iterable, List, Optional, Tuple, Union
 
-from rivr.http.message import HTTPMessage
+from rivr.http.message import HTTPMessage, MediaType
 
 
 class Http404(Exception):
@@ -22,7 +22,7 @@ class Response(HTTPMessage):
         self,
         content: Union[str, bytes] = '',
         status: Optional[int] = None,
-        content_type: Optional[str] = 'text/html; charset=utf8',
+        content_type: Union[str, MediaType, None] = 'text/html; charset=utf8',
     ):
         super(Response, self).__init__()
 
@@ -32,7 +32,10 @@ class Response(HTTPMessage):
             self.status_code = status
 
         if content_type:
-            self.content_type = content_type
+            if isinstance(content_type, str):
+                self.content_type = MediaType.parse(content_type)
+            else:
+                self.content_type = content_type
 
         self.cookies: SimpleCookie = SimpleCookie()
 
