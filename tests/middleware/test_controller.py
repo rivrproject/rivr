@@ -6,7 +6,7 @@ from rivr.middleware import Middleware, MiddlewareController
 
 
 class TestMiddleware(Middleware):
-    def __init__(self):
+    def __init__(self) -> None:
         self.processed_request = 0
         self.processed_response = 0
         self.processed_exception = 0

@@ -4,6 +4,8 @@
 
 ### Breaking Changes
 
+- Support for Python < 3.9 has been removed.
+
 - `Request` and `Response` `content_type` properties now return `MediaType`
   instead of a string. Use `str(request.content_type)` for former behaviour.
 

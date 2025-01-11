@@ -32,7 +32,7 @@ def test_content_type_getter() -> None:
 def test_content_type_setter() -> None:
     message = HTTPMessage()
 
-    message.content_type = 'text/plain'
+    message.content_type = MediaType('text', 'plain')
     assert message.headers['Content-Type'] == 'text/plain'
 
     message.content_type = MediaType('text', 'plain')

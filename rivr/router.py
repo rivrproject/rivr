@@ -1,5 +1,5 @@
 import re
-from typing import Any, Callable, Dict, Iterable, Optional, Tuple
+from typing import Any, Callable, Dict, Iterable, Optional, Self, Tuple
 
 from rivr.http import Http404, Request, Response, ResponsePermanentRedirect
 from rivr.importlib import import_module
@@ -158,11 +158,11 @@ class BaseRouter(object):
 
             self.urlpatterns.append(t)
 
-    def __iadd__(self, router) -> 'Router':
+    def __iadd__(self, router) -> Self:
         self.urlpatterns.__iadd__(router.urlpatterns)
         return self
 
-    def __isub__(self, router) -> 'Router':
+    def __isub__(self, router) -> Self:
         self.urlpatterns.__isub__(router.urlpatterns)
         return self
 

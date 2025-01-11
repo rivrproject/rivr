@@ -1,7 +1,7 @@
 import unittest
 
 import rivr
-from rivr.tests import TestClient
+from rivr.test import Client
 
 
 def hello_world(request):
@@ -10,7 +10,7 @@ def hello_world(request):
 
 class ExampleTests(unittest.TestCase):
     def setUp(self):
-        self.client = TestClient(hello_world)
+        self.client = Client(hello_world)
 
     def test200(self):
         assert self.client.get('/').status_code is 200
